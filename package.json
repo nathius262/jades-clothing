@@ -4,7 +4,9 @@
   "description": "Jade's Clothing is a full-stack e-commerce platform built to showcase and sell beautiful Nigerian traditional and contemporary attire. It's structured for growth and modular development.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "type": "module",
   "repository": {
@@ -25,5 +27,8 @@
   "homepage": "https://github.com/nathius262/jades-clothing#readme",
   "dependencies": {
     "@nathius262/nexusjs": "^0.0.15"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

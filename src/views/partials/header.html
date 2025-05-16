@@ -1,5 +1,52 @@
-<header>
-    <img src="logo.png" alt="NexusJS Logo">
-    <h1>Welcome to NexusJS</h1>
-    <p>A lightweight Express.js framework with Sequelize, module generation, JWT auth, and a powerful CLI.</p>
+<!-- Header -->
+<header class="bg-white shadow-sm py-3 mb-0 sticky-top">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <!-- Logo with stylish wedding font -->
+      <h2 class="m-0">
+        <a href="#" class="text-decoration-none">
+          <span class="text-dark" style="font-family: 'Alex Brush', cursive; font-size: 2.2rem; font-weight: 400;">Jade's Clothing</span>
+        </a>
+      </h2>
+      
+      <!-- Desktop Navigation -->
+      <nav class="d-none d-md-flex">
+        <a href="#" class="text-dark me-3 nav-link">Home</a>
+        <a href="#" class="text-dark me-3 nav-link">Shop</a>
+        <a href="#" class="text-dark me-3 nav-link">About</a>
+        <a href="#" class="text-dark me-3 nav-link">Contact</a>
+        <a href="#" class="text-dark fw-bold nav-link position-relative">
+          <i class="bi bi-cart3"></i> Cart
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            0
+          </span>
+        </a>
+      </nav>
+      
+      <!-- Mobile menu button -->
+      <button class="d-md-none btn btn-outline-dark border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+        <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+      </button>
+    </div>
+  </div>
 </header>
+
+<!-- Mobile Menu Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" style="font-family: 'Alex Brush', cursive; font-size: 2rem;">Jade's Clothing</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <nav class="d-flex flex-column">
+      <a href="#" class="nav-link text-dark py-2 border-bottom">Home</a>
+      <a href="#" class="nav-link text-dark py-2 border-bottom">Shop</a>
+      <a href="#" class="nav-link text-dark py-2 border-bottom">About</a>
+      <a href="#" class="nav-link text-dark py-2 border-bottom">Contact</a>
+      <a href="#" class="nav-link text-dark py-2 d-flex align-items-center justify-content-between">
+        <span>Cart</span>
+        <span class="badge rounded-pill bg-danger">0</span>
+      </a>
+    </nav>
+  </div>
+</div>

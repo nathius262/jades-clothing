@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/nathius262/jades-clothing/issues"
   },
-  "homepage": "https://github.com/nathius262/jades-clothing#readme"
+  "homepage": "https://github.com/nathius262/jades-clothing#readme",
+  "dependencies": {
+    "@nathius262/nexusjs": "^0.0.15"
+  }
 }

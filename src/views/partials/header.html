@@ -10,11 +10,17 @@
       </h2>
       
       <!-- Desktop Navigation -->
-      <nav class="d-none d-md-flex">
+      <nav class="d-none d-md-flex align-items-center">
         <a href="#" class="text-dark me-3 nav-link">Home</a>
         <a href="#" class="text-dark me-3 nav-link">Shop</a>
         <a href="#" class="text-dark me-3 nav-link">About</a>
         <a href="#" class="text-dark me-3 nav-link">Contact</a>
+        
+        <!-- Search Icon -->
+        <button class="btn btn-link text-dark me-3 nav-link" data-bs-toggle="modal" data-bs-target="#searchModal">
+          <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+        </button>
+        
         <a href="#" class="text-dark fw-bold nav-link position-relative">
           <i class="bi bi-cart3"></i> Cart
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -24,12 +30,119 @@
       </nav>
       
       <!-- Mobile menu button -->
-      <button class="d-md-none btn btn-outline-dark border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
-        <i class="bi bi-list" style="font-size: 1.5rem;"></i>
-      </button>
+      <div class="d-md-none">
+        <button class="btn btn-link text-dark me-2" data-bs-toggle="modal" data-bs-target="#searchModal">
+          <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+        </button>
+        <button class="btn btn-outline-dark border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+          <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+        </button>
+      </div>
     </div>
   </div>
 </header>
+
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0">
+      <div class="modal-header border-0 pb-0">
+        <div class="w-100 position-relative">
+          <input type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="Search for Nigerian attire..." style="font-size: 1.2rem; padding-left: 3rem;">
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 1.2rem;"></i>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <h5 class="mb-4 text-success">Popular Categories</h5>
+        <div class="row g-3">
+          <!-- Search Category 1 -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <img src="https://images.unsplash.com/photo-1688143029428-e3ea5f5e5515?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fG5pZ2VyaWFuJTIwY2xvdGhpbmd8ZW58MHx8MHx8fDA%3D" 
+                     class="img-fluid rounded mb-2" alt="Ankara">
+                <h6 class="card-title">Ankara Styles</h6>
+                <p class="card-text small text-muted">Vibrant traditional prints</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search Category 2 -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <img src="https://images.unsplash.com/photo-1561764981-1925f98905f0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG5pZ2VyaWFuJTIwY2xvdGhpbmd8ZW58MHx8MHx8fDA%3D" 
+                     class="img-fluid rounded mb-2" alt="Agbada">
+                <h6 class="card-title">Agbada</h6>
+                <p class="card-text small text-muted">Elegant flowing gowns</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search Category 3 -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <img src="https://images.unsplash.com/photo-1687952622898-4e9514a710d5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5pZ2VyaWFuJTIwY2xvdGhpbmd8ZW58MHx8MHx8fDA%3D" 
+                     class="img-fluid rounded mb-2" alt="Lace">
+                <h6 class="card-title">Lace Designs</h6>
+                <p class="card-text small text-muted">Sophisticated lace outfits</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search Category 4 -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <img src="https://images.unsplash.com/photo-1661332306744-70f9ed1a7f40?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fG5pZ2VyaWFuJTIwY2xvdGhpbmd8ZW58MHx8MHx8fDA%3D" 
+                     class="img-fluid rounded mb-2" alt="Kids">
+                <h6 class="card-title">Kids Attire</h6>
+                <p class="card-text small text-muted">Traditional outfits for children</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search Category 5 -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <img src="https://media.istockphoto.com/id/1234454727/photo/confident-young-african-businesswoman-looking-out-through-an-office-window.webp?a=1&b=1&s=612x612&w=0&k=20&c=qpckmrdK8JIS8waE-HgNFFIXFC8mwQzVWzkkUVK_EwQ=" 
+                     class="img-fluid rounded mb-2" alt="Accessories">
+                <h6 class="card-title">Accessories</h6>
+                <p class="card-text small text-muted">Complete your look</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search Category 6 -->
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <img src="https://media.istockphoto.com/id/1255153663/photo/cheery-black-guy-having-fun-over-yellow-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=L1mM5HlP8GUR3jx6qM2RqwEMvM74DdzyoZAoFhzwTc8=" 
+                     class="img-fluid rounded mb-2" alt="Wedding">
+                <h6 class="card-title">Wedding Collection</h6>
+                <p class="card-text small text-muted">For your special day</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Searches -->
+        <div class="mt-5">
+          <h5 class="mb-3 text-success">Recent Searches</h5>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="#" class="btn btn-outline-success btn-sm">Ankara dresses</a>
+            <a href="#" class="btn btn-outline-success btn-sm">Men's agbada</a>
+            <a href="#" class="btn btn-outline-success btn-sm">Lace iro and buba</a>
+            <a href="#" class="btn btn-outline-success btn-sm">Kids traditional wear</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Mobile Menu Offcanvas -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu">

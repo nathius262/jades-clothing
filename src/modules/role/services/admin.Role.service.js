@@ -4,7 +4,7 @@ import db from '../../../models/index.cjs';
 
 export const findAll = async () => {
   try {
-    return await Role.findAll();
+    return await db.Role.findAll();
   } catch (error) {
     throw new Error('Error fetching records: ' + error.message);
   }
@@ -12,7 +12,7 @@ export const findAll = async () => {
 
 export const findById = async (id) => {
   try {
-    const item = await Role.findByPk(id);
+    const item = await db.Role.findByPk(id);
     if (!item) throw new Error('Not found');
     return item;
   } catch (error) {
@@ -22,7 +22,7 @@ export const findById = async (id) => {
 
 export const create = async (data) => {
   try {
-    return await Role.create(data);
+    return await db.Role.create(data);
   } catch (error) {
     throw new Error('Error creating record: ' + error.message);
   }
@@ -30,7 +30,7 @@ export const create = async (data) => {
 
 export const update = async (id, data) => {
   try {
-    const item = await Role.findByPk(id);
+    const item = await db.Role.findByPk(id);
     if (!item) throw new Error('Not found');
     return await item.update(data);
   } catch (error) {
@@ -40,7 +40,7 @@ export const update = async (id, data) => {
 
 export const destroy = async (id) => {
   try {
-    const item = await Role.findByPk(id);
+    const item = await db.Role.findByPk(id);
     if (!item) throw new Error('Not found');
     return await item.destroy();
   } catch (error) {

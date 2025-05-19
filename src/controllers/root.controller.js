@@ -38,5 +38,16 @@ const shop_view = async (req, res) => {
     }
 };
 
+const detail_view = async (req, res) => {
+    try {
+        res.render('detail', {
+            pageTitle: "detail"
+        })
+    } catch (err) {
+        res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
+        
+    }
+};
 
-export {index_view, shop_view}
+
+export {index_view, shop_view, detail_view}

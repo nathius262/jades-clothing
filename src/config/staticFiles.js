@@ -14,5 +14,6 @@ const app = express();
 app.use('', express.static(path.join(__dirname, '..', '..', 'public')));
 app.use('/admin', express.static(path.join(__dirname, '..', '..', 'public')));
 app.use('/admin/role', express.static(path.join(__dirname, '..', '..', 'public')));
+app.use('/product/', express.static(path.join(__dirname, '..', '..', 'public')));
 
 export default app;

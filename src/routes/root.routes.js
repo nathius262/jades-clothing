@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { 
-    index_view, shop_view
+    index_view, shop_view, detail_view
 } from "../controllers/root.controller.js";
 
 const router = Router();
@@ -8,6 +8,7 @@ const router = Router();
 // Home Route
 router.get('/', index_view);
 router.get('/shop', shop_view);
+router.get('/product/detail', detail_view);
 
 
 export default router;

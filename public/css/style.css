@@ -3,6 +3,19 @@
   --white: #FFFFFF;
   --gold: #E8A317;
   --cream: #F5F5DC;
+  --bg-midnight-blue: #1c253c;
+  --bg-purplish: #94259D73;
+  --bg-red: #EB1B1B;
+  --white: white;
+  --grey: rgb(177, 174, 174);
+  --black: black;
+  --blue: #71D4FF;
+  --gold: #CD8E4F;
+  --bg-body: #020325;
+  --bg-blue-transparent: #141668;
+  --blue-transparent: #287ea3da;
+  --yellow: #FFD771;
+  --fire-red: #FF7171;
 }
 
 body {

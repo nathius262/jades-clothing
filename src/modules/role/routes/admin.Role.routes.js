@@ -5,10 +5,12 @@ const router = express.Router();
 
 // Admin view routes
 router.route('/')
-  .get(controller.findAll)
+  .get(controller.findAll);
+
+router.route('/create') 
+  .get(controller.renderCreate)
   .post(controller.create);
 
-router.get('/create', controller.renderCreate);
 router.get('/dashboard', controller.adminDashboard);
 
 router.route('/:id')

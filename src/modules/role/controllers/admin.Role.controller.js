@@ -19,7 +19,7 @@ export const findById = async (req, res) => {
     res.status(200).render('./admins/update', {
       success: true,
       pageTitle: "Update Record",
-      role: [data],
+      role: data,
     });
   } catch (err) {
     res.status(404).render('error', { error: err.message });

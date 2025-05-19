@@ -8,6 +8,7 @@ import loadModules from './src/config/load_modules.js';
 import staticFiles from "./src/config/staticFiles.js";
 import configureViewEngine from './src/config/viewEngine.js';
 import eventLogger from './src/middlewares/logger.middleware.js';
+import conditionalRendering from './src/middlewares/conditionalRender.middleware.js';
 
 // Resolve __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,10 @@ app.use(bodyParser.json());
 
 // Static files
 app.use(staticFiles);
+
+
+//render header and footer section based on root or admin route
+app.use(conditionalRendering);
 
 // Load dynamic routes from modules
 await loadModules(app);

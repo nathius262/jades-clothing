@@ -103,7 +103,9 @@
     <!--============ROOT SECTION==============-->
     <section id="root" class=" position-relative overflow-x-hidden">
         <!--=========HEADER BEGIN===========-->
+        {{#unless isAdmin}}
         {{> header}}
+        {{/unless}}
         <!--=========HEADER END===========-->
 
         <!--=========MAIN BEGIN===========-->
@@ -114,7 +116,10 @@
         <!--=========FOOTER BEGIN===========-->
         
         {{> notification/success}}
+        {{#unless isAdmin}}
         {{> footer}}
+        {{/unless}}
+
         <!--=========FOOTER END===========-->
     </section>
     <!--============ROOT SECTION END==============-->

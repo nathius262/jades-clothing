@@ -19,7 +19,7 @@ export const findById = async (req, res) => {
     res.status(200).render('./admins/update', {
       success: true,
       pageTitle: "Update Record",
-      user: [data],
+      user: data
     });
   } catch (err) {
     res.status(404).render('error', { error: err.message });
@@ -57,18 +57,6 @@ export const renderCreate = async (req, res) => {
   try {
     res.status(200).render('./admins/create', {
       pageTitle: "Create User"
-    });
-  } catch (err) {
-    res.status(500).render('error', { error: err.message });
-  }
-};
-
-export const adminDashboard = async (req, res) => {
-  try {
-    const data = await service.adminMethod();
-    res.status(200).render('./admins/dashboard', {
-      pageTitle: "Admin Dashboard",
-      data,
     });
   } catch (err) {
     res.status(500).render('error', { error: err.message });

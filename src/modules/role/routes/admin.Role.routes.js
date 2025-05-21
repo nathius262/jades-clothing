@@ -1,8 +1,10 @@
 import express from 'express';
 import * as controller from '../controllers/admin.Role.controller.js';
+import useModuleViews from '../../../middlewares/moduleViews.js';
 
 const router = express.Router();
 
+router.use(useModuleViews('role'));
 // Admin view routes
 router.route('/')
   .get(controller.findAll);

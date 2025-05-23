@@ -32,7 +32,7 @@ body {
 }
 
 .bg-hero {
-  background: linear-gradient(rgb(0 0 0 / 74%), rgb(0 0 0 / 48%)), url(..//assets/img/iStock-483232645.avif) no-repeat center center;
+  background: linear-gradient(rgb(0 0 0 / 74%), rgb(0 0 0 / 48%)), url(../img/iStock-483232645.avif) no-repeat center center;
   background-size: cover;
   color: white;
   min-height: 60vh;

@@ -27,6 +27,8 @@
   "homepage": "https://github.com/nathius262/jades-clothing#readme",
   "dependencies": {
     "@nathius262/nexusjs": "^0.0.15",
+    "express-handlebars": "^8.0.3",
+    "handlebars-helpers": "^0.10.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

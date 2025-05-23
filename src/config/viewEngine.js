@@ -24,7 +24,6 @@ export default function configureViewEngine(app) {
   // ✅ Register helpers ON the correct Handlebars instance
   registerHelpers(Handlebars);
 
-  console.log('Registered helpers:', Object.keys(Handlebars.helpers));
 
 
   app.engine('html', engine({

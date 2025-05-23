@@ -1,14 +1,29 @@
 import db from '../../../models/index.cjs';
 //import bcrypt from 'bcrypt';
 
-
-export const findAll = async () => {
+export const findAll = async ({ limit, offset }) => {
   try {
-    return await db.User.findAll();
-  } catch (error) {
-    throw new Error('Error fetching records: ' + error.message);
+    const { rows: data, count } = await db.User.findAndCountAll({
+      attributes: { exclude: ['password'] }, // Exclude sensitive fields
+      include: {
+        model: db.Role,
+        as: 'roles',
+        attributes: ['id', 'name'],
+        through: { attributes: [] }
+      },
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    return { data, totalPages };
+  } catch (err) {
+    throw new Error('Error fetching records: ' + err.message);
   }
 };
+
 
 export const findById = async (id) => {
   try {

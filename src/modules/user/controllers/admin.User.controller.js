@@ -1,28 +1,35 @@
 import * as service from '../services/admin.User.service.js';
 
+// controller.js
+
 export const findAll = async (req, res) => {
   try {
-    const data = await service.findAll();
-    res.status(200).render('./admins/list', {
-      success: true,
-      pageTitle: "Admin",
-      users: data,
+    const { page, limit, offset } = req.pagination;
+
+    const { data, totalPages } = await service.findAll({ limit, offset });
+
+    res.render('admins/list', {
+      users:data,
+      currentPage: page,
+      totalPages,
+      pageTitle: 'Admin',
     });
   } catch (err) {
-    res.status(500).render('error', { error: err.message });
+    res.status(500).render('errors/500', { error: err.message });
   }
 };
+
 
 export const findById = async (req, res) => {
   try {
     const data = await service.findById(req.params.id);
-    res.status(200).render('./admins/update', {
+    res.status(200).render('admins/update', {
       success: true,
       pageTitle: "Update Record",
       user: data
     });
   } catch (err) {
-    res.status(404).render('error', { error: err.message });
+    res.status(404).render('errors/500', { error: err.message });
   }
 };
 
@@ -55,10 +62,10 @@ export const destroy = async (req, res) => {
 
 export const renderCreate = async (req, res) => {
   try {
-    res.status(200).render('./admins/create', {
+    res.status(200).render('admins/create', {
       pageTitle: "Create User"
     });
   } catch (err) {
-    res.status(500).render('error', { error: err.message });
+    res.status(500).render('errors/500', { error: err.message });
   }
 };

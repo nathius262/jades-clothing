@@ -1,13 +1,14 @@
 import express from 'express';
 import * as controller from '../controllers/admin.User.controller.js';
 import useModuleViews from '../../../middlewares/moduleViews.js';
+import { withPagination } from '../../../middlewares/paginations.js';
 
 const router = express.Router();
 
 router.use(useModuleViews('user'));
-// Admin view routes
+
 router.route('/')
-  .get(controller.findAll);
+  .get(withPagination(10), controller.findAll);
 
 router.route('/create')
   .get(controller.renderCreate)

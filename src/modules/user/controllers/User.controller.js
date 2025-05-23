@@ -2,14 +2,18 @@ import * as service from '../services/User.service.js';
 
 export const findAll = async (req, res) => {
   try {
-    const data = await service.findAll();
-    res.status(200).render('./list', {
-      success: true,
-      pageTitle: "",
-      users: data,
+    const { page, limit, offset } = req.pagination;
+
+    const { data, totalPages } = await service.findAll({ limit, offset });
+
+    res.render('./list', {
+      users:data,
+      currentPage: page,
+      totalPages,
+      pageTitle: 'Users List',
     });
   } catch (err) {
-    res.status(500).render('error', { error: err.message });
+    res.status(500).render('errors/500', { error: err.message });
   }
 };
 

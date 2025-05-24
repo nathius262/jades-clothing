@@ -6,6 +6,12 @@ module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
     static associate(models) {
 
+      Product.belongsToMany(models.Category, {
+        through: 'ProductCategory',
+        foreignKey: 'productId',
+        as: 'categories'
+      });
+
       // One-to-many with Image
       Product.hasMany(models.Image, {
         foreignKey: 'productId',
@@ -44,9 +50,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // Use generateUniqueSlug from the helper file in hooks
-  Product.beforeValidate(async (category) => {
-    if (!category.slug) {
-      category.slug = await generateUniqueSlug(category.name, Product);
+  Product.beforeValidate(async (product) => {
+    if (!product.slug) {
+      product.slug = await generateUniqueSlug(product.name, Product);
     }
   });
 

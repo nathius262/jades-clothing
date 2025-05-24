@@ -1,0 +1,110 @@
+<link href="/assets/css/sb-admin-2.min.css" rel="stylesheet">
+ <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        {{> admin_sidebar}}
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content mt-5">
+
+                <!-- Topbar -->
+                {{> admin_navbar}}
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        {{> admin/usernav}}
+                        {{> admin/rolenav}}
+                    </div>
+                    
+                    <!-- Content Row -->
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <!-- Approach -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary" style="font-family: 'Alex Brush', cursive; font-size: 2.2rem; font-weight: 400;">Jade's Clothing</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>
+                                        Welcome to the Jade's Clogthing an e-commerce platform! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reiciendis nostrum eius commodi praesentium illum cum quisquam, libero aliquid earum molestiae, illo aspernatur minima sit laudantium aliquam, fugiat rerum expedita. Impedit.
+                                    </p>
+                                    <p class="mb-0">
+                                        
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Analytics Chart -->
+                    <div class="row">
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Sales Overview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                            <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+
+    <!-- Core plugin JavaScript-->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    const ctx = document.getElementById("salesChart");
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+        datasets: [{
+            label: "Sales (₦)",
+            data: [50000, 70000, 80000, 60000, 120000],
+            backgroundColor: "rgba(78, 115, 223, 0.05)",
+            borderColor: "#4e73df",
+        }],
+        },
+        options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        }
+        }
+    });
+    </script>
+    <script src="/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="/assets/js/sb-admin-2.min.js"></script>

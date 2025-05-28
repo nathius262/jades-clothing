@@ -43,12 +43,6 @@
                             </div>
                             <div class="card-body">
                                 <form id="update-user-form" class="user needs-validation" action="/admin/user/{{user.id}}" method="POST" novalidate>
-                                    <div class="form-group">
-                                        <input type="text" name="name" class="form-control form-control-user"
-                                            id="exampleInputName" aria-describedby="emailHelp"
-                                            placeholder="Enter Name..." value="{{user.name}}" required>
-                                        <div class="invalid-feedback">Full name is required</div>
-                                    </div>
                                     
                                     <div class="form-group">
                                         <input type="email" name="email" class="form-control form-control-user"

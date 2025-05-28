@@ -1,5 +1,5 @@
 import db from '../../../models/index.cjs';
-//import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export const findAll = async ({ limit, offset }) => {
   try {
@@ -27,7 +27,16 @@ export const findAll = async ({ limit, offset }) => {
 
 export const findById = async (id) => {
   try {
-    const item = await db.User.findByPk(id);
+    const item = await db.User.findByPk(id,
+      {
+      attributes: { exclude: ['password'] }, // Exclude sensitive fields
+      include: {
+        model: db.Role,
+        as: 'roles',
+        attributes: ['id', 'name'],
+        through: { attributes: [] }
+      }
+    });
     if (!item) throw new Error('Not found');
     return item;
   } catch (error) {
@@ -38,7 +47,7 @@ export const findById = async (id) => {
 export const create = async ({username, email, password, roleIds=[]}) => {
   try {
 
-    const hashed_password = "osdjs93rjml23rno2nknn"  //await bcrypt.hash(password, 10);
+    const hashed_password = await bcrypt.hash(password, 10);
     const user_role = await db.Role.findOne({where: {name: 'user'}});
     if (!user_role) throw new Error("default role 'user' not found");
 
@@ -55,13 +64,57 @@ export const create = async ({username, email, password, roleIds=[]}) => {
   }
 };
 
-export const update = async (id, data) => {
+
+export const update = async (id, { email, username, is_staff, is_admin }) => {
+  let transaction;
   try {
-    const item = await db.User.findByPk(id);
-    if (!item) throw new Error('Not found');
-    return await item.update(data);
+    transaction = await db.sequelize.transaction();
+    
+    const item = await db.User.findByPk(id, { transaction });
+    if (!item) {
+      throw new Error('User not found');
+    }
+
+    const update_user = await item.update({ email, username }, { transaction });
+
+    // Fetch all needed roles in a single query
+    const roleNames = ['user'];
+    if (is_admin) roleNames.push('admin');
+    if (is_staff) roleNames.push('staff');
+    
+    const roles = await db.Role.findAll({
+      where: { name: roleNames },
+      transaction
+    });
+
+    if (roles.length === 0) {
+      throw new Error('No valid roles found');
+    }
+
+    // Update user roles
+    await update_user.setRoles(roles, { transaction });
+
+    // Commit the transaction
+    await transaction.commit();
+
+    // Return the updated user with roles
+    const updatedUser = await db.User.findByPk(id, {
+      include: {
+        model: db.Role,
+        as: 'roles',
+        through: { attributes: [] }
+      }
+    });
+    return updatedUser;
   } catch (error) {
-    throw new Error('Error updating record: ' + error.message);
+    if (transaction) await transaction.rollback();
+    console.error('Error updating user:', error);
+    
+    // Differentiate between not found and other errors
+    if (error.message === 'User not found') {
+      throw error; // Re-throw as is
+    }
+    throw new Error(`Error updating user: ${error.message}`);
   }
 };
 

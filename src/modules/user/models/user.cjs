@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsToMany(models.Role, {
         through: 'user_roles',  // Junction table
         foreignKey: 'userId',
+        otherKey: 'roleId',
         as: 'roles'
       });
     }

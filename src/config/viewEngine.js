@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import registerHelpers from './handlebarsHelpers.js';
+import helpers from 'handlebars-helpers'; // Import handlebars-helpers
 
 const allowPrototypeAccess = Allow.allowInsecurePrototypeAccess || Allow.default || Allow;
 const __filename = fileURLToPath(import.meta.url);
@@ -21,8 +22,12 @@ export default function configureViewEngine(app) {
   // Allow insecure prototype access
   const Handlebars = allowPrototypeAccess(HandlebarsLib);
 
-  // ✅ Register helpers ON the correct Handlebars instance
+  // ✅ Register all handlebars-helpers
+  helpers({ handlebars: Handlebars });
+
+  // ✅ Register custom helpers ON the correct Handlebars instance
   registerHelpers(Handlebars);
+
 
 
 

@@ -1,48 +1,32 @@
 // src/middleware/moduleViews.js
-
 import path from 'path';
 import fs from 'fs';
-import { engine } from 'express-handlebars';
-import * as Allow from '@handlebars/allow-prototype-access';
-import Handlebars from 'handlebars';
-
-const allowPrototypeAccess = Allow.allowInsecurePrototypeAccess || Allow.default || Allow;
-
-const pathCache = new Map();
+import configureViewEngine from '../config/viewEngine.js';
 
 export default function useModuleViews(moduleName) {
   return function (req, res, next) {
     const rootPath = path.resolve();
     const moduleViewsPath = path.join(rootPath, 'src', 'modules', moduleName, 'views');
-    const modulePartialsPath = path.join(moduleViewsPath, 'partials');
-    const globalViewsPath = path.join(rootPath, 'src', 'views');
-    const globalLayoutsPath = path.join(globalViewsPath, 'layouts');
-    const globalPartialsPath = path.join(globalViewsPath, 'partials');
 
+    // 1. Ensure base configuration is loaded (only once)
+    if (!req.app.engines?.html) {
+      configureViewEngine(req.app);
+    }
+
+    // 2. Skip if module views don't exist
     if (!fs.existsSync(moduleViewsPath)) {
-      return next(); // fallback to global
+      return next();
     }
 
-    const cacheKey = `${moduleName}_engine`;
-    if (!pathCache.has(cacheKey)) {
-      // Register a dedicated engine per module with module-specific partials
-      const partialDirs = [globalPartialsPath];
-      if (fs.existsSync(modulePartialsPath)) {
-        partialDirs.unshift(modulePartialsPath); // Module-specific partials take precedence
-      }
+    // 3. Simply modify the views path to include module views first
+    const currentViews = req.app.get('views') || [];
+    req.app.set('views', [
+      moduleViewsPath,
+      ...(Array.isArray(currentViews) 
+        ? currentViews.filter(p => p !== moduleViewsPath) 
+        : [currentViews])
+    ]);
 
-      req.app.engine(`html`, engine({
-        extname: '.html',
-        defaultLayout: 'main',
-        layoutsDir: globalLayoutsPath,
-        partialsDir: partialDirs,
-        handlebars: allowPrototypeAccess(Handlebars),
-      }));
-
-      pathCache.set(cacheKey, partialDirs);
-    }
-
-    req.app.set('views', [moduleViewsPath, globalViewsPath]); // Prioritize module views
     next();
   };
 }

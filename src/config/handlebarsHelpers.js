@@ -21,7 +21,7 @@ export default function registerHelpers(handlebars) {
   handlebars.registerHelper('has', (set, value) => set.has(value));
   handlebars.registerHelper('anyImageIsPrimary', images => images.some(image => image.is_primary));
   handlebars.registerHelper('hasRoleByName', function (roles, roleName, options) {
-    const hasRole = roles && roles.some(role => role.role_name === roleName);
+    const hasRole = roles && roles.some(role => role.name === roleName);
     return hasRole ? options.fn(this) : options.inverse(this);
   });
   handlebars.registerHelper('set', function (varName, varValue, options) {

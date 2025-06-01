@@ -3,7 +3,7 @@ import * as service from '../services/admin.Category.service.js';
 export const findAll = async (req, res) => {
   try {
     const data = await service.findAll();
-    res.status(200).render('./admins/list', {
+    res.status(200).render('admins/list', {
       success: true,
       pageTitle: "Admin",
       categories: data,
@@ -16,7 +16,7 @@ export const findAll = async (req, res) => {
 export const findById = async (req, res) => {
   try {
     const data = await service.findById(req.params.id);
-    res.status(200).render('./admins/update', {
+    res.status(200).render('admins/update', {
       success: true,
       pageTitle: "Update Record",
       category: data,
@@ -55,7 +55,7 @@ export const destroy = async (req, res) => {
 
 export const renderCreate = async (req, res) => {
   try {
-    res.status(200).render('./admins/create', {
+    res.status(200).render('admins/create', {
       pageTitle: "Create Category"
     });
   } catch (err) {
@@ -66,7 +66,7 @@ export const renderCreate = async (req, res) => {
 export const adminDashboard = async (req, res) => {
   try {
     const data = await service.adminMethod();
-    res.status(200).render('./admins/dashboard', {
+    res.status(200).render('admins/dashboard', {
       pageTitle: "Admin Dashboard",
       data,
     });

@@ -4,7 +4,7 @@ import db from '../../../models/index.cjs';
 
 export const findAll = async () => {
   try {
-    return await Category.findAll();
+    return await db.Category.findAll();
   } catch (error) {
     throw new Error('Error fetching records: ' + error.message);
   }
@@ -12,7 +12,7 @@ export const findAll = async () => {
 
 export const findById = async (id) => {
   try {
-    const item = await Category.findByPk(id);
+    const item = await db.Category.findByPk(id);
     if (!item) throw new Error('Not found');
     return item;
   } catch (error) {
@@ -22,7 +22,7 @@ export const findById = async (id) => {
 
 export const create = async (data) => {
   try {
-    return await Category.create(data);
+    return await db.Category.create(data);
   } catch (error) {
     throw new Error('Error creating record: ' + error.message);
   }
@@ -30,7 +30,7 @@ export const create = async (data) => {
 
 export const update = async (id, data) => {
   try {
-    const item = await Category.findByPk(id);
+    const item = await db.Category.findByPk(id);
     if (!item) throw new Error('Not found');
     return await item.update(data);
   } catch (error) {
@@ -40,7 +40,7 @@ export const update = async (id, data) => {
 
 export const destroy = async (id) => {
   try {
-    const item = await Category.findByPk(id);
+    const item = await db.Category.findByPk(id);
     if (!item) throw new Error('Not found');
     return await item.destroy();
   } catch (error) {

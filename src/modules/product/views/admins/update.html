@@ -1,0 +1,208 @@
+<link rel="stylesheet" href="/assets/css/sb-admin-2.css">
+<link href="/assets/css/sb-admin-2.min.css" rel="stylesheet">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {{> admin_sidebar}}
+  <!-- End of Sidebar -->
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content mt-5">
+
+      <!-- Topbar -->
+      {{> admin_navbar}}
+      <!-- End of Topbar -->
+
+      <!-- Begin Page Content -->
+      <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <h1 class="h3 mb-0 text-gray-800">Update Product</h1>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+          <div class="col-12 mb-4">
+            <!-- Approach -->
+            <div class="card shadow mb-4">
+              <div class="card-header py-3 d-flex justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Update Product</h6>
+                <div>
+                  <div id="delete" data-url="/admin/product/{{product.id}}" class="btn btn-danger delete-product-btn">
+                    <i class="fas fa-solid fa-trash-can"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="update-product-form" class="product needs-validation" action="/admin/product/{{product.id}}"
+                  method="POST" enctype="multipart/form-data" novalidate>
+
+                  <!-- Product Name -->
+                  <div class="form-group">
+                    <input type="text" name="name" class="form-control form-control-user" id="exampleInputProductName"
+                      placeholder="Product Name" value="{{product.name}}" required>
+                    <div class="invalid-feedback">
+                      Product Name is required
+                    </div>
+                  </div>
+
+                  <!-- Product price -->
+                  <div class="form-group">
+                    <input type="number" name="price" class="form-control form-control-user" id="exampleInputPrice"
+                      placeholder="Price" value="{{product.price}}" required>
+                    <div class="invalid-feedback">
+                      Price is required
+                    </div>
+                  </div>
+
+                  <!-- Product Stock -->
+                  <div class="form-group">
+                    <input type="number" name="stock" class="form-control form-control-user" id="exampleInputStock"
+                      placeholder="Stock" value="{{product.stock}}" required>
+                    <div class="invalid-feedback">
+                      Stock is required
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <textarea type="text" rows="3" name="description" class="form-control form-control-user"
+                      id="exampleInputDescription" placeholder="Description...">{{product.description}}</textarea>
+                    <div class="invalid-feedback">
+                      description is required
+                    </div>
+                  </div>
+
+
+                  <!-- Select Categories -->
+                  <div class="form-group">
+                    <label for="categories">Categories</label>
+                    <select name="categoryIds[]" class="form-control" multiple>
+                      {{#each categories}}
+                      <option value="{{this.id}}" {{#if (has ../productCategoryIds this.id)}}selected{{/if}}>
+                        {{this.name}}</option>
+
+                      {{/each}}
+                    </select>
+                  </div>
+
+                  <!-- Image Upload Section -->
+                  <div class="form-group row d-block">
+                    <label for="images">Add New Images</label>
+                    <input name="images" multiple type="file" id="id_image_file" accept="image/*" class="form-control">
+                    <div class="invalid-feedback">
+                      Please add at least one image.
+                    </div>
+                    <button type="button" class="btn btn-primary mt-2" id="uploadImagesBtn">Upload Images</button>
+                  </div>
+
+                  <!-- Existing Images Section -->
+                  <div class="form-group">
+                    <label>Existing Images</label>
+                    <div class="row" id="existingImagesContainer">
+                      {{#each product.images}}
+                      <div class="col-md-3 text-center mb-2">
+                        <img src="{{this.url}}" alt="product image" class="img-fluid img-thumbnail mb-2">
+                        <input type="radio" name="primaryImageId" value="{{this.id}}" {{#if
+                          this.is_primary}}checked{{/if}}> Set as Primary
+                        <button type="button" class="btn btn-danger btn-sm delete-image-btn" data-id="{{this.id}}">
+                          <i class="fas fa-trash"></i> Remove
+                        </button>
+                      </div>
+                      {{/each}}
+                    </div>
+                  </div>
+
+                  <hr>
+                  <ul id="error" class="text-danger col-12"></ul>
+
+                  <div class="spinner-border col-12 d-none status" id="status" role="status">
+                    <span class="sr-only">Loading... </span>
+                  </div>
+
+                  <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
+                  <hr class="mb-3">
+
+                  <button type="submit" id="btn" class="btn btn-primary btn-user btn-block">Update</button>
+                  <hr>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+  </div>
+  <!-- End of Content Wrapper -->
+</div>
+<!-- End of Page Wrapper -->
+<script>
+  document.getElementById('uploadImagesBtn').addEventListener('click', function () {
+    const fileInput = document.getElementById('id_image_file');
+    const files = fileInput.files;
+    const productId = {{ product.id }}; // Assuming you have the product ID in the template
+
+    if (files.length === 0) {
+      alert('Please select images to upload.');
+      return;
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images', files[i]);
+    }
+
+    fetch(`/admin/upload/${productId}`, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        // Clear the file input
+        fileInput.value = '';  // Clear the input field
+
+        // Refresh the image gallery without refreshing the entire page
+        const existingImagesContainer = document.getElementById('existingImagesContainer');
+        existingImagesContainer.innerHTML = ''; // Clear current images
+
+        data.images.forEach(image => {
+          const imageElement = `
+            <div class="col-md-3 text-center mb-2">
+              <img src="${image.url}" alt="product image" class="img-fluid img-thumbnail mb-2">
+              <input type="radio" name="primaryImageId" value="${image.id}" ${image.is_primary ? 'checked' : ''}> Set as Primary
+              <button type="button" class="btn btn-danger btn-sm delete-image-btn" data-id="${image.id}">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+            </div>
+          `;
+          existingImagesContainer.insertAdjacentHTML('beforeend', imageElement);
+        });
+
+        alert('Images uploaded successfully!');  // Optional success message
+      }
+    })
+    .catch(error => console.error('Error uploading images:', error));
+  });
+</script>
+
+
+<!-- Core plugin JavaScript-->
+<script type="module" src="/assets/js/product.js"></script>
+<script src="/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+<!-- Custom scripts for all pages-->
+<script src="/assets/js/sb-admin-2.min.js"></script>

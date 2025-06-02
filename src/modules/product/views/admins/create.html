@@ -1,0 +1,206 @@
+<link rel="stylesheet" href="/assets/css/sb-admin-2.css">
+<link href="/assets/css/sb-admin-2.min.css" rel="stylesheet">
+
+<style>
+  /** 
+  account page 
+  **/
+  .main_img {
+    position: relative;
+    cursor: pointer;
+    width: 300px;
+    height: 300px;
+
+  }
+
+  .profile_img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  .main_overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    top: 0;
+    left: 0;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+
+  .main_overlay:hover {
+    opacity: 1;
+  }
+
+  .main_overlay_blur {
+    backdrop-filter: blur(5px);
+  }
+
+  .main_overlay>* {
+    transform: translateY(20px);
+    transition: transform 1s;
+  }
+
+  .main_overlay:hover>* {
+    transform: translateY(0);
+  }
+</style>
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {{> admin_sidebar}}
+  <!-- End of Sidebar -->
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content mt-5">
+
+      <!-- Topbar -->
+      {{> admin_navbar}}
+      <!-- End of Topbar -->
+
+      <!-- Begin Page Content -->
+      <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <h1 class="h3 mb-0 text-gray-800">Create Product</h1>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+          <div class="col-12 mb-4">
+            <!-- Approach -->
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Create Product</h6>
+              </div>
+              <div class="card-body">
+                <form id="create-new-product" class="product needs-validation" action="/admin/product" method="POST"
+                  enctype="multipart/form-data" novalidate>
+
+                  <!-- Product Name -->
+                  <div class="form-group">
+                    <input type="text" name="name" class="form-control form-control-user" id="exampleInputProductName"
+                      placeholder="Product Name..." required>
+                    <div class="invalid-feedback">
+                      Product Name is required
+                    </div>
+                  </div>
+
+                  <!-- Product Price -->
+                  <div class="form-group">
+                    <input type="number" name="price" class="form-control form-control-user" id="exampleInputPrice"
+                      placeholder="Price..." required>
+                    <div class="invalid-feedback">
+                      Price is required
+                    </div>
+                  </div>
+
+                  <!-- Product Stock -->
+                  <div class="form-group">
+                    <input type="number" name="stock" class="form-control form-control-user" id="exampleInputStock"
+                      placeholder="Stock..." required>
+                    <div class="invalid-feedback">
+                      Stock is required
+                    </div>
+                  </div>
+
+                  <!-- Select Categories -->
+                  <div class="form-group">
+                    <label for="categories">Categories</label>
+                    <select name="category_ids" class="form-control" multiple>
+                      {{#each categories}}
+                      <option value="{{this.id}}">{{this.name}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+
+                  
+                  <!-- Product short description -->
+                  <div class="form-group">
+                    <input type="text" rows="3" name="short_description" class="form-control form-control-user"
+                      id="exampleInputDescription" placeholder="Short Description..." required>
+                    <div class="invalid-feedback">
+                      short description is required
+                    </div>
+                  </div>
+
+                  <!-- Product description -->
+                  <div class="form-group">
+                    <textarea type="text" rows="3" name="description" class="form-control form-control-user"
+                      id="exampleInputDescription" placeholder="Description..."></textarea>
+                    <div class="invalid-feedback">
+                      description is required
+                    </div>
+                  </div>
+
+
+
+                  <div class="form-group row d-block">
+                    <input name="images" multiple type="file" id="id_image_file" accept="image/*" class="form-control" value=""
+                      required>
+
+                  </div>
+
+                  
+
+                  <hr>
+                  <ul id="error" class="text-danger col-12"></ul>
+
+                  <div class="spinner-border col-12 d-none status" id="status" role="status">
+                    <span class="sr-only">Loading... </span>
+                  </div>
+
+                  <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
+                  <hr class="mb-3">
+
+                  <button type="submit" id="btn" class="btn btn-primary btn-user btn-block">Create</button>
+                  <hr>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+  </div>
+  <!-- End of Content Wrapper -->
+</div>
+<!-- End of Page Wrapper -->
+<script>
+  function readURL(input) {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      $('#id_image_display')
+        .attr('src', e.target.result)
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+</script>
+
+<!-- Core plugin JavaScript-->
+<script type="module" src="/assets/js/product.js"></script>
+<script src="/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+<!-- Custom scripts for all pages-->
+<script src="/assets/js/sb-admin-2.min.js"></script>

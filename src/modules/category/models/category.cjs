@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       // Many-to-Many relationship with Product
       Category.belongsToMany(models.Product, {
-        through: 'ProductCategory',  // Junction table
-        foreignKey: 'categoryId',
+        through: 'product_categories',  // Junction table
+        foreignKey: 'category_id',
         as: 'products'               // Alias for related products
       });
     }

@@ -7,14 +7,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
 
       Product.belongsToMany(models.Category, {
-        through: 'ProductCategory',
-        foreignKey: 'productId',
+        through: 'product_categories',
+        foreignKey: 'product_id',
         as: 'categories'
       });
 
       // One-to-many with Image
       Product.hasMany(models.Image, {
-        foreignKey: 'productId',
+        foreignKey: 'product_id',
         as: 'images'
       });
 
@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true, // e.g. "gold-embroidered-agbada"
         allowNull: false
       },
-      shortDescription: DataTypes.STRING(160), // For meta descriptions
+      short_description: DataTypes.STRING(160), // For meta descriptions
       price: {
         type: DataTypes.DECIMAL(10, 2),
         validate: { min: 0 }

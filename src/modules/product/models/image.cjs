@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             // One-to-many with products
             Image.belongsTo(models.Product, {
-                foreignKey: 'productId',
+                foreignKey: 'product_id',
                 as: 'product'  // Alias for related product
             });
         }

@@ -9,10 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      productId: {
+      product_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Products',  // Refers to the Product table
+          model: 'products',  // Refers to the Product table
           key: 'id'
         },
         onUpdate: 'CASCADE',

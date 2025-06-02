@@ -3,26 +3,26 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('ProductCategory', {
+    await queryInterface.createTable('product_categories', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      productId: {
+      product_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Products',  // Refers to the Product table
+          model: 'products',  // Refers to the Product table
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      categoryId: {
+      category_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Category',  // Refers to the Category table
+          model: 'categories',  // Refers to the Category table
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -40,6 +40,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('ProductCategory');
+    await queryInterface.dropTable('product_categories');
   }
 };

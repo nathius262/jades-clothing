@@ -2,42 +2,18 @@
   <section class="container my-5 py-4">
     <h2 class="mb-4 text-start" style="font-family: 'Playfair Display', serif;">Explore Our Collections</h2>
     <div class="row g-4">
+
+      {{#each categories}}
       <div class="col-md-3">
         <div class="card border-0 h-100">
           <img src="https://plus.unsplash.com/premium_photo-1668665110891-8c1d7e4ce419?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" class="category-img" alt="Ankara Styles">
           <div class="card-body text-center">
-            <h5 class="card-title">Ankara Styles</h5>
+            <h5 class="card-title">{{this.name}}</h5>
             <a href="#" class="btn btn-outline-success btn-sm">View Collection</a>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card border-0 h-100">
-          <img src="https://images.unsplash.com/photo-1687952622898-4e9514a710d5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" class="category-img" alt="Agbada Collection">
-          <div class="card-body text-center">
-            <h5 class="card-title">Agbada Collection</h5>
-            <a href="#" class="btn btn-outline-success btn-sm">View Collection</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 h-100">
-          <img src="https://images.unsplash.com/photo-1579748294772-fa56d1a0a690?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OTZ8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" class="category-img" alt="Lace Designs">
-          <div class="card-body text-center">
-            <h5 class="card-title">Lace Designs</h5>
-            <a href="#" class="btn btn-outline-success btn-sm">View Collection</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card border-0 h-100">
-          <img src="https://plus.unsplash.com/premium_photo-1732464751186-8a22503fd51d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA1fHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww" class="category-img" alt="Kids Wear">
-          <div class="card-body text-center">
-            <h5 class="card-title">Kids & Family</h5>
-            <a href="#" class="btn btn-outline-success btn-sm">View Collection</a>
-          </div>
-        </div>
-      </div>
+      {{/each}}
     </div>
   </section>
 
@@ -70,13 +46,14 @@
     <div class="col-md-9">
       <div class="row g-4">
 
+        {{#each products}}
         <!-- Product Item -->
         <div class="col-md-4">
           <div class="card h-100 border-0 shadow-sm hover-effect">
             <img src="https://images.unsplash.com/photo-1636342518132-acefbb5dba97?w=500" class="card-img-top" alt="Ankara Dress">
             <div class="card-body">
-              <h5 class="card-title">Ankara Dress</h5>
-              <p class="text-success fw-bold">₦20,000</p>
+              <h5 class="card-title">{{this.name}}</h5>
+              <p class="text-success fw-bold">₦{{this.price}}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="ratings">
                   <i class="bi bi-star-fill text-gold"></i>
@@ -91,127 +68,13 @@
             </div>
           </div>
         </div>
-        
-        <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <img src="https://plus.unsplash.com/premium_photo-1668665110887-9f7e932dddeb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Ankara Dress</h5>
-              <p class="text-success fw-bold">₦20,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star text-gold"></i>
-                  <span class="ms-1">(45)</span>
-                </div>
-                <a href="#" class="btn btn-sm btn-success">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <img src="https://plus.unsplash.com/premium_photo-1732464751186-8a22503fd51d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA1fHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Ankara Dress</h5>
-              <p class="text-success fw-bold">₦20,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star text-gold"></i>
-                  <span class="ms-1">(45)</span>
-                </div>
-                <a href="#" class="btn btn-sm btn-success">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <img src="https://images.unsplash.com/photo-1687952622898-4e9514a710d5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Ankara Dress</h5>
-              <p class="text-success fw-bold">₦20,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star text-gold"></i>
-                  <span class="ms-1">(45)</span>
-                </div>
-                <a href="#" class="btn btn-sm btn-success">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <img src="https://images.unsplash.com/photo-1739566583874-43138d96d507?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODd8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Ankara Dress</h5>
-              <p class="text-success fw-bold">₦20,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star text-gold"></i>
-                  <span class="ms-1">(45)</span>
-                </div>
-                <a href="#" class="btn btn-sm btn-success">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-4">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <img src="https://images.unsplash.com/photo-1693479728644-653cb3ab1088?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTIwfHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Ankara Dress</h5>
-              <p class="text-success fw-bold">₦20,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star text-gold"></i>
-                  <span class="ms-1">(45)</span>
-                </div>
-                <a href="#" class="btn btn-sm btn-success">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
+
+        {{/each}}
         
       </div>
 
       <!-- Pagination -->
-      <div class="d-flex justify-content-center mt-5">
-        <nav>
-          <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link">Previous</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
-        </nav>
-      </div>
+      {{> pagination}}
     </div>
   </div>
 </section>

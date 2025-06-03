@@ -40,8 +40,8 @@
                 <h6 class="m-0 font-weight-bold text-primary">Create Category</h6>
               </div>
               <div class="card-body">
-                <form id="create-new-user" class="user needs-validation" action="/admin/category" method="POST"
-                  novalidate>
+                <form id="create-media" class="user needs-validation" action="/admin/category" method="POST"
+                  enctype="multipart/form-data" novalidate>
                   <div class="form-group">
                     <input type="text" name="name" class="form-control form-control-user" id="exampleInputEmail"
                       aria-describedby="emailHelp" placeholder="Enter Category Name..." required>
@@ -56,6 +56,14 @@
                       description is required
                     </div>
                   </div>
+
+                  <div class="form-group row d-block">
+                    <label for="id_image_file">Image Category</label>
+                    <input name="image_url" type="file" id="id_image_file" accept="image/*" class="form-control" value=""
+                      required>
+
+                  </div>
+
                   <hr>
                   <ul id="error" class="text-danger col-12"></ul>
 
@@ -87,7 +95,8 @@
 
 
 <!-- Core plugin JavaScript-->
-<script type="module" src="js/user.js"></script>
+<script type="module" src="/assets/js/uploader.js"></script>
+
 
 
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>

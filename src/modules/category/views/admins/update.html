@@ -42,8 +42,8 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <form id="update-user-form" class="user needs-validation" action="/admin/category/{{category.id}}"
-                                    method="POST" novalidate>
+                                <form id="update-user-form" class="update-media" action="/admin/category/{{category.id}}"
+                                    method="POST" enctype="multipart/form-data" novalidate>
                                     
                                     <div class="form-group">
                                         <input type="text" name="name" class="form-control form-control-user"
@@ -60,6 +60,13 @@
                                         <div class="invalid-feedback">
                                         description is required
                                         </div>
+                                    </div>
+
+                                    <div class="form-group row d-block">
+                                        <label for="id_image_file">Image Category</label>
+                                        <input name="image_url" type="file" id="id_image_file" accept="image/*" class="form-control" value="{{category.image_url}}"
+                                        required>
+
                                     </div>
 
                                     <hr>
@@ -93,7 +100,7 @@
 
 
 <!-- Core plugin JavaScript-->
-<script src="/assets/js/user.js"></script>
+<script src="/assets/js/uploader.js"></script>
 
 
 

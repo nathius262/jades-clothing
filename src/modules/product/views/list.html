@@ -1,0 +1,132 @@
+  <!-- Featured Categories -->
+  <section class="container my-5 py-4">
+    <h2 class="mb-4 text-start" style="font-family: 'Playfair Display', serif;">Explore Our Collections</h2>
+    <div class="row g-4">
+
+      {{#each categories}}
+      <div class="col-md-3">
+        <div class="card border-0 h-100">
+          <img src="https://plus.unsplash.com/premium_photo-1668665110891-8c1d7e4ce419?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" class="category-img" alt="Ankara Styles">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{this.name}}</h5>
+            <a href="#" class="btn btn-outline-success btn-sm">View Collection</a>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+
+<section class="container my-5">
+  <div class="row">
+    <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Product List</h2>
+
+    <!-- Sidebar Filters -->
+    <aside class="col-md-3 mb-4 bg-light">
+      <h5 class="mb-3">Filter By</h5>
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select class="form-select">
+          <option selected>All</option>
+          <option>Ankara</option>
+          <option>Agbada</option>
+          <option>Lace</option>
+          <option>Kids</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Price Range</label>
+        <input type="range" class="form-range" min="5000" max="100000" step="5000">
+        <small class="text-muted">₦5,000 - ₦100,000</small>
+      </div>
+    </aside>
+
+    <!-- Product Grid -->
+    <div class="col-md-9">
+      <section class="py-5 bg-light">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="row justify-content-between align-items-end mb-5">
+      <div class="col-md-8">
+        <h2 class="display-5 mb-3" style="font-family: 'Playfair Display', serif;">
+          <span class="text-success">Nigerian</span> Customer Favorites
+        </h2>
+        <p class="lead">The styles our community loves most this season</p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <a href="#" class="btn btn-outline-success">
+          View All Collections <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product Row with Navigation -->
+    <div class="position-relative">
+      <button class="btn btn-sm position-absolute start-0 top-50 translate-middle-y bg-white border rounded-circle shadow d-none d-md-block" 
+              style="z-index: 1; width: 40px; height: 40px; left: -20px;" 
+              onclick="scrollProducts(-1)">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      
+      <div class="products-row d-flex flex-nowrap overflow-hidden" style="scroll-behavior: smooth;">
+        <!-- Product 2 -->
+        <div class="col-md-4 flex-shrink-0 pe-3">
+          <div class="card h-100 border-0 shadow-sm hover-effect">
+            <div class="position-relative">
+              <img src="https://images.unsplash.com/photo-1714124731489-7eb16af0ac91?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" 
+                   class="card-img-top" alt="Lace Buba and Wrapper">
+              <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 small rounded">
+                New
+              </div>
+              <button class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
+                <i class="bi bi-eye-fill"></i> Quick View
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <h5 class="card-title mb-0">Lace Buba Set</h5>
+                <div class="text-success">
+                  <span class="fw-bold">₦32,000</span>
+                </div>
+              </div>
+              <p class="card-text small text-muted">Elegant lace with silk accents</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="ratings small">
+                  <i class="bi bi-star-fill text-gold"></i>
+                  <i class="bi bi-star-fill text-gold"></i>
+                  <i class="bi bi-star-fill text-gold"></i>
+                  <i class="bi bi-star-fill text-gold"></i>
+                  <i class="bi bi-star-fill text-gold"></i>
+                  <span class="ms-1">(89)</span>
+                </div>
+                <button class="btn btn-sm btn-success">
+                  <i class="bi bi-cart-plus"></i> Add
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+      <button class="btn btn-sm position-absolute end-0 top-50 translate-middle-y bg-white border rounded-circle shadow d-none d-md-block" 
+              style="z-index: 1; width: 40px; height: 40px; right: -20px;" 
+              onclick="scrollProducts(1)">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+    
+    <!-- Load More Button (for mobile) -->
+    <div class="text-center mt-4 d-md-none">
+      <button class="btn btn-outline-success" onclick="loadMoreProducts()">
+        Load More <i class="bi bi-arrow-down ms-2"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+      <!-- Pagination -->
+      {{> pagination}}
+    </div>
+  </div>
+</section>

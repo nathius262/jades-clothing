@@ -1,5 +1,6 @@
-import { check, validationResult } from 'express-validator';
 import dotenv from 'dotenv';
+import * as productService from '../modules/product/services/Product.service.js';
+import * as categoryService from '../modules/category/services/Category.service.js';
 
 // Derive the equivalent of __dirname
 import { fileURLToPath } from 'url';
@@ -29,10 +30,20 @@ const index_view = async (req, res) => {
 
 const shop_view = async (req, res) => {
     try {
+        const { page, limit, offset } = req.query;
+        const products = await productService.findAll({limit, offset});
+        const categories = await categoryService.findAll();
+
         res.render('shop', {
-            pageTitle: "Shop"
+            pageTitle: "Shop",
+            products: products.products,
+            categories,
+            currentPage:page,
+            totalPage: products.totalPages,
+            totalItems: products.totalItems
         })
     } catch (err) {
+        console.log(err)
         res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
         
     }

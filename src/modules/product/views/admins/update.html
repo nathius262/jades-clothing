@@ -74,6 +74,15 @@
                     </div>
                   </div>
 
+                  <!-- Product Short Description -->
+                  <div class="form-group">
+                    <input type="text" name="short_description" class="form-control form-control-user" id="exampleInputStock"
+                      placeholder="Short Description" value="{{product.short_description}}" >
+                    <div class="invalid-feedback">
+                      Short Description is required
+                    </div>
+                  </div>
+
                   <div class="form-group">
                     <textarea type="text" rows="3" name="description" class="form-control form-control-user"
                       id="exampleInputDescription" placeholder="Description...">{{product.description}}</textarea>
@@ -86,7 +95,7 @@
                   <!-- Select Categories -->
                   <div class="form-group">
                     <label for="categories">Categories</label>
-                    <select name="categoryIds[]" class="form-control" multiple>
+                    <select name="category_ids[]" class="form-control" multiple>
                       {{#each categories}}
                       <option value="{{this.id}}" {{#if (has ../productCategoryIds this.id)}}selected{{/if}}>
                         {{this.name}}</option>

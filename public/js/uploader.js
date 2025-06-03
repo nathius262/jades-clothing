@@ -1,8 +1,11 @@
 //import { body, header } from "express-validator"
 import {messageAlert} from './utils.js'
 
+
 (function () {
     'use strict'
+console.log('test')
+
   
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     var forms = document.querySelectorAll('.needs-validation')

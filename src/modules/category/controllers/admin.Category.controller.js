@@ -28,8 +28,12 @@ export const findById = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const data = await service.create(req.body);
-    res.status(201).json({ success: true, data });
+    const request_data = req.body;
+    const image_url = req.files?.['image_url'] ? req.files['image_url'][0].path : "";
+    request_data.image_url = image_url
+
+    const data = await service.create(request_data);
+    res.status(201).json({ success: true, data, redirectTo: '/admin/category/' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -37,8 +41,12 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const data = await service.update(req.params.id, req.body);
-    res.status(200).json({ success: true, data });
+    const request_data = req.body;
+    const image_url = req.files?.['image_url'] ? req.files['image_url'][0].path : "";
+    request_data.image_url = image_url
+
+    const data = await service.update(req.params.id, request_data);
+    res.status(200).json({ success: true, data, redirectTo: '/admin/category/'+req.params.id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -47,7 +55,7 @@ export const update = async (req, res) => {
 export const destroy = async (req, res) => {
   try {
     const data = await service.destroy(req.params.id);
-    res.status(200).json({ success: true, message: 'Deleted successfully', data });
+    res.status(200).json({ success: true, message: 'Deleted successfully', data, redirectTo: '/admin/category/' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -57,18 +65,6 @@ export const renderCreate = async (req, res) => {
   try {
     res.status(200).render('admins/create', {
       pageTitle: "Create Category"
-    });
-  } catch (err) {
-    res.status(500).render('error', { error: err.message });
-  }
-};
-
-export const adminDashboard = async (req, res) => {
-  try {
-    const data = await service.adminMethod();
-    res.status(200).render('admins/dashboard', {
-      pageTitle: "Admin Dashboard",
-      data,
     });
   } catch (err) {
     res.status(500).render('error', { error: err.message });

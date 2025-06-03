@@ -85,9 +85,10 @@ export const update = async (id, data) => {
       const {
       name,
       description,
+      short_description,
       price,
       stock,
-      categoryIds = [],
+      category_ids = [],
       primaryImageId
     } = data;
 
@@ -96,7 +97,7 @@ export const update = async (id, data) => {
     const toArray = (val) => (Array.isArray(val) ? val : [val]);
   
     // Safely convert strings to arrays and then to integers
-    const parsedCategoryIds = toArray(categoryIds).map(id => parseInt(id, 10));
+    const parsedCategoryIds = toArray(category_ids).map(id => parseInt(id, 10));
 
     const transactionOptions = {
         retry: {
@@ -113,14 +114,14 @@ export const update = async (id, data) => {
     
     
   try {
-    const product = await db.Product.findByPk(productId);
+    const product = await db.Product.findByPk(id);
     
       if (!product) {
         throw new Error('Product not found');
       }
   
       // Update product basic details
-      await product.update({ name, description, price, stock }, { transaction });
+      await product.update({ name, short_description, description, price, stock }, { transaction });
   
       // Handle many-to-many relationships with proper logging and error handling
       if (parsedCategoryIds.length >= 0) {
@@ -131,15 +132,15 @@ export const update = async (id, data) => {
 
       // Handle primary image selection
       if (primaryImageId) {
-        await db.Image.update({ is_primary: false }, { where: { productId: product.id }, transaction });
+        await db.Image.update({ is_primary: false }, { where: { id: product.id }, transaction });
         await db.Image.update({ is_primary: true }, { where: { id: parseInt(primaryImageId, 10) }, transaction });
       }
   
       // Commit the transaction if all operations were successful
       await transaction.commit();
-    if (!item) throw new Error('Not found');
-    return await item.update(data);
+    return product;
   } catch (error) {
+    console.log(error)
     await transaction.rollback();
     throw new Error('Error updating record: ' + error.message);
   }
@@ -150,12 +151,12 @@ export const destroy = async (id) => {
     const product = await db.Product.findByPk(id, { include: db.Image });
         if (!product) return null;
 
-        const images = await db.Image.findAll({ where: { productId: product.id } });
+        const images = await db.Image.findAll({ where: { id: product.id } });
         for (const image of images) {
             await cloudinary.uploader.destroy(getPublicIdFromUrl(image.url, { resource_type: 'image' }));
         }
 
-        await db.Image.destroy({ where: { productId: product.id } });
+        await db.Image.destroy({ where: { id: product.id } });
         await product.destroy();
         return true;
   } catch (error) {

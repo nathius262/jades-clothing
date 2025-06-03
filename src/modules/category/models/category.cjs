@@ -26,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,  // Ensures the slug is unique
       allowNull: false
-    }
+    },
+    image_url: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Category',

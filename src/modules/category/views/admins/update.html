@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <form id="update-user-form" class="update-media" action="/admin/category/{{category.id}}"
+                                <form id="update-media" class=" needs-validation" action="/admin/category/{{category.id}}"
                                     method="POST" enctype="multipart/form-data" novalidate>
                                     
                                     <div class="form-group">
@@ -63,10 +63,12 @@
                                     </div>
 
                                     <div class="form-group row d-block">
-                                        <label for="id_image_file">Image Category</label>
-                                        <input name="image_url" type="file" id="id_image_file" accept="image/*" class="form-control" value="{{category.image_url}}"
-                                        required>
-
+                                        <label for="images">Update Image</label>
+                                        <img src="{{category.image_url}}" alt="">
+                                        <input name="image_url" type="file" id="id_image_file" accept="image/*" class="form-control">
+                                        <div class="invalid-feedback">
+                                        Please add at least one image.
+                                        </div>
                                     </div>
 
                                     <hr>
@@ -75,6 +77,9 @@
                                     <div class="spinner-border col-12 d-none" id="status" category="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
+
+                                    <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
+                                    <hr class="mb-3">
 
                                     <button type="submit" id="btn" class="btn btn-primary btn-user btn-block">
                                         Update
@@ -100,11 +105,11 @@
 
 
 <!-- Core plugin JavaScript-->
-<script src="/assets/js/uploader.js"></script>
+<script type="module" src="/assets/js/uploader.js"></script>
 
 
 
-<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <!-- Custom scripts for all pages-->
 <script src="/assets/js/sb-admin-2.min.js"></script>

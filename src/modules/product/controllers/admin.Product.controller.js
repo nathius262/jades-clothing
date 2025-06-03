@@ -1,5 +1,6 @@
 import * as service from '../services/admin.Product.service.js';
 import * as category from '../../category/services/admin.Category.service.js';
+import db from '../../../models/index.cjs';
 
 export const findAll = async (req, res) => {
   try {
@@ -21,11 +22,16 @@ export const findAll = async (req, res) => {
 
 export const findById = async (req, res) => {
   try {
+    const categories = await category.findAll()
     const data = await service.findById(req.params.id);
+    const productCategoryIds = new Set(data.categories.map(category => category.id));
+    console.log(productCategoryIds)
     res.status(200).render('./admins/update', {
       success: true,
       pageTitle: "Update Record",
-      product: [data],
+      product: data,
+      categories,
+      productCategoryIds
     });
   } catch (err) {
     res.status(404).render('errors/500', { error: err.message });
@@ -48,7 +54,7 @@ export const create = async (req, res) => {
     }
 
     const data = await service.create(request_data);
-    res.status(201).json({ success: true, data });
+    res.status(201).json({ success: true, data, redirectTo: '/admin/product/' });
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: err.message });
@@ -58,8 +64,9 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const data = await service.update(req.params.id, req.body);
-    res.status(200).json({ success: true, data });
+    res.status(200).json({ success: true, data, redirectTo: '/admin/product/'+req.params.id });
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: err.message });
   }
 };
@@ -67,7 +74,7 @@ export const update = async (req, res) => {
 export const destroy = async (req, res) => {
   try {
     const data = await service.destroy(req.params.id);
-    res.status(200).json({ success: true, message: 'Deleted successfully', data });
+    res.status(200).json({ success: true, message: 'Deleted successfully', data, redirectTo: '/admin/product/' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

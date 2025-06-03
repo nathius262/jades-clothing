@@ -22,6 +22,7 @@ export const findById = async (id) => {
 };
 
 export const create = async (data) => {
+
   try {
     return await db.Category.create(data);
   } catch (error) {
@@ -60,7 +61,7 @@ export const update = async (id, data) => {
     }
 
     if(image_url == ""){
-      image_url = color.image_url
+      image_url = item.image_url
     }
 
     await item.update({name, description, image_url});
@@ -69,7 +70,7 @@ export const update = async (id, data) => {
 
     return item
   } catch (error) {
-    console.error('Error updating color:', error);
+    console.error('Error updating data:', error);
     await transaction.rollback();
     throw new Error('Error updating record: ' + error.message);
   }

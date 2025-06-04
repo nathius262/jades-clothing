@@ -28,7 +28,7 @@
   "dependencies": {
     "@nathius262/nexusjs": "^0.0.15",
     "bcryptjs": "^3.0.2",
-    "cloudinary": "^2.6.1",
+    "express-session": "^1.18.1",
     "handlebars-helpers": "^0.10.0",
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0",

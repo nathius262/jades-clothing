@@ -1,0 +1,246 @@
+<style>
+    :root {
+      --green: #1A5F16;
+      --white: #FFFFFF;
+      --gold: #E8A317;
+      --cream: #F5F5DC;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--cream);
+    }
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+    }
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: white;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .quantity-input {
+      width: 50px;
+      height: 30px;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-left: none;
+      border-right: none;
+    }
+    .btn-outline-success:hover {
+      background-color: var(--green);
+      color: white;
+    }
+    .remove-item {
+      color: #dc3545;
+      cursor: pointer;
+    }
+    .remove-item:hover {
+      color: #bb2d3b;
+    }
+    .summary-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .cart-item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    @media (max-width: 768px) {
+      .cart-item-image {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+  <div class="container py-4">
+    <div class="row">
+      <!-- Cart Items Column -->
+      <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-0">
+            <h4 class="mb-0">Your Shopping Cart</h4>
+          </div>
+          <div class="card-body">
+            <!-- Empty Cart Message -->
+            <div id="empty-cart-message" class="text-center py-5" style="display: none;">
+              <i class="bi bi-cart-x text-muted" style="font-size: 3rem;"></i>
+              <h5 class="mt-3">Your cart is empty</h5>
+              <p class="text-muted">Browse our collection to add items</p>
+              <a href="shop.html" class="btn btn-success mt-3">Continue Shopping</a>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items-container">
+                rests
+              <!-- Cart items will be dynamically inserted here by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Column -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm border-0 summary-card sticky-top" style="top: 20px;">
+          <div class="card-header bg-white border-0">
+            <h4 class="mb-0">Order Summary</h4>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span id="subtotal">₦0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping</span>
+              <span id="shipping">₦2,500</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="fw-bold">Total</span>
+              <span class="fw-bold" id="total">₦2,500</span>
+            </div>
+            <button id="checkout-btn" class="btn btn-success w-100 py-2" disabled>
+              Proceed to Checkout
+            </button>
+            <div class="text-center mt-3">
+              <small class="text-muted">or</small>
+              <a href="shop.html" class="d-block mt-1">Continue Shopping</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Item Template (hidden) -->
+  <template id="cart-item-template">
+    <div class="cart-item mb-3 pb-3 border-bottom">
+      <div class="row">
+        <div class="col-3 col-md-2">
+          <img src="" class="cart-item-image img-fluid" alt="Product Image">
+        </div>
+        <div class="col-9 col-md-10">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="mb-1 product-title">Product Title</h6>
+              <p class="mb-1 text-muted product-price">₦0</p>
+            </div>
+            <i class="bi bi-x-lg remove-item" data-product-id=""></i>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="quantity-controls" data-product-id="">
+              <button class="quantity-btn decrement-btn">-</button>
+              <input type="number" class="quantity-input" value="1" min="1">
+              <button class="quantity-btn increment-btn">+</button>
+            </div>
+            <span class="fw-bold item-total">₦0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script></script>
+  <script type="module" src="/assets/js/Cart.js">
+    // This would be in a separate checkout.js file in production
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sample product data - in a real app, this would come from your backend
+      const products = {
+        'prod-001': {
+          title: 'Ankara Maxi Dress',
+          price: 18500,
+          image: 'https://images.unsplash.com/photo-1591035897819-f4bdf739f446?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80'
+        },
+        'prod-002': {
+          title: 'Lace Buba Set',
+          price: 32000,
+          image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80'
+        },
+        'prod-003': {
+          title: 'Agbada Ensemble',
+          price: 45000,
+          image: 'https://images.unsplash.com/photo-1590845947676-fa2576f401d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80'
+        }
+      };
+
+      // Initialize cart
+      Cart.init();
+      
+      // Render cart items
+      function renderCart() {
+        const cartItems = Cart.getCart();
+        const container = document.getElementById('cart-items-container');
+        const emptyMessage = document.getElementById('empty-cart-message');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        // Clear existing items
+        container.innerHTML = '';
+        
+        if (cartItems.length === 0) {
+          emptyMessage.style.display = 'block';
+          checkoutBtn.disabled = true;
+          updateSummary(0);
+          return;
+        }
+        
+        emptyMessage.style.display = 'none';
+        checkoutBtn.disabled = false;
+        
+        let subtotal = 0;
+        const template = document.getElementById('cart-item-template');
+        
+        cartItems.forEach(item => {
+          const product = products[item.product];
+          if (!product) return;
+          
+          const clone = template.content.cloneNode(true);
+          const itemTotal = product.price * item.quantity;
+          subtotal += itemTotal;
+          
+          // Fill in template
+          clone.querySelector('.cart-item-image').src = product.image;
+          clone.querySelector('.product-title').textContent = product.title;
+          clone.querySelector('.product-price').textContent = `₦${product.price.toLocaleString()}`;
+          clone.querySelector('.quantity-controls').dataset.productId = item.product;
+          clone.querySelector('.quantity-input').value = item.quantity;
+          clone.querySelector('.item-total').textContent = `₦${itemTotal.toLocaleString()}`;
+          clone.querySelector('.remove-item').dataset.productId = item.product;
+          
+          container.appendChild(clone);
+        });
+        
+        updateSummary(subtotal);
+      }
+      
+      // Update order summary
+      function updateSummary(subtotal) {
+        const shipping = 2500; // Fixed shipping cost
+        const total = subtotal + shipping;
+        
+        document.getElementById('subtotal').textContent = `₦${subtotal.toLocaleString()}`;
+        document.getElementById('total').textContent = `₦${total.toLocaleString()}`;
+      }
+      
+      // Handle remove item clicks
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+          const productId = e.target.dataset.productId;
+          Cart.removeFromCart(productId);
+          renderCart();
+        }
+      });
+      
+      // Initial render
+      renderCart();
+    });
+  </script>

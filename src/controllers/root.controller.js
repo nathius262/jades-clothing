@@ -61,4 +61,44 @@ const detail_view = async (req, res) => {
 };
 
 
-export {index_view, shop_view, detail_view}
+const checkout_view = async (req, res) => {
+    try {
+        // Get cart from cookies or initialize empty cart
+        let cart = req.cookies.jades_cart ? JSON.parse(req.cookies.jades_cart) : { items: [], totalQty: 0, totalPrice: 0 };
+        
+        // Fetch product details for each item in cart
+        const cartItems = await Promise.all(cart.items.map(async (item) => {
+            const product = await productService.findById(item.productId);
+            return {
+                productId: item.productId,
+                qty: item.qty,
+                price: item.price,
+                name: product.name,
+                image: product.image,
+                description: product.description,
+                itemTotal: item.qty * item.price
+            };
+        }));
+        
+        // Calculate totals
+        const totalQty = cartItems.reduce((sum, item) => sum + item.qty, 0);
+        const totalPrice = cartItems.reduce((sum, item) => sum + item.itemTotal, 0);
+        
+        res.render('checkout', {
+            pageTitle: "Checkout",
+            cartItems,
+            totalQty,
+            totalPrice,
+            // Include any other necessary data like shipping options, user info if logged in, etc.
+        });
+    } catch (err) {
+        console.error('Checkout error:', err);
+        res.status(500).render('./errors/500', { 
+            message: 'Internal Server Error', 
+            error: err.message 
+        });
+    }
+};
+
+
+export {index_view, shop_view, detail_view, checkout_view}

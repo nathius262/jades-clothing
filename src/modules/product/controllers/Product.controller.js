@@ -25,13 +25,13 @@ export const findAll = async (req, res) => {
 
 export const findBySlug = async (req, res) => {
   try {
-    const data = await service.findBySlug(req.params.id);
-    res.status(200).render('./single', {
+    const data = await service.findBySlug(req.params.slug);
+    res.status(200).render('./detail', {
       success: true,
       pageTitle: "Details",
       product: data,
     });
   } catch (err) {
-    res.status(404).render('error', { error: err.message });
+    res.status(500).render('./errors/500', { error: err.message });
   }
 };

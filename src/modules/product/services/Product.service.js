@@ -50,3 +50,18 @@ export const findBySlug = async (slug) => {
     throw new Error('Error fetching record: ' + error.message);
   }
 };
+
+export const findById = async (id) => {
+  try {
+     const item = await db.Product.findByPk(id, {
+        include: [
+            { model: db.Category, as: 'categories', through: { attributes: [] } },
+            { model: db.Image, as: 'images', attributes: ['url', 'id', 'is_primary'] },
+        ],
+    });
+    if (!item) throw new Error('Not found');
+    return item;
+  } catch (error) {
+    throw new Error('Error fetching record: ' + error.message);
+  }
+};

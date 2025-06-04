@@ -3,6 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import dotenv from 'dotenv';
 
 import loadModules from './src/config/load_modules.js';
 import staticFiles from "./src/config/staticFiles.js";
@@ -14,6 +16,8 @@ import conditionalRendering from './src/middlewares/conditionalRender.middleware
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+dotenv.config();
+
 const app = express();
 
 // Setup Handlebars view engine
@@ -23,6 +27,12 @@ app.use(eventLogger);
 
 // Middleware
 app.use(cookieParser());
+app.use(session({
+  secret: process.env.SESSION_SECRETE_KEY,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: process.env.IS_PRODUCTION } // Set to true in production with HTTPS
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

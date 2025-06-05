@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import * as productService from '../modules/product/services/Product.service.js';
 import * as categoryService from '../modules/category/services/Category.service.js';
 
+
 // Derive the equivalent of __dirname
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -64,32 +65,35 @@ const detail_view = async (req, res) => {
 const checkout_view = async (req, res) => {
     try {
         // Get cart from cookies or initialize empty cart
-        let cart = req.cookies.jades_cart ? JSON.parse(req.cookies.jades_cart) : { items: [], totalQty: 0, totalPrice: 0 };
-        
+        let cart = [];
+
+        if (!req.session.cart || !req.session.jades_cart) cart = JSON.parse(req.cookies.jades_cart) || JSON.parse(req.cookies.cart)
+        else if (!req.cookies.jades_cart) cart = req.session.jades_cart || req.session.cart
+        else cart = [];
+
         // Fetch product details for each item in cart
-        const cartItems = await Promise.all(cart.items.map(async (item) => {
-            const product = await productService.findById(item.productId);
+        const cartItems = await Promise.all(cart.map(async (item) => {
+            const product = await productService.findById(item.product);
             return {
-                productId: item.productId,
-                qty: item.qty,
-                price: item.price,
+                id: item.product,
+                quantity: item.quantity,
+                price: product.price,
                 name: product.name,
-                image: product.image,
+                images: product.images,
                 description: product.description,
-                itemTotal: item.qty * item.price
+                itemTotal: item.quantity * product.price
             };
         }));
         
         // Calculate totals
-        const totalQty = cartItems.reduce((sum, item) => sum + item.qty, 0);
+        const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
         const totalPrice = cartItems.reduce((sum, item) => sum + item.itemTotal, 0);
-        
+
         res.render('checkout', {
             pageTitle: "Checkout",
             cartItems,
             totalQty,
             totalPrice,
-            // Include any other necessary data like shipping options, user info if logged in, etc.
         });
     } catch (err) {
         console.error('Checkout error:', err);

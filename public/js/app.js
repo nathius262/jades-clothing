@@ -1,4 +1,4 @@
-import { Cart } from './cart.js';
+//import { Cart } from './cart.js';
 
 // Initialize cart functionality
-Cart.init();
+//Cart.init();

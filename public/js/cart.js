@@ -1,262 +1,173 @@
-const CART_API_BASE = '/cart/api';
+// cart.js
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize cart badge
+  updateCartBadge();
 
-export class Cart {
-  /**
-   * Get current cart items from server
-   * @returns {Promise<Array<{product: string, quantity: number}>>}
-   */
-  static async getCart() {
+  // Set up quantity controls and add to cart buttons
+  document.querySelectorAll('.quantity-controls').forEach(control => {
+    const productId = control.dataset.productId;
+    const input = control.querySelector('.quantity-input');
+    const incrementBtn = control.querySelector('.increment-btn');
+    const decrementBtn = control.querySelector('.decrement-btn');
+    const addToCartBtn = document.querySelector(`.add-to-cart[data-product-id="${productId}"]`);
+    
+    // Disable add to cart button initially (only enable when quantity changes)
+    if (addToCartBtn) {
+      addToCartBtn.disabled = true;
+      input.dataset.originalValue = input.value;
+    }
+
+    // Quantity increment
+    incrementBtn.addEventListener('click', () => {
+      input.value = parseInt(input.value) + 1;
+      toggleAddToCartButton(input, addToCartBtn);
+    });
+
+    // Quantity decrement
+    decrementBtn.addEventListener('click', () => {
+      const newValue = parseInt(input.value) - 1;
+      if (newValue >= parseInt(input.min)) {
+        input.value = newValue;
+        toggleAddToCartButton(input, addToCartBtn);
+      }
+    });
+
+    // Manual input change
+    input.addEventListener('change', () => {
+      if (parseInt(input.value) < parseInt(input.min)) {
+        input.value = input.min;
+      }
+      toggleAddToCartButton(input, addToCartBtn);
+    });
+  });
+
+    // Add to cart button handlers - modified version
+// Add to cart button handlers - updated version
+document.querySelectorAll('.add-to-cart').forEach(button => {
+  button.addEventListener('click', async function() {
+    const productId = this.dataset.productId;
+    
+    // Check if this is on a detail page with quantity controls
+    const quantityControl = document.querySelector(`.quantity-controls[data-product-id="${productId}"]`);
+    const isDetailPage = !!quantityControl;
+    let quantity = 1;
+    
+    if (isDetailPage) {
+      quantity = parseInt(quantityControl.querySelector('.quantity-input').value);
+    }
+    
+    // Disable button during operation
+    const originalHtml = this.innerHTML;
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+    
     try {
-      const response = await fetch(`${CART_API_BASE}/`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      // For non-detail pages, check if item exists first
+      if (!isDetailPage) {
+        const cartResponse = await fetch('/cart/api');
+        if (!cartResponse.ok) throw new Error('Could not fetch cart');
+        
+        const cartData = await cartResponse.json();
+        const existingItem = cartData.cart.find(item => item.product === productId);
+        
+        if (existingItem) {
+          showToast(`This item is already in your cart (Quantity: ${existingItem.quantity})`, 'info');
+          return;
+        }
+      }
       
+      // Proceed with add/update
+      const addResponse = await fetch('/cart/api/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, quantity })
+      });
+      
+      if (addResponse.ok) {
+        updateCartBadge();
+        showToast(isDetailPage ? 'Cart updated' : 'Item added to cart');
+        
+        // Reset quantity controls if on detail page
+        if (isDetailPage) {
+          const input = quantityControl.querySelector('.quantity-input');
+          input.value = 1;
+          input.dataset.originalValue = '1';
+          this.disabled = true;
+        }
+      } else {
+        throw new Error('Failed to add item to cart');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showToast('Error adding item to cart', 'danger');
+    } finally {
+      this.innerHTML = originalHtml;
+      this.disabled = false;
+    }
+  });
+});
+
+  // Function to toggle add to cart button state
+  function toggleAddToCartButton(input, button) {
+    if (button) {
+      button.disabled = input.value === input.dataset.originalValue;
+    }
+  }
+
+  // Updated function to calculate count from cart items
+async function updateCartBadge() {
+  try {
+    const response = await fetch('/cart/api');
+    if (response.ok) {
       const data = await response.json();
-      
-      // Handle different response formats
-      if (Array.isArray(data)) {
-        return data; // Direct array response
-      } else if (data.cart && Array.isArray(data.cart)) {
-        return data.cart; // Wrapped in cart property
-      } else if (data.items && Array.isArray(data.items)) {
-        return data.items; // Alternative property name
-      }
-      
-      console.warn('Unexpected cart format:', data);
-      return [];
-    } catch (error) {
-      console.error('Cart fetch error:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get total number of items in cart (across all products)
-   * @returns {Promise<number>}
-   */
-  static async getCartCount() {
-    try {
-      const cart = await this.getCart();
-      
-      // Double-check we have an array
-      if (!Array.isArray(cart)) {
-        console.warn('Cart is not an array:', cart);
-        return 0;
-      }
-      
-      return cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    } catch (error) {
-      console.error('Get cart count error:', error);
-      return 0;
-    }
-  }
-
-  /**
-   * Add or update a product in the cart via API
-   * @param {string} productId 
-   * @param {number} quantity 
-   */
-  static async addToCart(productId, quantity = 1) {
-    try {
-      const response = await fetch(`${CART_API_BASE}/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, quantity })
+      // Calculate total quantity by summing all item quantities
+      const totalItems = data.cart.reduce((total, item) => total + item.quantity, 0);
+      document.querySelectorAll('.cart-badge').forEach(badge => {
+        badge.textContent = totalItems || '0';
       });
-      
-      if (!response.ok) throw new Error('Failed to add to cart');
-      
-      const result = await response.json();
-      this._updateCartBadge(result.cartCount || result.cart.length);
-      return result;
-    } catch (error) {
-      console.error('Add to cart error:', error);
-      throw error;
     }
-  }
-
-  /**
-   * Set exact quantity for a product via API
-   * @param {string} productId 
-   * @param {number} quantity 
-   */
-  static async setQuantity(productId, quantity) {
-    try {
-      const response = await fetch(`${CART_API_BASE}/update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, quantity })
-      });
-      
-      if (!response.ok) throw new Error('Failed to update quantity');
-      
-      const result = await response.json();
-      this._updateCartBadge(result.cartCount || result.cart.length);
-      return result;
-    } catch (error) {
-      console.error('Update quantity error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Decrease the quantity of a product in the cart
-   * @param {string} productId 
-   */
-  static async decrementQuantity(productId) {
-    try {
-      const cart = await this.getCart();
-      const item = cart.find(item => item.product === productId);
-      
-      if (!item) return;
-      
-      const newQuantity = item.quantity - 1;
-      return await this.setQuantity(productId, newQuantity);
-    } catch (error) {
-      console.error('Decrement quantity error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove product from cart via API
-   * @param {string} productId 
-   */
-  static async removeFromCart(productId) {
-    try {
-      const response = await fetch(`${CART_API_BASE}/remove`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId })
-      });
-      
-      if (!response.ok) throw new Error('Failed to remove from cart');
-      
-      const result = await response.json();
-      this._updateCartBadge(result.cartCount || result.cart.length);
-      return result;
-    } catch (error) {
-      console.error('Remove from cart error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Update cart badge count in UI
-   * @param {number} [count] - Optional count to avoid extra API call
-   */
-  static async _updateCartBadge(count) {
-    try {
-      const badgeElements = document.querySelectorAll('.cart-badge');
-      const cartCount = count !== undefined ? count : await this.getCartCount();
-
-      badgeElements.forEach(badge => {
-        badge.textContent = cartCount;
-        badge.style.display = cartCount > 0 ? 'block' : 'none';
-      });
-    } catch (error) {
-      console.error('Update cart badge error:', error);
-    }
-  }
-
-  /**
-   * Initialize cart functionality
-   */
-  static init() {
-    document.addEventListener('DOMContentLoaded', () => {
-      this._updateCartBadge();
-
-      // Handle clicks on .add-to-cart buttons
-      document.body.addEventListener('click', async (e) => {
-        const addToCartBtn = e.target.closest('.add-to-cart');
-        if (addToCartBtn) {
-          e.preventDefault();
-
-          try {
-            const productId = addToCartBtn.dataset?.productId;
-            if (!productId) return;
-
-            const quantityInput = document.querySelector('#quantity');
-            const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
-
-            await this.addToCart(productId, quantity);
-
-            // Visual feedback
-            const icon = addToCartBtn.querySelector('i');
-            if (icon) {
-              icon.classList.remove('bi-cart-plus');
-              icon.classList.add('bi-check');
-              setTimeout(() => {
-                icon.classList.remove('bi-check');
-                icon.classList.add('bi-cart-plus');
-              }, 1000);
-            }
-          } catch (err) {
-            console.error('Add to cart failed:', err);
-          }
-        }
-      });
-
-      // Handle quantity increment/decrement buttons
-      document.body.addEventListener('click', async (e) => {
-        const decrementBtn = e.target.closest('.decrement-btn');
-        const incrementBtn = e.target.closest('.increment-btn');
-
-        if (!decrementBtn && !incrementBtn) return;
-
-        try {
-          const wrapper = e.target.closest('.quantity-controls');
-          if (!wrapper) return;
-
-          const productId = wrapper.dataset?.productId;
-          if (!productId) return;
-
-          const input = wrapper.querySelector('.quantity-input');
-          if (!input) return;
-
-          let quantity = parseInt(input.value) || 1;
-
-          if (incrementBtn) {
-            quantity += 1;
-          } else if (decrementBtn && quantity > 1) {
-            quantity -= 1;
-          } else if (decrementBtn && quantity <= 1) {
-            await this.removeFromCart(productId);
-            wrapper.closest('.cart-item')?.remove(); // Optional DOM cleanup
-            quantity = 1; // Keep input consistent
-          }
-
-          input.value = quantity;
-          await this.setQuantity(productId, quantity);
-        } catch (err) {
-          console.error('Quantity adjustment failed:', err);
-        }
-      });
-
-      // Optional: handle direct input change
-      document.body.addEventListener('change', async (e) => {
-        const input = e.target.closest('.quantity-input');
-        if (input) {
-          try {
-            const wrapper = input.closest('.quantity-controls');
-            const productId = wrapper?.dataset?.productId;
-            if (!productId) return;
-
-            let quantity = parseInt(input.value) || 1;
-            if (quantity < 1) quantity = 1;
-
-            input.value = quantity;
-            await this.setQuantity(productId, quantity);
-          } catch (err) {
-            console.error('Manual quantity input failed:', err);
-          }
-        }
-      });
+  } catch (error) {
+    console.error('Error updating cart badge:', error);
+    // Fallback to 0 if there's an error
+    document.querySelectorAll('.cart-badge').forEach(badge => {
+      badge.textContent = '0';
     });
   }
 }
+  // Helper function to show toast notifications
+  function showToast(message, variant = 'success') {
+    // Implement your toast notification system here
+    // Example using Bootstrap toasts:
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${variant} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    `;
+    toastContainer.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', () => {
+      toast.remove();
+    });
+  }
+
+  function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'position-fixed bottom-0 end-0 p-3';
+    container.style.zIndex = '11';
+    document.body.appendChild(container);
+    return container;
+  }
+});

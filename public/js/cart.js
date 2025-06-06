@@ -51,6 +51,7 @@ document.querySelectorAll('.add-to-cart').forEach(button => {
     const quantityControl = document.querySelector(`.quantity-controls[data-product-id="${productId}"]`);
     const isDetailPage = !!quantityControl;
     let quantity = 1;
+    const price = this.dataset.productPrice;
     
     if (isDetailPage) {
       quantity = parseInt(quantityControl.querySelector('.quantity-input').value);
@@ -82,7 +83,7 @@ document.querySelectorAll('.add-to-cart').forEach(button => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ productId, quantity })
+        body: JSON.stringify({ productId, quantity, price })
       });
       
       if (addResponse.ok) {

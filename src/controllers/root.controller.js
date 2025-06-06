@@ -67,9 +67,16 @@ const checkout_view = async (req, res) => {
         // Get cart from cookies or initialize empty cart
         let cart = [];
 
-        if (!req.session.cart || !req.session.jades_cart) cart = JSON.parse(req.cookies.jades_cart) || JSON.parse(req.cookies.cart)
-        else if (!req.cookies.jades_cart) cart = req.session.jades_cart || req.session.cart
-        else cart = [];
+        try {
+            if (!req.session.cart || !req.session.jades_cart) cart = JSON.parse(req.cookies.jades_cart) || JSON.parse(req.cookies.cart)
+            else if (!req.cookies.jades_cart) cart = req.session.jades_cart || req.session.cart
+            else cart = [];
+        } catch (error) {
+            console.log(error)
+            cart = [];
+        }
+
+        
 
         // Fetch product details for each item in cart
         const cartItems = await Promise.all(cart.map(async (item) => {

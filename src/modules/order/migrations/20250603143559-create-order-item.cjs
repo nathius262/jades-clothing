@@ -18,7 +18,7 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      product: {
+      product_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },

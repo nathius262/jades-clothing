@@ -1,5 +1,4 @@
 import db from '../../../models/index.cjs';
-import db from '../models/index.cjs';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function createOrder(paymentData, cartItems) {
@@ -49,20 +48,29 @@ export async function createOrder(paymentData, cartItems) {
 
         // Validate and create OrderItems
         const orderItems = cartItems.map(item => {
+            // Convert fields to numbers
+            const productId = Number(item.product);
+            const quantity = Number(item.quantity);
+            const price = Number(item.price);
+
+            // Validate numeric values
             if (
-                typeof item.product !== 'number' ||
-                typeof item.quantity !== 'number' ||
-                typeof item.price !== 'number'
+                isNaN(productId) ||
+                isNaN(quantity) ||
+                isNaN(price) ||
+                !Number.isInteger(productId) ||
+                !Number.isInteger(quantity) ||
+                quantity <= 0
             ) {
                 throw new Error(`Invalid cart item data: ${JSON.stringify(item)}`);
             }
 
             return {
                 order_id: order.id,
-                product: item.product,
+                product_id: item.product,
                 quantity: item.quantity,
                 price: item.price,
-                totalPrice: item.quantity * item.price,
+                total_price: item.quantity * item.price,
             };
         });
         await db.OrderItem.bulkCreate(orderItems, { transaction });
@@ -84,12 +92,12 @@ export async function createOrder(paymentData, cartItems) {
             await product.save({ transaction });
         }
 
-        /*/ Create initial DeliveryStatus
+        //Create initial DeliveryStatus
         await db.DeliveryStatus.create({
             order_id: order.id,
             status: 'pending', // Initial delivery status
             notes: 'Order has been created and is pending processing.',
-        }, { transaction });*/
+        }, { transaction });
 
         // Commit the transaction
         await transaction.commit();
@@ -103,47 +111,86 @@ export async function createOrder(paymentData, cartItems) {
 }
 
 
-export const getOrders = async (page, limit)=> {
+export const getOrders = async (page, limit) => {
     const offset = (page - 1) * limit;
 
     const { rows: orders, count: totalOrderItems } = await db.Order.findAndCountAll({
-        attributes:['id', 'tracking_id', 'customer_email', 'customer_phone', 'total_amount', 'currency', 'status', 'paidAt', 'payment_channel', 'gateway_response', 'updatedAt', 'createdAt'],   
-        include:[
-            //{model:db.DeliveryStatus, as:'deliveryStatus', attributes: ['status']}
+        attributes: ['id', 'tracking_id', 'customer_email', 'customer_phone', 'total_amount', 'currency', 'status', 'paidAt', 'payment_channel', 'gateway_response', 'updatedAt', 'createdAt'],
+        include: [
+            { model: db.DeliveryStatus, as: 'delivery_status', attributes: ['status'] }
         ],
         limit,
         offset,
         distinct: true,
-        order:[['updatedAt', 'DESC'], ['createdAt', 'DESC']]
+        order: [['updatedAt', 'DESC'], ['createdAt', 'DESC']]
     });
 
     const totalOrderPages = Math.ceil(totalOrderItems / limit);
 
-    return {orders:orders, totalOrderPages:totalOrderPages, totalOrderItems:totalOrderItems, currentOrderPage:page}
+    return { orders: orders, totalOrderPages: totalOrderPages, totalOrderItems: totalOrderItems, currentOrderPage: page }
 }
 
 
-export const getOrderById = async (id)=> {
+export const getOrderById = async (id) => {
 
     const order = await db.Order.findByPk(id, {
-    attributes:['id', 'tracking_id', 'customerEmail', 'customer_phone', 'total_amount', 'currency', 'status', 'paidAt', 'payment_channel', 'gateway_response', 'updatedAt', 'createdAt'],
+        attributes: ['id', 'tracking_id', 'customerEmail', 'customer_phone', 'total_amount', 'currency', 'status', 'paidAt', 'payment_channel', 'gateway_response', 'updatedAt', 'createdAt'],
 
-    include: [
+        include: [
 
-        {model:db.Address, as:'address', attributes: ['street_address', 'city', 'state', 'country']},
-        //{model:db.DeliveryStatus, as:'deliveryStatus', attributes: ['status']},
-        {
-            model:db.OrderItem, 
-            as:'items', 
-            attributes: ['quantity', 'price', 'totalPrice'],
-            include:[
-            {model:db.Product, as:'product', attributes:['id', 'name']},
-            ]
-        },
+            { model: db.Address, as: 'address', attributes: ['street_address', 'city', 'state', 'country'] },
+            { model: db.DeliveryStatus, as: 'delivery_status', attributes: ['status'] },
+            {
+                model: db.OrderItem,
+                as: 'items',
+                attributes: ['quantity', 'price', 'total_price'],
+                include: [
+                    { model: db.Product, as: 'product', attributes: ['id', 'name'] },
+                ]
+            },
 
         ],
     });
 
     if (!order) return null;
     return order;
+}
+
+export const getOrderByTrackingId = async (tracking_id) => {
+    try {
+        // Fetch order details
+        const order = await db.Order.findOne({
+            where: { tracking_id },
+            attributes: ['tracking_id'],
+            include: [
+                { model: db.OrderItem, as: 'items', attributes:['quantity', 'price'], include: [{ model: db.Product, as: 'product', attributes:['name', 'price'] }] },
+                { model: db.DeliveryStatus, as: 'delivery_status', attributes: ['status', 'notes', 'updatedAt'] },
+            ],
+        });
+
+
+        if (!order) {
+            throw new Error('Not found');
+        }
+
+        const orderDetail = {
+            status: order.status,
+            items: order.items.map(item => ({
+                name: item.product.name,
+                quantity: item.quantity,
+                price: item.price,
+            })),
+            delivery_status: order.delivery_status.map(status => ({
+                status: status.status,
+                updatedAt:status.updatedAt,
+                notes:status.notes
+            }))
+        }
+
+        return orderDetail;
+    } catch (error) {
+        console.error('Error tracking order:', error);
+        throw new Error('Error fetching record: ' + error.message);
+
+    }
 }

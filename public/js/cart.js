@@ -46,12 +46,13 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('.add-to-cart').forEach(button => {
   button.addEventListener('click', async function() {
     const productId = this.dataset.productId;
+    const price = this.dataset.productPrice;
+
     
     // Check if this is on a detail page with quantity controls
     const quantityControl = document.querySelector(`.quantity-controls[data-product-id="${productId}"]`);
     const isDetailPage = !!quantityControl;
     let quantity = 1;
-    const price = this.dataset.productPrice;
     
     if (isDetailPage) {
       quantity = parseInt(quantityControl.querySelector('.quantity-input').value);

@@ -4,8 +4,8 @@ export const CartController = {
   // Add item to cart
   addToCart: async (req, res) => {
     try {
-      const { productId, quantity = 1 } = req.body;
-      CartService.addItem(req, res, productId, quantity);
+      const { productId, quantity = 1, price } = req.body;
+      CartService.addItem(req, res, productId, quantity, price);
       res.json({ success: true, cart: CartService.getCart(req) });
     } catch (error) {
       res.status(500).json({ error: 'Failed to add item to cart' });

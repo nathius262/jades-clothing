@@ -1,0 +1,285 @@
+<style>
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--white);
+    }
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+    }
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: white;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .quantity-input {
+      width: 50px;
+      height: 30px;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-left: none;
+      border-right: none;
+    }
+    .btn-outline-success:hover {
+      background-color: var(--green);
+      color: white;
+    }
+    .remove-item {
+      color: #dc3545;
+      cursor: pointer;
+    }
+    .remove-item:hover {
+      color: #bb2d3b;
+    }
+    .summary-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .cart-item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    @media (max-width: 768px) {
+      .cart-item-image {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+  <div class="container py-4">
+    <div class="row">
+      <!-- Cart Items Column -->
+      <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-0">
+            <h4 class="mb-0">Your Shopping Cart</h4>
+          </div>
+          <div class="card-body">
+            <!-- Empty Cart Message -->
+             {{#if cartItems}}
+            
+            {{else}}
+            <div id="empty-cart-message" class="text-center py-5">
+              <i class="bi bi-cart-x text-muted" style="font-size: 3rem;"></i>
+              <h5 class="mt-3">Your cart is empty</h5>
+              <p class="text-muted">Browse our collection to add items</p>
+              <a href="/product" class="btn btn-success mt-3">Continue Shopping</a>
+            </div>
+            {{/if}}
+
+            <!-- Cart Items List -->
+            <div id="cart-items-container">
+
+              {{#each cartItems}}
+              <div class="cart-item mb-3 pb-3 border-bottom">
+                <div class="row">
+                  <div class="col-3 col-md-2">
+
+                    <!-- Check if any image is marked as primary -->
+                    {{#each this.images}}
+                    {{#if this.is_primary}}
+                    <img src="{{this.url}}" class="cart-item-image img-fluid" alt="Product Image">
+
+                    {{/if}}
+                    {{/each}}
+
+                    {{#unless (anyImageIsPrimary this.images)}}
+                    {{#each this.images}}
+                    {{#if @first}}
+                    <img src="{{this.url}}" class="cart-item-image img-fluid" alt="Product Image">
+                    
+                    {{/if}}
+                    {{/each}}
+                    {{/unless}}
+
+
+                    
+                  </div>
+                  <div class="col-9 col-md-10">
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <h6 class="mb-1 product-title">{{this.name}}</h6>
+                        <p class="mb-1 text-muted product-price">₦ {{this.price}}</p>
+                      </div>
+                      <i class="bi bi-x-lg remove-item" data-product-id="{{this.id}}"></i>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                      <div class="quantity-controls" data-product-id="{{this.id}}">
+                        <button class="quantity-btn decrement-btn">-</button>
+                        <input type="number" class="quantity-input" value="{{this.quantity}}" min="1">
+                        <button class="quantity-btn increment-btn">+</button>
+                      </div>
+                      <span class="fw-bold item-total">₦{{this.itemTotal}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Column -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm border-0 summary-card sticky-top" style="top: 20px;">
+          <div class="card-header bg-white border-0">
+            <h4 class="mb-0">Order Summary</h4>
+          </div>
+          <div class="card-body">
+            <div class="form-group mt-3 row mb-2">
+                <label class="col-6" for="currency">Choose your currency:</label>
+                <select class="form-control col-5" id="currency" disabled>
+                    <option value="NGN" selected>NGN</option>
+                    <option value="USD">USD</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span id="subtotal"  data-subtotal="{{totalPrice}}">₦{{totalPrice}}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping</span>
+              <span id="shipping" data-shipping="{{shippingFee}}">₦{{shippingFee}}</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="fw-bold">Total</span>              
+              <span class="fw-bold" id="total" data-total-price="{{total}}" >₦{{total}}</span>
+            </div>
+            <button id="checkout-btn" class="btn btn-success w-100 py-2" disabled>
+              Proceed to Checkout
+            </button>
+            <div class="text-center mt-3">
+              <small class="text-muted">or</small>
+              <a href="/product" class="d-block mt-1">Continue Shopping</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Complete Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm">
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" id="firstName" class="form-control" required />
+                        </div>
+    
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" id="lastName" class="form-control" required />
+                        </div>
+    
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" class="form-control" required />
+                        </div>
+    
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" id="phone" class="form-control" required />
+                        </div>
+    
+                        <!-- Delivery Option -->
+                        <div class="mb-3 form-check">
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="deliveryOption"
+                                onchange="toggleAddressField()"
+                            />
+                            <label for="deliveryOption" class="form-check-label">
+                                I want this delivered
+                            </label>
+                        </div>
+    
+                        <!-- Shipping Address -->
+                        <div id="addressField" class="mb-3" style="display: none;">
+                            <label for="address" class="form-label">Shipping Address</label>
+                            <textarea
+                                id="address"
+                                class="form-control mb-3"
+                                rows="2"
+                                placeholder="Enter your shipping address"
+                            ></textarea>
+
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="country_id1" class="form-label">Country</label>
+                                    <select name="p_country" element-id="country" dependent-state-id="state_id1" dependent-city-id="city_id1" id="country_id1" class="countrystatecity form-control">
+                                        <option value="">select</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label class="form-label" for="state_id1">State</label>
+                                    <select name="p_state" element-id="state" dependent-city-id="city_id1" id="state_id1" id="state_id1" class="countrystatecity form-control">
+                                        <option value="">select</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label class="form-label" for="countrystatecity">City</label>
+                                    <select name="p_city" element-id="city" id="city_id1" class="countrystatecity form-control">
+                                        <option value="">select</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Pay Now Button -->
+                        <button type="button" id="payNow" class="btn btn-success w-100">
+                            Pay Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+  <!-- Scripts -->
+   <script type="text/javascript" src="/assets/js/countrystatecity.js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+    $(document).ready(function(){
+		$('.countrystatecity').countrystatecity();
+	});
+    
+    function toggleAddressField() {
+        const deliveryOption = document.getElementById('deliveryOption');
+        const addressField = document.getElementById('addressField');
+    
+        if (deliveryOption.checked) {
+            addressField.style.display = 'block';
+        } else {
+            addressField.style.display = 'none';
+        }
+    };
+
+</script>
+  <script type="module" src="/assets/js/utils.js"></script>
+  <script type="module" src="/assets/js/checkout.js"></script>
+  <script type="module" src="/assets/js/payment.js"></script>

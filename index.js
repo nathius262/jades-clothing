@@ -12,6 +12,8 @@ import configureViewEngine from './src/config/viewEngine.js';
 import eventLogger from './src/middlewares/logger.middleware.js';
 import conditionalRendering from './src/middlewares/conditionalRender.middleware.js';
 
+import fetchGlobalEntitiesWithCache from './src/middlewares/fetchGlobalEntitiesWithCache.js';
+
 // Resolve __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +40,9 @@ app.use(bodyParser.json());
 
 // Static files
 app.use(staticFiles);
+
+
+app.use(fetchGlobalEntitiesWithCache);
 
 
 //render header and footer section based on root or admin route

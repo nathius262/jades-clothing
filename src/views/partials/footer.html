@@ -15,11 +15,10 @@
         <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
           <h6 class="text-uppercase mb-4">Shop</h6>
           <ul class="list-unstyled">
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">New Arrivals</a></li>
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">Ankara Styles</a></li>
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">Agbada Collection</a></li>
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">Lace Designs</a></li>
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">Kids & Family</a></li>
+            {{#each globalEntities.categories}}
+            <li class="mb-2"><a href="#" class="text-white text-decoration-none">{{this.name}}</a></li>
+            {{/each}}
+            
           </ul>
         </div>
         <div class="col-lg-2 col-md-6 mb-4 mb-md-0">

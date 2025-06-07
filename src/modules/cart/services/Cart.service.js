@@ -14,7 +14,7 @@ export class CartService {
   /**
    * Add/update item in cart
    */
-  static addItem(req, res, productId, quantity) {
+  static addItem(req, res, productId, quantity, price) {
     if (!req.session.cart) req.session.cart = [];
 
     const existingItem = req.session.cart.find(item => item.product === productId);
@@ -22,7 +22,7 @@ export class CartService {
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      req.session.cart.push({ product: productId, quantity });
+      req.session.cart.push({ product: productId, quantity, price });
     }
 
     this._syncCartToCookie(req, res);

@@ -60,3 +60,35 @@ export const detail_view = async (req, res) => {
         
     }
 };
+
+export const about_view = async (req, res) => {
+    try {
+        res.status(200).render('about', {pageTitle: "About"})
+    } catch (error) {
+        res.status(500).render('errors/500', {error: error.message})
+    }
+}
+
+export const contact_view = async (req, res) => {
+    try {
+        res.status(200).render('contact', {pageTitle: "Contact"})
+    } catch (error) {
+        res.status(500).render('errors/500', {error: error.message})
+    }
+}
+
+export const privacy_policy_view = async (req, res) => {
+    try {
+        res.status(200).render('privacy_policy', {pageTitle: "Privacy-Policy"})
+    } catch (error) {
+        res.status(500).render('errors/500', {error: error.message})
+    }
+}
+
+export const terms_condition_view = async (req, res) => {
+    try {
+        res.status(200).render('terms_condition', {pageTitle: "Terms and Conditions"})
+    } catch (error) {
+        res.status(500).render('errors/500', {error: error.message})
+    }
+}

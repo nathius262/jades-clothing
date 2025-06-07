@@ -98,7 +98,7 @@ export class PaymentHandler {
 
   static async handlePaymentResponse(response) {
     try {
-      const verification = await fetch(`/checkout/api/verify-payment?reference=${response.reference}`, {
+      const verification = await fetch(`/order/api/verify-payment?reference=${response.reference}`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'

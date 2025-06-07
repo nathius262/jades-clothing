@@ -1,0 +1,101 @@
+<section class="checkout-page py-5 mt-5">
+    <div class="container">
+        <h1 class="my-5">Track Your Order</h1>
+        <form id="trackingForm" class="needs-validation trackingForm" novalidate>
+            <label for="tracking_id">Enter Tracking ID:</label>
+            <input class="form-control" type="text" id="tracking_id" required />
+            <button class="btn btn-success my-4" type="submit">Track Order</button>
+        </form>
+
+        <div id="orderDetails" style="display:none;">
+            <h2>Order Details</h2>
+            <p id="orderStatus" class="my-3"></p>
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total Price</th>
+                            <th>Delivery Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderItems"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', async function () {
+                // Helper function to extract URL query parameters
+                function getQueryParam(param) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get(param);
+                }
+        
+                // Check if tracking_id is present in the URL
+                const trackingIdFromUrl = getQueryParam('tracking_id');
+                if (trackingIdFromUrl) {
+                    // Populate input field and fetch order details
+                    document.getElementById('tracking_id').value = trackingIdFromUrl;
+                    await fetchOrderDetails(trackingIdFromUrl);
+                }
+        
+                // Attach event listener to the form
+                document.querySelectorAll('.trackingForm').forEach((btn) => {
+                    btn.addEventListener('submit', async function (e) {
+                        e.preventDefault();
+                        const tracking_id = document.getElementById('tracking_id').value;
+                        await fetchOrderDetails(tracking_id);
+                    });
+                })
+        
+                // Function to fetch order details
+                async function fetchOrderDetails(tracking_id) {
+                    try {
+                        // Fetch order details from the server
+                        const response = await fetch(`/order/api/track-order?tracking_id=${tracking_id}`);
+                        const data = await response.json();
+        
+                        if (data.success) {
+                            // Show order details section
+                            document.getElementById('orderDetails').style.display = 'block';
+        
+                            // Populate status
+                            document.getElementById('orderStatus').innerText = `Order Status: ${data.order.status}`;
+        
+                            // Populate table
+                            const orderItemsTable = document.getElementById('orderItems');
+                            orderItemsTable.innerHTML = ''; // Clear previous entries
+
+                            console.log(data)
+        
+                            data.order.items.forEach(item => {
+                                const row = `
+                                    <tr>
+                                        <td>${item.name}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>${item.price}</td>
+                                        <td>${(item.quantity * item.price)}</td>
+                                        <td>${data.order.delivery_status[0].status}</td>
+                                    </tr>
+                                `;
+                                orderItemsTable.innerHTML += row;
+                            });
+
+                        } else {
+                            alert(data.message || 'Order not found!');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching order details:', error);
+                        alert('Failed to fetch order details. Please try again later.', error.message || error);
+                    }
+                }
+            });
+        </script>
+        
+
+    </div>
+</section>

@@ -192,73 +192,42 @@
 
     <!-- Product Row with Navigation -->
     <div class="position-relative">
-      <button class="btn btn-sm position-absolute start-0 top-50 translate-middle-y bg-white border rounded-circle shadow d-none d-md-block" 
-              style="z-index: 1; width: 40px; height: 40px; left: -20px;" 
-              onclick="scrollProducts(-1)">
-        <i class="bi bi-chevron-left"></i>
-      </button>
       
       <div class="products-row d-flex flex-nowrap overflow-hidden" style="scroll-behavior: smooth;">
-        <!-- Product 1 -->
-        <div class="col-md-4 flex-shrink-0 pe-3">
+        {{#each products}}
+        <div class="col-md-4 flex-shrink-0 pe-3 mb-4">
           <div class="card h-100 border-0 shadow-sm hover-effect">
             <div class="position-relative">
-              <img src="https://plus.unsplash.com/premium_photo-1668665110887-9f7e932dddeb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" 
-                   class="card-img-top" alt="Ankara Maxi Dress">
-              <div class="position-absolute top-0 end-0 bg-danger text-white px-2 py-1 m-2 small rounded">
-                -20%
-              </div>
-              <button class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
-                <i class="bi bi-eye-fill"></i> Quick View
-              </button>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-2">
-                <h5 class="card-title mb-0">Ankara Maxi Dress</h5>
-                <div class="text-success">
-                  <span class="fw-bold">₦18,500</span>
-                  <small class="text-decoration-line-through text-muted d-block">₦23,000</small>
-                </div>
-              </div>
-              <p class="card-text small text-muted">Handmade with premium Ankara fabric</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings small">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-half text-gold"></i>
-                  <span class="ms-1">(127)</span>
-                </div>
-                <button class="btn btn-sm btn-success">
-                  <i class="bi bi-cart-plus"></i> Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Product 2 -->
-        <div class="col-md-4 flex-shrink-0 pe-3">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <div class="position-relative">
-              <img src="https://images.unsplash.com/photo-1714124731489-7eb16af0ac91?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" 
-                   class="card-img-top" alt="Lace Buba and Wrapper">
+              {{#each this.images}}
+
+              {{#if this.is_primary}}
+              <img src="{{this.url}}" class="card-img-top" alt="Lace Buba and Wrapper">
+              {{/if}}
+              {{/each}}
+              <!-- If no primary image, use the first image as default -->
+              {{#unless (anyImageIsPrimary this.images)}}
+              {{#each this.images}}
+              {{#if @first}}
+              <img src="{{this.url}}" class="card-img-top" alt="Lace Buba and Wrapper">
+              {{/if}}
+              {{/each}}
+              {{/unless}}
               <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 small rounded">
                 New
               </div>
-              <button class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
+              <a href="/product/{{this.slug}}"
+                class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
                 <i class="bi bi-eye-fill"></i> Quick View
-              </button>
+              </a>
             </div>
             <div class="card-body">
               <div class="d-flex justify-content-between mb-2">
-                <h5 class="card-title mb-0">Lace Buba Set</h5>
+                <h5 class="card-title mb-0">{{this.name}}</h5>
                 <div class="text-success">
-                  <span class="fw-bold">₦32,000</span>
+                  <span class="fw-bold">₦{{this.price}}</span>
                 </div>
               </div>
-              <p class="card-text small text-muted">Elegant lace with silk accents</p>
+              <p class="card-text small text-muted">{{this.short_description}}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="ratings small">
                   <i class="bi bi-star-fill text-gold"></i>
@@ -268,133 +237,16 @@
                   <i class="bi bi-star-fill text-gold"></i>
                   <span class="ms-1">(89)</span>
                 </div>
-                <button class="btn btn-sm btn-success">
+                <button class="btn btn-sm btn-success add-to-cart" data-product-price="{{this.price}}" data-product-id="{{this.id}}">
                   <i class="bi bi-cart-plus"></i> Add
                 </button>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Product 3 -->
-        <div class="col-md-4 flex-shrink-0 pe-3">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <div class="position-relative">
-              <img src="https://plus.unsplash.com/premium_photo-1693243525780-e280c307387d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2xvdGhpbmclMjBuaWdlcmlhbnxlbnwwfHwwfHx8MA%3D%3D" 
-                   class="card-img-top" alt="Agbada Ensemble">
-              <button class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
-                <i class="bi bi-eye-fill"></i> Quick View
-              </button>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-2">
-                <h5 class="card-title mb-0">Agbada Ensemble</h5>
-                <div class="text-success">
-                  <span class="fw-bold">₦45,000</span>
-                </div>
-              </div>
-              <p class="card-text small text-muted">Premium hand-embroidered Agbada</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings small">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star text-gold"></i>
-                  <span class="ms-1">(42)</span>
-                </div>
-                <button class="btn btn-sm btn-success">
-                  <i class="bi bi-cart-plus"></i> Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Product 4 (hidden until next button clicked) -->
-        <div class="col-md-4 flex-shrink-0 pe-3">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <div class="position-relative">
-              <img src="https://images.unsplash.com/photo-1620932934121-64b011924f08?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" 
-                   class="card-img-top" alt="Ankara Maxi Dress">
-              <div class="position-absolute top-0 end-0 bg-danger text-white px-2 py-1 m-2 small rounded">
-                -20%
-              </div>
-              <button class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
-                <i class="bi bi-eye-fill"></i> Quick View
-              </button>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-2">
-                <h5 class="card-title mb-0">Ankara Maxi Dress</h5>
-                <div class="text-success">
-                  <span class="fw-bold">₦18,500</span>
-                  <small class="text-decoration-line-through text-muted d-block">₦23,000</small>
-                </div>
-              </div>
-              <p class="card-text small text-muted">Handmade with premium Ankara fabric</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings small">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-half text-gold"></i>
-                  <span class="ms-1">(127)</span>
-                </div>
-                <button class="btn btn-sm btn-success">
-                  <i class="bi bi-cart-plus"></i> Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Product 5 (hidden until next button clicked) -->
-        <div class="col-md-4 flex-shrink-0 pe-3">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <div class="position-relative">
-              <img src="https://plus.unsplash.com/premium_photo-1701180531315-9e87d292ce04?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" 
-                   class="card-img-top" alt="Lace Buba and Wrapper">
-              <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 small rounded">
-                New
-              </div>
-              <button class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
-                <i class="bi bi-eye-fill"></i> Quick View
-              </button>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-2">
-                <h5 class="card-title mb-0">Lace Buba Set</h5>
-                <div class="text-success">
-                  <span class="fw-bold">₦32,000</span>
-                </div>
-              </div>
-              <p class="card-text small text-muted">Elegant lace with silk accents</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings small">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <span class="ms-1">(89)</span>
-                </div>
-                <button class="btn btn-sm btn-success">
-                  <i class="bi bi-cart-plus"></i> Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+
+        {{/each}}
       </div>
-      
-      <button class="btn btn-sm position-absolute end-0 top-50 translate-middle-y bg-white border rounded-circle shadow d-none d-md-block" 
-              style="z-index: 1; width: 40px; height: 40px; right: -20px;" 
-              onclick="scrollProducts(1)">
-        <i class="bi bi-chevron-right"></i>
-      </button>
-    </div>
     
     <!-- Load More Button (for mobile) -->
     <div class="text-center mt-4 d-md-none">

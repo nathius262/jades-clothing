@@ -49,8 +49,11 @@
     <div class="modal-content border-0">
       <div class="modal-header border-0 pb-0">
         <div class="w-100 position-relative">
-          <input type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="Search for Nigerian attire..." style="font-size: 1.2rem; padding-left: 3rem;">
+          <form action="/search" method="get" class="needs-validation" novalidate>
+          <input type="text" name="searchTerm" class="form-control form-control-lg border-0 shadow-none" placeholder="Search for Nigerian attire..." style="font-size: 1.2rem; padding-left: 3rem;" required>
           <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 1.2rem;"></i>
+        </form>
+
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>

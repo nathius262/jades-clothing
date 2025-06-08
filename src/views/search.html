@@ -1,0 +1,178 @@
+<!-- Search Results Section -->
+<section class="container my-5">
+  <div class="row">
+    <!-- Search Header -->
+    <div class="col-12 mb-4">
+      <h2 class="mb-2" style="font-family: 'Playfair Display', serif;">Search Results</h2>
+      <p class="text-muted">Showing results for "<span class="fw-bold">{{searchQuery}}</span>"</p>
+      <p class="text-muted">Showing <span class="fw-bold">{{startItem}}-{{endItem}}</span> of <span class="fw-bold">{{totalItems}}</span> results</p>
+    </div>
+
+    <!-- Sidebar Filters -->
+    <aside class="col-md-3 mb-4 bg-light p-4 rounded">
+      <form method="GET" action="/search">
+        <h5 class="mb-3">Refine Search</h5>
+        
+        <!-- Search Term -->
+        <div class="mb-4">
+          <label class="form-label">Search Term</label>
+          <div class="input-group">
+            <input type="text" name="searchTerm" class="form-control" 
+                  placeholder="Search products..." value="{{currentFilters.searchTerm}}">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <select class="form-select" name="categories">
+            <option value="">All Categories</option>
+            {{#each globalEntities.categories}}
+              <option value="{{this.id}}"
+                {{#eq this.id ../currentFilters.categories}}selected{{/eq}}>
+                {{this.name}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+
+        <!-- Price Range -->
+        <div class="mb-3">
+          <label class="form-label">Price Range</label>
+          <div class="row g-2">
+            <div class="col">
+              <input type="number" name="min_price" class="form-control" 
+                    placeholder="Min" value="{{currentFilters.min_price}}">
+            </div>
+            <div class="col">
+              <input type="number" name="max_price" class="form-control" 
+                    placeholder="Max" value="{{currentFilters.max_price}}">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort Options -->
+        <div class="mb-3">
+          <label class="form-label">Sort By</label>
+          <select class="form-select" name="sort_by">
+            <option value="">Featured</option>
+            <option value="price" {{#eq currentFilters.sort_by 'price'}}selected{{/eq}}>
+              Price: Low to High
+            </option>
+            <option value="createdAt" {{#eq currentFilters.sort_by 'createdAt'}}selected{{/eq}}>
+              Newest Arrivals
+            </option>
+          </select>
+          <input type="hidden" name="sort_order" value="{{currentFilters.sort_order}}">
+        </div>
+
+        <input type="hidden" name="page" value="1">
+
+        <button type="submit" class="btn btn-success w-100 mb-2">
+          <i class="bi bi-funnel"></i> Apply Filters
+        </button>
+        <a href="/search" class="btn btn-outline-dark w-100">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+        </a>
+      </form>
+    </aside>
+
+    <!-- Search Results Grid -->
+    <div class="col-md-9">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="btn-group" role="group">
+            <a href="?{{queryString}}&view=grid" class="btn btn-outline-secondary {{#eq viewMode 'grid'}}active{{/eq}}">
+              <i class="bi bi-grid-fill"></i>
+            </a>
+            <a href="?{{queryString}}&view=list" class="btn btn-outline-secondary {{#eq viewMode 'list'}}active{{/eq}}">
+              <i class="bi bi-list-ul"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="row g-4">
+        {{#each products}}
+          <div class="col-md-4 col-6">
+            <div class="card h-100 border-0 shadow-sm hover-effect">
+              <div class="position-relative">
+                {{#each this.images}}
+                  {{#if this.is_primary}}
+                    <img src="{{this.url}}" class="card-img-top" alt="{{this.title}}">
+                  {{/if}}
+                {{/each}}
+                {{#unless (anyImageIsPrimary this.images)}}
+                  {{#each this.images}}
+                    {{#if @first}}
+                      <img src="{{this.url}}" class="card-img-top" alt="{{this.title}}">
+                    {{/if}}
+                  {{/each}}
+                {{/unless}}
+                <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 small rounded">
+                  New
+                </div>
+                <a href="/product/{{this.slug}}"
+                  class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
+                  <i class="bi bi-eye-fill"></i> Quick View
+                </a>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <h5 class="card-title mb-0">{{this.name}}</h5>
+                  <div class="text-success">
+                    <span class="fw-bold">₦{{this.price}}</span>
+                  </div>
+                </div>
+                <p class="card-text small text-muted">{{this.short_description}}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="ratings small">
+                    <i class="bi bi-star-fill text-gold"></i>
+                    <i class="bi bi-star-fill text-gold"></i>
+                    <i class="bi bi-star-fill text-gold"></i>
+                    <i class="bi bi-star-fill text-gold"></i>
+                    <i class="bi bi-star-half text-gold"></i>
+                    <span class="ms-1">(24)</span>
+                  </div>
+                  <button class="btn btn-sm btn-success add-to-cart" data-product-id="{{this.id}}">
+                    <i class="bi bi-cart-plus"></i> Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {{else}}
+          <div class="col-12 text-center py-5">
+            <i class="bi bi-search display-1 text-muted mb-4"></i>
+            <h3 class="mb-3">No products found</h3>
+            <p class="text-muted">Try adjusting your search or filter criteria</p>
+            <a href="/search" class="btn btn-success">Clear all filters</a>
+          </div>
+        {{/each}}
+      </div>
+
+      <!-- Pagination -->
+      {{#if totalPages}}
+      <nav aria-label="Search results pagination" class="mt-5">
+        <ul class="pagination justify-content-center">
+          <li class="page-item {{#eq currentPage 1}}disabled{{/eq}}">
+            <a class="page-link" href="?{{prevPageQuery}}" tabindex="-1">Previous</a>
+          </li>
+          {{#each pageNumbers}}
+            <li class="page-item {{#eq this ../currentPage}}active{{/eq}}">
+              <a class="page-link" href="?{{this.query}}">{{this.number}}</a>
+            </li>
+          {{/each}}
+          <li class="page-item {{#eq currentPage totalPages}}disabled{{/eq}}">
+            <a class="page-link" href="?{{nextPageQuery}}">Next</a>
+          </li>
+        </ul>
+      </nav>
+      {{/if}}
+    </div>
+  </div>
+</section>

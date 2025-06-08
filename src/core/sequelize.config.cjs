@@ -7,6 +7,9 @@ module.exports = {
     database: 'db.sqlite', // SQLite file name
     storage: './src/databases/db_test.sqlite', // Path to SQLite file
     dialect: 'sqlite',
+    define: {
+      collate: 'nocase' // Case-insensitive collation
+    }
     //logging: console.log,
     
   },

@@ -11,7 +11,7 @@ import staticFiles from "./src/config/staticFiles.js";
 import configureViewEngine from './src/config/viewEngine.js';
 import eventLogger from './src/middlewares/logger.middleware.js';
 import conditionalRendering from './src/middlewares/conditionalRender.middleware.js';
-
+import { adminAuthMiddleware } from './src/middlewares/adminAuth.middleware.js';
 import fetchGlobalEntitiesWithCache from './src/middlewares/fetchGlobalEntitiesWithCache.js';
 
 // Resolve __dirname for ES modules
@@ -43,6 +43,10 @@ app.use(staticFiles);
 
 
 app.use(fetchGlobalEntitiesWithCache);
+
+
+//confirm admin previlege for routes that begins with /admin...
+app.use(adminAuthMiddleware);
 
 
 //render header and footer section based on root or admin route

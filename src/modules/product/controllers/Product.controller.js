@@ -8,7 +8,7 @@ export const findAll = async (req, res) => {
           const products = await service.findAll({limit, offset});
           const categories = await categoryService.findAll();
   
-          res.render('./list', {
+          res.render('./product_list', {
               pageTitle: "Products Listing",
               products: products.products,
               categories,
@@ -26,7 +26,7 @@ export const findAll = async (req, res) => {
 export const findBySlug = async (req, res) => {
   try {
     const data = await service.findBySlug(req.params.slug);
-    res.status(200).render('./detail', {
+    res.status(200).render('./product_detail', {
       success: true,
       pageTitle: "Details",
       product: data,

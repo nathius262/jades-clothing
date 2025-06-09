@@ -6,7 +6,7 @@ export const findAll = async (req, res) => {
   try {
     const { page, limit, offset } = req.pagination;
     const data = await service.findAll({limit, offset});
-    res.status(200).render('./admins/list', {
+    res.status(200).render('admins/product_list', {
       success: true,
       pageTitle: "Admin",
       products: data.products,
@@ -26,7 +26,7 @@ export const findById = async (req, res) => {
     const data = await service.findById(req.params.id);
     const productCategoryIds = new Set(data.categories.map(category => category.id));
     console.log(productCategoryIds)
-    res.status(200).render('./admins/update', {
+    res.status(200).render('./admins/product_update', {
       success: true,
       pageTitle: "Update Record",
       product: data,
@@ -83,7 +83,7 @@ export const destroy = async (req, res) => {
 export const renderCreate = async (req, res) => {
   const categories = await category.findAll();
   try {
-    res.status(200).render('./admins/create', {
+    res.status(200).render('./admins/product_create', {
       categories: categories,
       pageTitle: "Create Product"
     });

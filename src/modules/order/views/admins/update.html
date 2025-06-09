@@ -1,0 +1,189 @@
+<link rel="stylesheet" href="/assets/css/sb-admin-2.css">
+<link href="/assets/css/sb-admin-2.min.css" rel="stylesheet">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {{> admin_sidebar}}
+  <!-- End of Sidebar -->
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content mt-5">
+
+      <!-- Topbar -->
+      {{> admin_navbar}}
+      <!-- End of Topbar -->
+
+      <!-- Begin Page Content -->
+      <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <h1 class="h3 mb-0 text-gray-800">Order Details</h1>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+          <div class="col-12 mb-4">
+            <!-- Order Details Card -->
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Order Details</h6>
+              </div>
+              <div class="card-body">
+
+                <!-- Order Information -->
+                <form id="update-order-form" action="/admin/order/{{order.id}}" method="POST">
+                  <div class="form-group">
+                    <label for="tracking_id">Tracking ID</label>
+                    <input type="text" class="form-control" id="tracking_id" value="{{order.tracking_id}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="customer_email">Customer Email</label>
+                    <input type="email" class="form-control" id="customer_email" value="{{order.customer_email}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="customer_phone">Customer Phone</label>
+                    <input type="text" class="form-control" id="customer_phone" value="{{order.customer_phone}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="total_amount">Total Amount</label>
+                    <input type="text" class="form-control" id="total_amount" value="{{order.total_amount}} {{order.currency}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="status">Order Status</label>
+                    <input type="text" class="form-control" id="status" value="{{order.status}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="paidAt">Paid At</label>
+                    <input type="text" class="form-control" id="paidAt" value="{{order.paidAt}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="paymentChannel">Payment Channel</label>
+                    <input type="text" class="form-control" id="paymentChannel" value="{{order.paymentChannel}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="gatewayResponse">Gateway Response</label>
+                    <input type="text" class="form-control" id="gatewayResponse" value="{{order.gatewayResponse}}" readonly>
+                  </div>
+
+                  <!-- Address Information -->
+                  <h5 class="mt-4">Address</h5>
+                  
+                  <div class="form-group">
+                    <label for="street_address">Street Address</label>
+                    <input type="text" class="form-control" id="street_address" value="{{order.address.street_address}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" value="{{order.address.city}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" class="form-control" id="state" value="{{order.address.state}}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" class="form-control" id="country" value="{{order.address.country}}" readonly>
+                  </div>
+
+                  <!-- Delivery Status -->
+                  <h5 class="mt-4">Delivery Status</h5>
+                  <div class="form-group">
+                    <label for="deliveryStatus">Update Delivery Status</label>
+                    <select name="status" class="form-control" id="deliveryStatus">
+                      <option value="pending" {{#if (eq order.delivery_status.[0].status 'pending')}}selected{{/if}}>Pending</option>
+                      <option value="shipped" {{#if (eq order.delivery_status.[0].status 'shipped')}}selected{{/if}}>Shipped</option>
+                      <option value="delivered" {{#if (eq order.delivery_status.[0].status 'delivered')}}selected{{/if}}>Delivered</option>
+                      <option value="cancelled" {{#if (eq order.delivery_status.[0].status 'cancelled')}}selected{{/if}}>Cancelled</option>
+                    </select>
+                  </div>
+
+                  <!-- Items -->
+                  <h5 class="mt-4">Items</h5>
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each order.items}}
+                      <tr>
+                        <td>{{this.product.name}}</td>
+                        <td>{{this.quantity}}</td>
+                        <td>{{this.price}}</td>
+                        <td>{{this.total_price}}</td>
+                      </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+
+                  <hr>
+                  <button type="submit" class="btn btn-primary">Update Delivery Status</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+  </div>
+  <!-- End of Content Wrapper -->
+</div>
+
+<script type="module">
+  import {messageAlert} from '/assets/js/utils.js'
+  let form = document.querySelector('#update-order-form')
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    let form_data = Object.fromEntries(new FormData(form))
+    let url = form.action;
+    let option = {
+      method:"PUT",
+      headers:{
+        "Content-Type":"Application/json"
+      },
+      body:JSON.stringify(form_data)
+    }
+
+    fetch(url, option)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        messageAlert(
+          title ="Alert!", 
+          message =data.message, 
+          redirectTo= `/admin/order/`+{{order.id}}, 
+          classType ="btn-info", 
+          btnType="btn-info",
+        )
+      })
+      .catch((err) => {
+        console.log('err', err)
+        messageAlert(
+          title ="Error!", 
+          message =err, 
+          redirectTo, 
+          classType ="btn-danger", 
+          btnType="btn-danger",
+        )
+      })
+  })
+</script>
+<!-- End of Page Wrapper -->
+<script src="/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="/assets/js/sb-admin-2.min.js"></script>

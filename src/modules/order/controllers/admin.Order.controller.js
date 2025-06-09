@@ -1,15 +1,22 @@
 import * as service from '../services/admin.Order.service.js';
 
 export const findAll = async (req, res) => {
+
+
   try {
-    const data = await service.findAll();
+    const {page, limit, offset} = req.pagination;
+    const data = await service.findAll({limit, offset});
     res.status(200).render('./admins/list', {
       success: true,
       pageTitle: "Admin",
-      orders: data,
+      orders: data.orders,
+      currentPage: page,
+      totalPages: data.totalPages,
+      totalItems: data.totalItems
     });
   } catch (err) {
-    res.status(500).render('error', { error: err.message });
+    console.log(err)
+    res.status(500).render('errors/500', { error: err.message });
   }
 };
 
@@ -19,26 +26,20 @@ export const findById = async (req, res) => {
     res.status(200).render('./admins/update', {
       success: true,
       pageTitle: "Update Record",
-      order: [data],
+      order: data,
     });
   } catch (err) {
-    res.status(404).render('error', { error: err.message });
+    console.log(err)
+    res.status(404).render('errors/500', { error: err.message });
   }
 };
 
-export const create = async (req, res) => {
-  try {
-    const data = await service.create(req.body);
-    res.status(201).json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 export const update = async (req, res) => {
   try {
-    const data = await service.update(req.params.id, req.body);
-    res.status(200).json({ success: true, data });
+    const {status} = req.body
+    const data = await service.update(req.params.id, status);
+    res.status(200).json({ success: true, data, message:"update successful" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -50,27 +51,5 @@ export const destroy = async (req, res) => {
     res.status(200).json({ success: true, message: 'Deleted successfully', data });
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }
-};
-
-export const renderCreate = async (req, res) => {
-  try {
-    res.status(200).render('./admins/create', {
-      pageTitle: "Create Order"
-    });
-  } catch (err) {
-    res.status(500).render('error', { error: err.message });
-  }
-};
-
-export const adminDashboard = async (req, res) => {
-  try {
-    const data = await service.adminMethod();
-    res.status(200).render('./admins/dashboard', {
-      pageTitle: "Admin Dashboard",
-      data,
-    });
-  } catch (err) {
-    res.status(500).render('error', { error: err.message });
   }
 };

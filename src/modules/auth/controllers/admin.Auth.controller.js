@@ -19,8 +19,10 @@ export const authenticateAdmin = async (req, res) => {
             }
         });
 
+        console.log(admin)
+
         if (!admin) {
-            return res.status(404).json({ message: 'Admin not found' });
+            return res.status(404).json({ message: 'Admin user not found' });
         }
 
 

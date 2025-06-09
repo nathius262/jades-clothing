@@ -11,7 +11,7 @@ export const findAll = async (req, res) => {
       pageTitle: "Admin",
       products: data.products,
       currentPage:page,
-      totalPage: data.totalPages,
+      totalPages: data.totalPages,
       totalItems: data.totalItems
     });
   } catch (err) {

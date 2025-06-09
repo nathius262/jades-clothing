@@ -67,40 +67,7 @@
                                 </table>
                                 
                                 <!-- Pagination Controls -->
-                                <div class="d-flex mt-5 justify-content-center">
-                                    <nav aria-label="Page navigation">
-                                        <ul class="pagination">
-                                            <!-- Previous Button -->
-                                            {{#if (gt currentProductPage 1)}}
-                                              <li class="page-item">
-                                                <a class="page-link" href="?page={{subtract currentProductPage 1}}">Previous</a>
-                                              </li>
-                                            {{else}}
-                                              <li class="page-item disabled">
-                                                <a class="page-link">Previous</a>
-                                              </li>
-                                            {{/if}}
-
-                                            <!-- Page Numbers -->
-                                            {{#each (range 1 totalProductPages)}}
-                                              <li class="page-item {{#if (eq this ../currentProductPage)}}active{{/if}}">
-                                                <a class="page-link" href="?page={{this}}">{{this}}</a>
-                                              </li>
-                                            {{/each}}
-
-                                            <!-- Next Button -->
-                                            {{#if (lt currentProductPage totalProductPages)}}
-                                              <li class="page-item">
-                                                <a class="page-link" href="?page={{add currentProductPage 1}}">Next</a>
-                                              </li>
-                                            {{else}}
-                                              <li class="page-item disabled">
-                                                <a class="page-link">Next</a>
-                                              </li>
-                                            {{/if}}
-                                          </ul>
-                                    </nav>
-                                </div>
+                                {{> pagination}}
                             </div>
                         </div>
                     </div>

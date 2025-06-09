@@ -25,7 +25,6 @@ export const index_view = async (req, res) => {
 
         const products = await productService.findAll({offset, limit})
 
-        console.log(products)
 
         //console.log(result.rows)
         res.render('index', {

@@ -6,7 +6,7 @@ export const findAll = async (req, res) => {
   try {
     const {page, limit, offset} = req.pagination;
     const data = await service.findAll({limit, offset});
-    res.status(200).render('./admins/list', {
+    res.status(200).render('./admins/order_list', {
       success: true,
       pageTitle: "Admin",
       orders: data.orders,
@@ -23,7 +23,7 @@ export const findAll = async (req, res) => {
 export const findById = async (req, res) => {
   try {
     const data = await service.findById(req.params.id);
-    res.status(200).render('./admins/update', {
+    res.status(200).render('./admins/order_update', {
       success: true,
       pageTitle: "Update Record",
       order: data,

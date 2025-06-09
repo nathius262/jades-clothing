@@ -8,7 +8,7 @@ export const findAll = async (req, res) => {
 
     const { data, totalPages } = await service.findAll({ limit, offset });
 
-    res.render('admins/list', {
+    res.render('admins/user_list', {
       users:data,
       currentPage: page,
       totalPages,
@@ -23,7 +23,7 @@ export const findAll = async (req, res) => {
 export const findById = async (req, res) => {
   try {
     const data = await service.findById(req.params.id);
-    res.status(200).render('admins/update', {
+    res.status(200).render('admins/user_update', {
       success: true,
       pageTitle: "Update Record",
       user: data
@@ -62,7 +62,7 @@ export const destroy = async (req, res) => {
 
 export const renderCreate = async (req, res) => {
   try {
-    res.status(200).render('admins/create', {
+    res.status(200).render('admins/user_create', {
       pageTitle: "Create User"
     });
   } catch (err) {

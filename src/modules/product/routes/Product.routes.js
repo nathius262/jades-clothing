@@ -9,7 +9,7 @@ const router = express.Router();
 router.use(useModuleViews('product'));
 
 // Public view routes
-router.get('/', controller.findAll);
+router.get('/', withPagination(9), controller.findAll);
 router.get('/:slug', controller.findBySlug);
 
 export default router;

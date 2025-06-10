@@ -4,7 +4,7 @@ import * as categoryService from '../../category/services/Category.service.js';
 
 export const findAll = async (req, res) => {
   try {
-          const { page, limit, offset } = req.query;
+          const { page, limit, offset } = req.pagination;
           const products = await service.findAll({limit, offset});
           const categories = await categoryService.findAll();
   
@@ -13,7 +13,7 @@ export const findAll = async (req, res) => {
               products: products.products,
               categories,
               currentPage:page,
-              totalPage: products.totalPages,
+              totalPages: products.totalPages,
               totalItems: products.totalItems
           })
       } catch (err) {

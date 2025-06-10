@@ -2,7 +2,7 @@ import db from '../../../models/index.cjs';
 
 
 
-export const findAll = async ({offset, limit}) => {
+export const findAll = async ({limit, offset}) => {
   try {
     
 

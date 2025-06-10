@@ -1,31 +1,32 @@
 <!-- Hero Section -->
-  <section class="py-5 bg-hero">
-    <div class="container hero-content">
-      <h1 class="display-4 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">Discover Timeless Nigerian Fashion</h1>
-      <p class="lead mb-4">Agbada. Ankara. Lace. All in one place — Jade's Clothing.</p>
-      <a href="/product" class="btn btn-gold btn-lg px-4 py-2">Shop Now <i class="bi bi-arrow-right ms-2"></i></a>
-    </div>
-  </section>
+<section class="py-5 bg-hero">
+  <div class="container hero-content">
+    <h1 class="display-4 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">Discover Timeless Nigerian
+      Fashion</h1>
+    <p class="lead mb-4">Agbada. Ankara. Lace. All in one place — Jade's Clothing.</p>
+    <a href="/product" class="btn btn-gold btn-lg px-4 py-2">Shop Now <i class="bi bi-arrow-right ms-2"></i></a>
+  </div>
+</section>
 
-  <!-- Featured Categories -->
-  <section class="container my-5 py-4">
-    <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Explore Our Collections</h2>
-    <div class="row g-4">
-      {{#each globalEntities.categories}}
-      <div class="col-md-3">
-        <div class="card border-0 h-100">
-          <img src="{{this.image_url}}" class="category-img" alt="{{this.name}}">
-          <div class="card-body text-center">
-            <h5 class="card-title">{{this.name}}</h5>
-            <a href="/search?categories={{this.id}}" class="btn btn-outline-success btn-sm">View Collection</a>
-          </div>
+<!-- Featured Categories -->
+<section class="container my-5 py-4">
+  <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Explore Our Collections</h2>
+  <div class="row g-4">
+    {{#each globalEntities.categories}}
+    <div class="col-md-3">
+      <div class="card border-0 h-100">
+        <img src="{{this.image_url}}" class="category-img" alt="{{this.name}}">
+        <div class="card-body text-center">
+          <h5 class="card-title">{{this.name}}</h5>
+          <a href="/search?categories={{this.id}}" class="btn btn-outline-success btn-sm">View Collection</a>
         </div>
       </div>
-      {{/each}}
     </div>
-  </section>
+    {{/each}}
+  </div>
+</section>
 
-  <!-- Featured Products
+<!-- Featured Products
   <section class="bg-white py-5 border-top">
     <div class="container">
       <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Featured Products</h2>
@@ -95,31 +96,32 @@
     </div>
   </section> -->
 
-  <!-- Nigerian Heritage Section -->
+<!-- Nigerian Heritage Section -->
 <section class="py-5 my-5">
   <div class="container">
     <div class="row align-items-center g-5">
       <!-- Image Column -->
       <div class="col-lg-6">
         <div class="position-relative">
-          <img src="https://images.unsplash.com/photo-1687052034884-391a9e5ea8dd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA4fHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww" 
-               class="img-fluid w-100 rounded-3 shadow-lg" 
-               alt="Nigerian couple in traditional attire">
+          <img
+            src="https://images.unsplash.com/photo-1687052034884-391a9e5ea8dd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA4fHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww"
+            class="img-fluid w-100 rounded-3 shadow-lg" alt="Nigerian couple in traditional attire">
           <div class="position-absolute bottom-0 start-0 bg-success text-white px-3 py-2 m-3 rounded">
             <i class="bi bi-heart-fill me-2"></i> Authentic Nigerian Design
           </div>
         </div>
       </div>
-      
+
       <!-- Text Column -->
       <div class="col-lg-6">
         <h2 class="display-5 mb-4" style="font-family: 'Playfair Display', serif;">
           Celebrating Nigeria's <span class="text-success">Rich Cultural Heritage</span>
         </h2>
         <p class="lead mb-4">
-          At Jade's Clothing, we preserve the artistry of Nigerian fashion while infusing contemporary elegance. Each piece tells a story of our vibrant culture.
+          At Jade's Clothing, we preserve the artistry of Nigerian fashion while infusing contemporary elegance. Each
+          piece tells a story of our vibrant culture.
         </p>
-        
+
         <div class="d-flex mb-4">
           <div class="me-4">
             <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-2">
@@ -128,7 +130,7 @@
             <h5 class="h6">Handcrafted</h5>
             <p class="small">Meticulously tailored by skilled artisans</p>
           </div>
-          
+
           <div>
             <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-2">
               <i class="bi bi-globe-africa text-success" style="font-size: 1.5rem;"></i>
@@ -137,7 +139,7 @@
             <p class="small">Made with genuine Nigerian fabrics</p>
           </div>
         </div>
-        
+
         <a href="/about" class="btn btn-outline-success px-4 py-2">
           Discover Our Story <i class="bi bi-arrow-right ms-2"></i>
         </a>
@@ -167,10 +169,10 @@
 
     <!-- Product Row with Navigation -->
     <div class="position-relative">
-      
-      <div class="products-row d-flex flex-nowrap overflow-hidden" style="scroll-behavior: smooth;">
+      <div class="products-row row">
+        <!-- Product 2 -->
         {{#each products}}
-        <div class="col-md-4 flex-shrink-0 pe-3 mb-4">
+        <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
           <div class="card h-100 border-0 shadow-sm hover-effect">
             <div class="position-relative">
               {{#each this.images}}
@@ -212,7 +214,8 @@
                   <i class="bi bi-star-fill text-gold"></i>
                   <span class="ms-1">(89)</span>
                 </div>
-                <button class="btn btn-sm btn-success add-to-cart" data-product-price="{{this.price}}" data-product-id="{{this.id}}">
+                <button class="btn btn-sm btn-success add-to-cart" data-product-price="{{this.price}}"
+                  data-product-id="{{this.id}}">
                   <i class="bi bi-cart-plus"></i> Add
                 </button>
               </div>
@@ -221,15 +224,9 @@
         </div>
 
         {{/each}}
+
       </div>
-    
-    <!-- Load More Button (for mobile) -->
-    <div class="text-center mt-4 d-md-none">
-      <button class="btn btn-outline-success" onclick="loadMoreProducts()">
-        Load More <i class="bi bi-arrow-down ms-2"></i>
-      </button>
     </div>
-  </div>
 </section>
 
 
@@ -257,104 +254,104 @@
   </div>
 </section>-->
 
-  <!-- Why Jade's Clothing -->
-  <section class="py-5 border-top">
-    <div class="container text-center">
-      <h3 class="mb-4 text-success" style="font-family: 'Playfair Display', serif;">Why Shop with Jade's?</h3>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="feature-icon">
-            <i class="bi bi-globe2 display-6 text-gold"></i>
-          </div>
-          <h5 class="mt-3">Worldwide Shipping</h5>
-          <p>Fast delivery across Nigeria, UK, US, and more.</p>
+<!-- Why Jade's Clothing -->
+<section class="py-5 border-top">
+  <div class="container text-center">
+    <h3 class="mb-4 text-success" style="font-family: 'Playfair Display', serif;">Why Shop with Jade's?</h3>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-icon">
+          <i class="bi bi-globe2 display-6 text-gold"></i>
         </div>
-        <div class="col-md-4">
-          <div class="feature-icon">
-            <i class="bi bi-star-fill display-6 text-gold"></i>
-          </div>
-          <h5 class="mt-3">Authentic Designs</h5>
-          <p>Made by local artisans with top-quality fabrics.</p>
+        <h5 class="mt-3">Worldwide Shipping</h5>
+        <p>Fast delivery across Nigeria, UK, US, and more.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-icon">
+          <i class="bi bi-star-fill display-6 text-gold"></i>
         </div>
-        <div class="col-md-4">
-          <div class="feature-icon">
-            <i class="bi bi-lock-fill display-6 text-gold"></i>
-          </div>
-          <h5 class="mt-3">Secure Checkout</h5>
-          <p>Shop with confidence — encrypted & protected.</p>
+        <h5 class="mt-3">Authentic Designs</h5>
+        <p>Made by local artisans with top-quality fabrics.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-icon">
+          <i class="bi bi-lock-fill display-6 text-gold"></i>
+        </div>
+        <h5 class="mt-3">Secure Checkout</h5>
+        <p>Shop with confidence — encrypted & protected.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Our Values -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center playfair-font mb-5">Our Core Values</h2>
+    <div class="row g-4">
+      <div class="col-md-4 text-center">
+        <div class="values-icon mb-3">
+          <i class="bi bi-heart-fill"></i>
+        </div>
+        <h4 class="playfair-font">Cultural Preservation</h4>
+        <p>We honor traditional Nigerian textiles and techniques while innovating for contemporary tastes.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="values-icon mb-3">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <h4 class="playfair-font">Artisan Empowerment</h4>
+        <p>Every purchase supports Nigerian tailors, weavers, and craftspeople with fair wages.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="values-icon mb-3">
+          <i class="bi bi-tree-fill"></i>
+        </div>
+        <h4 class="playfair-font">Sustainable Practices</h4>
+        <p>We prioritize eco-friendly materials and processes to minimize our environmental impact.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="bg-green text-white py-5">
+  <div class="container text-center">
+    <h3 class="mb-3">Join Our Fashion Community</h3>
+    <p class="mb-4">Subscribe to get updates on new arrivals, special offers and Nigerian fashion tips</p>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <input type="email" class="form-control" placeholder="Your email address">
+          <button class="btn btn-gold" type="button">Subscribe</button>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-    <!-- Our Values -->
-  <section class="py-5">
-    <div class="container">
-      <h2 class="text-center playfair-font mb-5">Our Core Values</h2>
-      <div class="row g-4">
-        <div class="col-md-4 text-center">
-          <div class="values-icon mb-3">
-            <i class="bi bi-heart-fill"></i>
-          </div>
-          <h4 class="playfair-font">Cultural Preservation</h4>
-          <p>We honor traditional Nigerian textiles and techniques while innovating for contemporary tastes.</p>
-        </div>
-        <div class="col-md-4 text-center">
-          <div class="values-icon mb-3">
-            <i class="bi bi-people-fill"></i>
-          </div>
-          <h4 class="playfair-font">Artisan Empowerment</h4>
-          <p>Every purchase supports Nigerian tailors, weavers, and craftspeople with fair wages.</p>
-        </div>
-        <div class="col-md-4 text-center">
-          <div class="values-icon mb-3">
-            <i class="bi bi-tree-fill"></i>
-          </div>
-          <h4 class="playfair-font">Sustainable Practices</h4>
-          <p>We prioritize eco-friendly materials and processes to minimize our environmental impact.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Newsletter -->
-  <section class="bg-green text-white py-5">
-    <div class="container text-center">
-      <h3 class="mb-3">Join Our Fashion Community</h3>
-      <p class="mb-4">Subscribe to get updates on new arrivals, special offers and Nigerian fashion tips</p>
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="input-group">
-            <input type="email" class="form-control" placeholder="Your email address">
-            <button class="btn btn-gold" type="button">Subscribe</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <script>
+<script>
   let currentPosition = 0;
   const productWidth = 33.33; // Each product takes ~1/3 of width
-  
+
   function scrollProducts(direction) {
     const container = document.querySelector('.products-row');
     const productCount = container.children.length;
     const visibleCount = 3; // Number of products visible at once
-    
+
     // Calculate new position
     currentPosition = Math.max(0, Math.min(
       currentPosition + (direction * visibleCount),
       productCount - visibleCount
     ));
-    
+
     // Scroll to new position
     container.scrollTo({
       left: currentPosition * (container.scrollWidth / productCount),
       behavior: 'smooth'
     });
   }
-  
+
   function loadMoreProducts() {
     // For mobile - you could implement AJAX loading here
     // For demo purposes, we'll just show the next set

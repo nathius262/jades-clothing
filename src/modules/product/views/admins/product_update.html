@@ -174,7 +174,7 @@
       formData.append('images', files[i]);
     }
 
-    fetch(`/admin/upload/${productId}`, {
+    fetch(`/admin/product/upload/${productId}`, {
       method: 'POST',
       body: formData,
     })

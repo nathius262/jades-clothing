@@ -1,6 +1,8 @@
 import * as service from '../services/admin.Product.service.js';
 import * as category from '../../category/services/admin.Category.service.js';
 import db from '../../../models/index.cjs';
+import { getPublicIdFromUrl } from '../utils/utils.js';
+import cloudinary from '../../../config/cloudinaryConfig.js';
 
 export const findAll = async (req, res) => {
   try {
@@ -114,7 +116,7 @@ export const uploadImages = async (req, res) => {
       // const imageUrl = cloudinaryUploadFunction(file); // Example function
       return db.Image.create({
         url: file.path, // Or the cloud URL
-        productId: product.id
+        product_id: product.id
       });
     });
 
@@ -122,7 +124,7 @@ export const uploadImages = async (req, res) => {
     await Promise.all(imagePromises);
 
     // Fetch updated product images
-    const updatedImages = await db.Image.findAll({ where: { productId } });
+    const updatedImages = await db.Image.findAll({ where: { product_id:productId } });
 
     res.status(200).json({ images: updatedImages });
 

@@ -1,5 +1,6 @@
 import db from '../../../models/index.cjs';
 import { getPublicIdFromUrl } from '../../product/utils/utils.js';
+import cloudinary from '../../../config/cloudinaryConfig.js';
 
 
 

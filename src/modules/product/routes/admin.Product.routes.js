@@ -23,7 +23,7 @@ router.route('/:id')
   .delete(controller.destroy);
 
 router.post('/upload/:productId', upload.array('images', 5), controller.uploadImages);
-router.delete('/product/delete-image/:id', controller.deleteImage)
+router.delete('/delete-image/:id', controller.deleteImage)
 
 
 export default router;

@@ -37,38 +37,6 @@ export const index_view = async (req, res) => {
     }
 };
 
-export const shop_view = async (req, res) => {
-    try {
-        const { page, limit, offset } = req.query;
-        const products = await productService.findAll({limit, offset});
-        const categories = await categoryService.findAll();
-
-        res.render('shop', {
-            pageTitle: "Shop",
-            products: products.products,
-            categories,
-            currentPage:page,
-            totalPage: products.totalPages,
-            totalItems: products.totalItems
-        })
-    } catch (err) {
-        console.log(err)
-        res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
-        
-    }
-};
-
-export const detail_view = async (req, res) => {
-    try {
-        res.render('detail', {
-            pageTitle: "detail"
-        })
-    } catch (err) {
-        res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
-        
-    }
-};
-
 export const about_view = async (req, res) => {
     try {
         res.status(200).render('about', {pageTitle: "About"})

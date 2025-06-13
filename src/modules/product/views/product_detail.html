@@ -1,3 +1,25 @@
+<style>
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .thumbnail-image {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .thumbnail-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .active-thumbnail {
+    border: 2px solid #28a745 !important;
+    /* Bootstrap success color */
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+  }
+</style>
+
 <section class="container my-5">
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
@@ -9,50 +31,44 @@
   </nav>
 
   <div class="row g-5">
-    <!-- Product Image -->
+    <!-- Product Image Gallery -->
     <div class="col-md-6">
-      
       <div class="row">
+        <!-- Main Image Display -->
         <div class="col-12 mt-1 mb-4">
-        <!-- Check if any image is marked as primary -->
-        {{#each product.images}}
-        {{#if this.is_primary}}
-        <img src="{{this.url}}" 
-            class="img-fluid rounded shadow" 
-            alt="{{product.name}}">
+          <!-- Primary image or first image as default (initially shown) -->
+          {{#each product.images}}
+          {{#if this.is_primary}}
+          <img id="main-product-image" src="{{this.url}}" class="img-fluid rounded shadow" alt="{{product.name}}"
+            data-image-id="{{this.id}}">
+          {{/if}}
+          {{/each}}
 
-        {{/if}}
-        {{/each}}
+          {{#unless (anyImageIsPrimary product.images)}}
+          {{#each product.images}}
+          {{#if @first}}
+          <img id="main-product-image" src="{{this.url}}" class="img-fluid rounded shadow" alt="{{product.name}}"
+            data-image-id="{{this.id}}">
+          {{/if}}
+          {{/each}}
+          {{/unless}}
+        </div>
 
-        <!-- If no primary image, use the first image as default -->
-        {{#unless (anyImageIsPrimary product.images)}}
-        {{#each product.images}}
-        {{#if @first}}
-        <img src="{{this.url}}" 
-            class="img-fluid rounded shadow" 
-            alt="{{product.name}}">
-        {{/if}}
-        {{/each}}
-        {{/unless}}
-      </div>
-
-      <div class="col-12">
-        <div class="row ">
-            <!-- Loop through images for hover, displaying those that are not primary -->
+        <!-- Thumbnail Gallery -->
+        <div class="col-12">
+          <div class="row">
             {{#each product.images}}
-            {{#unless product.is_primary}}
-            <div class="col-4">
-              <img src="{{this.url}}" alt="{{this.short_description}} Alt"
-                class="img-fluid w-100 mb-3" style="object-fit: cover; object-position: center;">
+            <div class="col-4 mb-3">
+              <img src="{{this.url}}" alt="{{product.name}} - Image {{@index}}"
+                class="img-fluid container thumbnail-image cursor-pointer {{#if this.is_primary}}active-thumbnail{{/if}}"
+                style="object-fit: cover; height: 200px; width: 100%;" data-full-image="{{this.url}}" data-image-id="{{this.id}}">
             </div>
-            {{/unless}}
             {{/each}}
-
-
+          </div>
         </div>
       </div>
-      </div>
     </div>
+
 
     <!-- Product Info -->
     <div class="col-md-6">
@@ -79,7 +95,7 @@
       <!-- Quantity Controls -->
       <div class="d-grid my-4">
         <span class="fw-bold">Quantity:</span>
-        <div class="quantity-controls" data-product-id="{{product.id}}">        
+        <div class="quantity-controls" data-product-id="{{product.id}}">
           <button class="btn btn-sm btn-secondary decrement-btn">-</button>
           <input type="number" class="quantity-input form-control d-inline w-25" value="1" min="1">
           <button class="btn btn-sm btn-secondary increment-btn">+</button>
@@ -87,7 +103,8 @@
 
       </div>
       <!-- Add to Cart -->
-      <button class="btn btn-success btn-lg add-to-cart" data-product-price="{{product.price}}" data-product-id="{{product.id}}">
+      <button class="btn btn-success btn-lg add-to-cart" data-product-price="{{product.price}}"
+        data-product-id="{{product.id}}">
         <i class="bi bi-cart-plus"></i> Add to Cart
       </button>
     </div>
@@ -98,13 +115,16 @@
     <div class="col-md-12">
       <ul class="nav nav-tabs" id="productTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button">Description</button>
+          <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc"
+            type="button">Description</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">Reviews</button>
+          <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews"
+            type="button">Reviews</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button">Shipping Info</button>
+          <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping"
+            type="button">Shipping Info</button>
         </li>
       </ul>
       <div class="tab-content border border-top-0 p-4" id="productTabContent">
@@ -122,3 +142,23 @@
     </div>
   </div>
 </section>
+
+<!--SCRIPT-->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const mainImage = document.getElementById('main-product-image');
+    const thumbnails = document.querySelectorAll('.thumbnail-image');
+
+    thumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', function () {
+        // Update main image source
+        mainImage.src = this.dataset.fullImage;
+        mainImage.dataset.imageId = this.dataset.imageId;
+
+        // Update active thumbnail styling
+        thumbnails.forEach(t => t.classList.remove('active-thumbnail'));
+        this.classList.add('active-thumbnail');
+      });
+    });
+  });
+</script>

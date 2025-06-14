@@ -1,16 +1,86 @@
+<style>
+  .product-image-container:hover .main-img {
+    opacity: 0 !important;
+  }
+  
+  .product-image-container:hover .alt-img {
+    opacity: 1 !important;
+    transform: scale(1.2) !important; /* 20% zoom */
+  }
+  
+  .product-image-container:hover .flash-overlay {
+    animation: flash 0.4s ease;
+  }
+  
+  @keyframes flash {
+    0% { opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+</style>
+
+
 <!-- Hero Section -->
 <section class="py-5 bg-hero">
   <div class="container hero-content">
-    <h1 class="display-4 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">Discover Timeless Nigerian
-      Fashion</h1>
+    <h1 class="display-4 fw-bold mb-4">Discover Timeless<br>Nigerian Fashion</h1>
     <p class="lead mb-4">Agbada. Ankara. Lace. All in one place — Jade's Clothing.</p>
-    <a href="/product" class="btn btn-gold btn-lg px-4 py-2">Shop Now <i class="bi bi-arrow-right ms-2"></i></a>
+    <a href="/product" class="btn btn-gold btn-lg px-4 py-2 rounded-0">Shop Now <i
+        class="bi bi-arrow-right ms-2"></i></a>
   </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="row justify-content-center align-items-end mb-5">
+      <div class="col-md-12 text-center" style="font-weight: 400 !important;">
+        <h2 class="display-5 mb-3">
+          Latest
+        </h2>
+      </div>
+    </div>
+
+    <div class="position-relative">
+  <div class="products-row row">
+    {{#each products}}
+    <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
+      <div class="card h-100 border-0 shadow-0 hover-effect">
+        <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
+          <!-- Main Image -->
+          {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
+            <img src="{{mainImg.url}}" class="main-img" 
+                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:all 0.5s ease;z-index:1;">
+          {{/with}}
+          
+          <!-- Alternate Image with Zoom -->
+          {{#with (findAlternateImage this.images) as |altImg|}}
+            <img src="{{altImg.url}}" class="alt-img" 
+                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transform:scale(1);transition:all 0.5s ease;z-index:2;">
+          {{/with}}
+          
+          <!-- Flash Overlay -->
+          <div class="flash-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;"></div>
+        </div>
+        <div class="card-body px-0">
+          <div class="d-grid justify-content-start mb-2 px-0">
+            <h5 class="card-title mb-0 text-capitalize">{{this.name}}</h5>
+            <div class="">
+              <span class="fw-light mt-1">₦{{this.price}}</span>
+            </div>
+          </div>
+          </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
 </section>
 
 <!-- Featured Categories -->
 <section class="container my-5 py-4">
-  <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Explore Our Collections</h2>
+  <h2 class="mb-4 text-center">Explore Our Collections</h2>
   <div class="row g-4">
     {{#each globalEntities.categories}}
     <div class="col-md-3">
@@ -26,75 +96,6 @@
   </div>
 </section>
 
-<!-- Featured Products
-  <section class="bg-white py-5 border-top">
-    <div class="container">
-      <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Featured Products</h2>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card h-100">
-            <img src="https://images.unsplash.com/photo-1739566583874-43138d96d507?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODd8fGNsb3RoaW5nJTIwbmlnZXJpYW58ZW58MHx8MHx8fDA%3D" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Premium Ankara Dress</h5>
-              <p class="card-text text-success">₦25,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-half text-gold"></i>
-                  <span class="ms-1">(24)</span>
-                </div>
-                <a href="#" class="btn btn-success btn-sm">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <img src="https://images.unsplash.com/photo-1693479728644-653cb3ab1088?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTIwfHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Premium Ankara Dress</h5>
-              <p class="card-text text-success">₦25,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-half text-gold"></i>
-                  <span class="ms-1">(24)</span>
-                </div>
-                <a href="#" class="btn btn-success btn-sm">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="card h-100">
-            <img src="https://images.unsplash.com/photo-1636342518132-acefbb5dba97?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI4fHxjbG90aGluZyUyMG5pZ2VyaWFufGVufDB8fDB8fHww" class="card-img-top" alt="Ankara Dress">
-            <div class="card-body">
-              <h5 class="card-title">Premium Ankara Dress</h5>
-              <p class="card-text text-success">₦25,000</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-half text-gold"></i>
-                  <span class="ms-1">(24)</span>
-                </div>
-                <a href="#" class="btn btn-success btn-sm">Add to Cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
 
 <!-- Nigerian Heritage Section -->
 <section class="py-5 my-5">
@@ -103,9 +104,8 @@
       <!-- Image Column -->
       <div class="col-lg-6">
         <div class="position-relative">
-          <img
-            src="/assets/img/a1.jpg"
-            class="img-fluid w-100 rounded-3 shadow-lg" alt="Nigerian couple in traditional attire">
+          <img src="/assets/img/a1.jpg" class="img-fluid w-100 rounded-3 shadow-lg"
+            alt="Nigerian couple in traditional attire">
           <div class="position-absolute bottom-0 start-0 bg-success text-white px-3 py-2 m-3 rounded">
             <i class="bi bi-heart-fill me-2"></i> Authentic Nigerian Design
           </div>
@@ -114,7 +114,7 @@
 
       <!-- Text Column -->
       <div class="col-lg-6">
-        <h2 class="display-5 mb-4" style="font-family: 'Playfair Display', serif;">
+        <h2 class="display-5 mb-4">
           Celebrating Nigeria's <span class="text-success">Rich Cultural Heritage</span>
         </h2>
         <p class="lead mb-4">
@@ -155,7 +155,7 @@
     <!-- Section Header -->
     <div class="row justify-content-between align-items-end mb-5">
       <div class="col-md-8">
-        <h2 class="display-5 mb-3" style="font-family: 'Playfair Display', serif;">
+        <h2 class="display-5 mb-3">
           <span class="text-success">Nigerian</span> Customer Favorites
         </h2>
         <p class="lead">The styles our community loves most this season</p>
@@ -167,97 +167,38 @@
       </div>
     </div>
 
-    <!-- Product Row with Navigation -->
-    <div class="position-relative">
-      <div class="products-row row">
-        <!-- Product 2 -->
-        {{#each products}}
-        <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
-          <div class="card h-100 border-0 shadow-sm hover-effect">
-            <div class="position-relative">
-              {{#each this.images}}
-
-              {{#if this.is_primary}}
-              <img src="{{this.url}}" class="card-img-top" alt="Lace Buba and Wrapper">
-              {{/if}}
-              {{/each}}
-              <!-- If no primary image, use the first image as default -->
-              {{#unless (anyImageIsPrimary this.images)}}
-              {{#each this.images}}
-              {{#if @first}}
-              <img src="{{this.url}}" class="card-img-top" alt="Lace Buba and Wrapper">
-              {{/if}}
-              {{/each}}
-              {{/unless}}
-              <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 small rounded">
-                New
-              </div>
-              <a href="/product/{{this.slug}}"
-                class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
-                <i class="bi bi-eye-fill"></i> Quick View
-              </a>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between mb-2">
-                <h5 class="card-title mb-0">{{this.name}}</h5>
-                <div class="text-success">
-                  <span class="fw-bold">₦{{this.price}}</span>
-                </div>
-              </div>
-              <p class="card-text small text-muted">{{this.short_description}}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="ratings small">
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <i class="bi bi-star-fill text-gold"></i>
-                  <span class="ms-1">(89)</span>
-                </div>
-                <button class="btn btn-sm btn-success add-to-cart" data-product-price="{{this.price}}"
-                  data-product-id="{{this.id}}">
-                  <i class="bi bi-cart-plus"></i> Add
-                </button>
-              </div>
-            </div>
-          </div>
+<div class="position-relative">
+  <div class="products-row row">
+    {{#each products}}
+    <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
+      <div class="card h-100 border-0 shadow-0 hover-effect">
+        <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
+          <!-- Main Image -->
+          {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
+            <img src="{{mainImg.url}}" class="main-img" 
+                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:opacity 0.5s ease;z-index:1;">
+          {{/with}}
+          
+          <!-- Alternate Image -->
+          {{#with (findAlternateImage this.images) as |altImg|}}
+            <img src="{{altImg.url}}" class="alt-img" 
+                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transition:opacity 0.5s ease;z-index:2;">
+          {{/with}}
+          
+          <!-- Flash Overlay -->
+          <div class="flash-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;"></div>
         </div>
-
-        {{/each}}
-
       </div>
     </div>
-</section>
-
-
-
-
-<!-- Special Offer Banner 
-<section class="py-5 bg-success text-white">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <h3 class="display-6 mb-3" style="font-family: 'Playfair Display', serif;">
-          Limited Time Offer!
-        </h3>
-        <p class="lead mb-0">
-          Get 15% off your first order when you sign up for our newsletter. 
-          <span class="d-block mt-2">Use code: <strong>JADES15</strong></span>
-        </p>
-      </div>
-      <div class="col-md-4 text-md-end mt-3 mt-md-0">
-        <button class="btn btn-light btn-lg px-4 text-success">
-          Claim Offer <i class="bi bi-gift-fill ms-2"></i>
-        </button>
-      </div>
-    </div>
+    {{/each}}
   </div>
-</section>-->
+</div>
+</section>
 
 <!-- Why Jade's Clothing -->
 <section class="py-5 border-top">
   <div class="container text-center">
-    <h3 class="mb-4 text-success" style="font-family: 'Playfair Display', serif;">Why Shop with Jade's?</h3>
+    <h3 class="mb-4 text-success">Why Shop with Jade's?</h3>
     <div class="row g-4">
       <div class="col-md-4">
         <div class="feature-icon">
@@ -329,32 +270,3 @@
     </div>
   </div>
 </section>
-
-<script>
-  let currentPosition = 0;
-  const productWidth = 33.33; // Each product takes ~1/3 of width
-
-  function scrollProducts(direction) {
-    const container = document.querySelector('.products-row');
-    const productCount = container.children.length;
-    const visibleCount = 3; // Number of products visible at once
-
-    // Calculate new position
-    currentPosition = Math.max(0, Math.min(
-      currentPosition + (direction * visibleCount),
-      productCount - visibleCount
-    ));
-
-    // Scroll to new position
-    container.scrollTo({
-      left: currentPosition * (container.scrollWidth / productCount),
-      behavior: 'smooth'
-    });
-  }
-
-  function loadMoreProducts() {
-    // For mobile - you could implement AJAX loading here
-    // For demo purposes, we'll just show the next set
-    scrollProducts(1);
-  }
-</script>

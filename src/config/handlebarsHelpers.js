@@ -8,6 +8,15 @@ export default function registerHelpers(handlebars) {
   handlebars.registerHelper('add', (a, b) => a + b);
   handlebars.registerHelper('subtract', (a, b) => a - b);
   handlebars.registerHelper('not', value => !value);
+  handlebars.registerHelper('findPrimaryOrFirst', function (images) {
+    const primary = images.find(img => img.is_primary);
+    return primary || images[0];
+  });
+
+  handlebars.registerHelper('findAlternateImage', function (images) {
+    const mainImage = images.find(img => img.is_primary) || images[0];
+    return images.find(img => img.url !== mainImage.url) || mainImage;
+  });
   handlebars.registerHelper('range', (start, end) => {
     const result = [];
     for (let i = start; i <= end; i++) result.push(i);

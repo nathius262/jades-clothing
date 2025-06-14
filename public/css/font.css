@@ -1,0 +1,52 @@
+@font-face {
+    font-family: M-Heading-Font;
+    font-weight: 400;
+    src: url(https://cdn.shopify.com/s/files/1/0561/2742/2636/files/Jost-Regular.ttf?v=1618297125);
+    font-display: swap;
+}
+
+@font-face {
+    font-family: M-Heading-Font;
+    font-weight: 500;
+    src: url(https://cdn.shopify.com/s/files/1/0561/2742/2636/files/Jost-Medium.ttf?v=1618297125);
+    font-display: swap;
+}
+
+@font-face {
+    font-family: M-Heading-Font;
+    font-weight: 600;
+    src: url(https://cdn.shopify.com/s/files/1/0561/2742/2636/files/Jost-SemiBold.ttf?v=1618297125);
+    font-display: swap;
+}
+
+:root {
+    --font-stack-header: 'M-Heading-Font';
+    --font-weight-header: 400;
+}
+
+@font-face {
+    font-family: M-Body-Font;
+    font-weight: 400;
+    src: url(https://cdn.shopify.com/s/files/1/0561/2742/2636/files/Jost-Regular.ttf?v=1618297125);
+    font-display: swap;
+}
+
+@font-face {
+    font-family: M-Body-Font;
+    font-weight: 500;
+    src: url(https://cdn.shopify.com/s/files/1/0561/2742/2636/files/Jost-Medium.ttf?v=1618297125);
+    font-display: swap;
+}
+
+@font-face {
+    font-family: M-Body-Font;
+    font-weight: 600;
+    src: url(https://cdn.shopify.com/s/files/1/0561/2742/2636/files/Jost-SemiBold.ttf?v=1618297125);
+    font-display: swap;
+}
+
+:root {
+    --font-stack-body: 'M-Body-Font';
+    --font-weight-body: 400;
+    ;
+}

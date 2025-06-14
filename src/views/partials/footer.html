@@ -1,5 +1,5 @@
   <!-- Footer -->
-  <footer class="bg-dark text-white py-5">
+  <footer class="text-white py-5" style="background-color: var(--black) !important;">
     <div class="container">
       <div class="row  text-center text-md-start">
         <div class="col-lg-4 mb-4 mb-lg-0">
@@ -16,7 +16,7 @@
           <h6 class="text-uppercase mb-4">Shop</h6>
           <ul class="list-unstyled">
             {{#each globalEntities.categories}}
-            <li class="mb-2"><a href="/search?categories={{this.id}}" class="text-white text-decoration-none">{{this.name}}</a></li>
+            <li class="mb-2"><a href="/search?categories={{this.id}}" class="text-white text-decoration-none text-capitalize">{{this.name}}</a></li>
             {{/each}}
             
           </ul>
@@ -36,9 +36,9 @@
           <p>Subscribe for updates on new collections and exclusive offers.</p>
           <div class="input-group mb-3">
             <input type="email" class="form-control" placeholder="Your email">
-            <button class="btn btn-gold" type="button">Subscribe</button>
+            <button class="btn btn-dark" type="button">Subscribe</button>
           </div>
-          <small class="text-muted">We respect your privacy. Unsubscribe at any time.</small>
+          <small class="">We respect your privacy. Unsubscribe at any time.</small>
         </div>
       </div>
       <hr class="my-4 bg-secondary">

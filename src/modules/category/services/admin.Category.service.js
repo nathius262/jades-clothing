@@ -82,7 +82,7 @@ export const destroy = async (id) => {
     const item = await db.Category.findByPk(id);
     if (!item) throw new Error('Not found');
     if(item.image_url){
-      await cloudinary.uploader.destroy(getPublicIdFromUrl(color.image_url, { resource_type: 'image' }));
+      await cloudinary.uploader.destroy(getPublicIdFromUrl(item.image_url, { resource_type: 'image' }));
 
       }
     return await item.destroy();

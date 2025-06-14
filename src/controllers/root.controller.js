@@ -25,7 +25,6 @@ export const index_view = async (req, res) => {
 
         const products = await productService.findAll({offset, limit})
 
-
         //console.log(result.rows)
         res.render('index', {
             pageTitle: "Home",
@@ -33,6 +32,7 @@ export const index_view = async (req, res) => {
             products:products.products
         });
     } catch (err) {
+      console.log(err)
         res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
     }
 };

@@ -11,33 +11,38 @@
       </h2>
       
       <!-- Desktop Navigation -->
-      <nav class="d-none d-md-flex align-items-center">
+      <nav class="d-none d-md-flex align-items-center text-uppercase">
         <a href="/" class="text-dark me-3 nav-link">Home</a>
         <a href="/product" class="text-dark me-3 nav-link">Shop</a>
         <a href="/about" class="text-dark me-3 nav-link">About</a>
         <a href="/contact" class="text-dark me-3 nav-link">Contact</a>
         
-        <!-- Search Icon -->
+       
+      </nav>
+
+      <nav class="d-none d-md-flex align-items-center text-uppercase">
+         <!-- Search Icon -->
         <button class="btn btn-link text-dark me-3 nav-link" data-bs-toggle="modal" data-bs-target="#searchModal">
-          <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+          <i class="bi bi-search fs-4"></i>
         </button>
         
         <a href="/order/checkout" class="text-dark fw-bold nav-link position-relative">
-          <i class="bi bi-cart3"></i> Cart
+          <i class="bi bi-cart3 fs-3"></i>
           <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
             0
           </span>
         </a>
-      </nav>
       
+      </nav>
       <!-- Mobile menu button -->
       <div class="d-md-none">
         <button class="btn btn-link text-dark me-2" data-bs-toggle="modal" data-bs-target="#searchModal">
-          <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+          <i class="bi bi-search fs-4"></i>
         </button>
-        <button class="btn btn-outline-dark border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
-          <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+        <button id="menu-btn" class="btn btn-outline-dark border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+          <i class="bi bi-list fs-4"></i>
         </button>
+
       </div>
     </div>
   </div>
@@ -47,7 +52,7 @@
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0">
-      <div class="modal-header border-0 pb-0">
+      <div class="modal-header border-0 pb-0 mb-3">
         <div class="w-100 position-relative">
           <form action="/search" method="get" class="needs-validation" novalidate>
           <input type="text" name="searchTerm" class="form-control form-control-lg border-0 shadow-none" placeholder="Search for Nigerian attire..." style="font-size: 1.2rem; padding-left: 3rem;" required>
@@ -58,17 +63,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body pt-0">
-        <h5 class="mb-4 text-success">Popular Categories</h5>
+        <h5 class="mb-4 text-uppercase">Popular Categories</h5>
         <div class="row g-3">
           <!-- Search Category 1 -->
           {{#each globalEntities.categories}}
           <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 rounded-0 shadow-sm h-100">
               <div class="card-body text-center">
                 <img src="{{this.image_url}}" 
-                     class="img-fluid rounded mb-2" alt="Ankara">
-                <h6 class="card-title">{{this.name}}</h6>
-                <p class="card-text small text-muted">Vibrant traditional prints</p>
+                     class="img-fluid rounded-0 mb-2" alt="Ankara">
+                <h6 class="card-title text-uppercase">{{this.name}}</h6>
+                <p class="card-text small text-muted">{{this.description}}</p>
               </div>
             </div>
           </div>
@@ -78,12 +83,12 @@
         
         <!-- Recent Searches -->
         <div class="mt-5">
-          <h5 class="mb-3 text-success">Recent Searches</h5>
+          <h5 class="mb-3 text-uppercase">Recent Searches</h5>
           <div class="d-flex flex-wrap gap-2">
-            <a href="#" class="btn btn-outline-success btn-sm">Ankara dresses</a>
-            <a href="#" class="btn btn-outline-success btn-sm">Men's agbada</a>
-            <a href="#" class="btn btn-outline-success btn-sm">Lace iro and buba</a>
-            <a href="#" class="btn btn-outline-success btn-sm">Kids traditional wear</a>
+            <a href="#" class="btn btn-outline-dark btn-sm rounded-0">Ankara dresses</a>
+            <a href="#" class="btn btn-outline-dark btn-sm rounded-0">Men's agbada</a>
+            <a href="#" class="btn btn-outline-dark btn-sm rounded-0">Lace iro and buba</a>
+            <a href="#" class="btn btn-outline-dark btn-sm rounded-0">Kids traditional wear</a>
           </div>
         </div>
       </div>
@@ -98,7 +103,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
-    <nav class="d-flex flex-column">
+    <nav class="d-flex flex-column text-uppercase">
       <a href="/" class="nav-link text-dark py-2 border-bottom">Home</a>
       <a href="/product" class="nav-link text-dark py-2 border-bottom">Shop</a>
       <a href="/about" class="nav-link text-dark py-2 border-bottom">About</a>

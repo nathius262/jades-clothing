@@ -17,7 +17,7 @@ export const findAll = async ({limit, offset}) => {
             {
                 model: db.Image,
                 as: 'images',
-                attributes: ['url'],  // Only return image URLs
+                attributes: ['url', 'is_primary'],  // Only return image URLs
             },
         ],
         limit,

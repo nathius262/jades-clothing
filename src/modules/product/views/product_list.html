@@ -1,40 +1,34 @@
-<!-- Featured Categories -->
-<section class="container my-5 py-4">
-  <h2 class="mb-4 text-start" style="font-family: 'Playfair Display', serif;">Explore Our Collections</h2>
-  <div class="row g-4">
-
-    {{#each categories}}
-    <div class="col-md-3">
-      <div class="card border-0 h-100">
-        <img
-          src="{{this.image_url}}"
-          class="category-img" alt="Ankara Styles">
-        <div class="card-body text-center">
-          <h5 class="card-title text-uppercase">{{this.name}}</h5>
-          <a href="/search?categories={{this.id}}" class="btn btn-outline-success btn-sm">View Collection</a>
-        </div>
-      </div>
-    </div>
-    {{/each}}
-  </div>
-</section>
-
 <section class="container my-5">
   <div class="row">
-    <h2 class="mb-4 text-center" style="font-family: 'Playfair Display', serif;">Product List</h2>
+
+    <div class="col-12 justify-content-center">
+      <nav aria-label="breadcrumb ">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item fw-light fs-6 nav-link text-dark" style="color: var(--black) !important;"><a href="/">Home</a></li>
+          <li class="breadcrumb-item fw-light fs-6 nav-link text-dark" style="color: var(--black) !important;"><a href="/product">Product</a></li>
+        </ol>
+      </nav>
+    </div>
+
+
+    <div class="col-md-12 text-center" style="font-weight: 400 !important;">
+        <h2 class="display-5 mb-3">
+          Latest
+        </h2>
+      </div>
 
     <!-- Sidebar Filters -->
-    <aside class="col-md-3 mb-4 bg-light p-4 rounded">
+    <aside class="col-md-3 mb-4 p-4 rounded">
       <form method="GET" action="/search">
         <h5 class="mb-3">Refine Search</h5>
-        
+
         <!-- Search Term -->
         <div class="mb-4">
           <label class="form-label">Search Term</label>
           <div class="input-group">
-            <input type="text" name="searchTerm" class="form-control" 
-                  placeholder="Search products..." value="{{currentFilters.searchTerm}}">
-            <button type="submit" class="btn btn-success">
+            <input type="text" name="searchTerm" class="form-control rounded-0" placeholder="Search products..."
+              value="{{currentFilters.searchTerm}}">
+            <button type="submit" class="btn btn-dark rounded-0">
               <i class="bi bi-search"></i>
             </button>
           </div>
@@ -43,13 +37,12 @@
         <!-- Category Filter -->
         <div class="mb-3">
           <label class="form-label">Category</label>
-          <select class="form-select" name="categories">
+          <select class="form-select rounded-0" name="categories">
             <option value="">All Categories</option>
             {{#each globalEntities.categories}}
-              <option value="{{this.id}}"
-                {{#eq this.id ../currentFilters.categories}}selected{{/eq}}>
-                {{this.name}}
-              </option>
+            <option value="{{this.id}}" {{#eq this.id ../currentFilters.categories}}selected{{/eq}}>
+              {{this.name}}
+            </option>
             {{/each}}
           </select>
         </div>
@@ -59,12 +52,12 @@
           <label class="form-label">Price Range</label>
           <div class="row g-2">
             <div class="col">
-              <input type="number" name="min_price" class="form-control" 
-                    placeholder="Min" value="{{currentFilters.min_price}}">
+              <input type="number" name="min_price" class="form-control rounded-0" placeholder="Min"
+                value="{{currentFilters.min_price}}">
             </div>
             <div class="col">
-              <input type="number" name="max_price" class="form-control" 
-                    placeholder="Max" value="{{currentFilters.max_price}}">
+              <input type="number" name="max_price" class="form-control rounded-0" placeholder="Max"
+                value="{{currentFilters.max_price}}">
             </div>
           </div>
         </div>
@@ -72,12 +65,12 @@
         <!-- Sort Options -->
         <div class="mb-3">
           <label class="form-label">Sort By</label>
-          <select class="form-select" name="sort_by">
+          <select class="form-select rounded-0" name="sort_by">
             <option value="">Featured</option>
-            <option value="price" {{#eq currentFilters.sort_by 'price'}}selected{{/eq}}>
+            <option value="price" {{#eq currentFilters.sort_by 'price' }}selected{{/eq}}>
               Price: Low to High
             </option>
-            <option value="createdAt" {{#eq currentFilters.sort_by 'createdAt'}}selected{{/eq}}>
+            <option value="createdAt" {{#eq currentFilters.sort_by 'createdAt' }}selected{{/eq}}>
               Newest Arrivals
             </option>
           </select>
@@ -86,10 +79,10 @@
 
         <input type="hidden" name="page" value="1">
 
-        <button type="submit" class="btn btn-success w-100 mb-2">
+        <button type="submit" class="btn btn-dark rounded-0 w-100 mb-2">
           <i class="bi bi-funnel"></i> Apply Filters
         </button>
-        <a href="/search" class="btn btn-outline-dark w-100">
+        <a href="/search" class="btn btn-outline-dark rounded-0 w-100">
           <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
         </a>
       </form>
@@ -97,74 +90,66 @@
 
     <!-- Product Grid -->
     <div class="col-md-9">
-      <section class="py-5 bg-light">
+      <section class="py-5">
         <div class="container">
-          <!-- Product Row with Navigation -->
+
           <div class="position-relative">
             <div class="products-row row">
-              <!-- Product 2 -->
               {{#each products}}
-              <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-effect">
-                  <div class="position-relative">
-                    {{#each this.images}}
+              <div class="col-md-4 col-sm-6 col-12 flex-shrink-0 pe-3 mb-4">
+                <div class="card h-100 border-0 shadow-0 hover-effect">
+                  <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
+                    <!-- Main Image -->
+                    {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
+                    <img src="{{mainImg.url}}" class="main-img"
+                      style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:all 0.5s ease;z-index:1;">
+                    {{/with}}
 
-                    {{#if this.is_primary}}
-                    <img src="{{this.url}}" class="card-img-top" alt="Lace Buba and Wrapper">
-                    {{/if}}
-                    {{/each}}
-                    <!-- If no primary image, use the first image as default -->
-                    {{#unless (anyImageIsPrimary this.images)}}
-                    {{#each this.images}}
-                    {{#if @first}}
-                    <img src="{{this.url}}" class="card-img-top" alt="Lace Buba and Wrapper">
-                    {{/if}}
-                    {{/each}}
-                    {{/unless}}
-                    <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 small rounded">
-                      New
+                    <!-- Alternate Image with Zoom -->
+                    {{#with (findAlternateImage this.images) as |altImg|}}
+                    <img src="{{altImg.url}}" class="alt-img"
+                      style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transform:scale(1);transition:all 0.5s ease;z-index:2;">
+                    {{/with}}
+
+                    <!-- Flash Overlay -->
+                    <div class="flash-overlay"
+                      style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;">
                     </div>
-                    <a href="/product/{{this.slug}}"
-                      class="btn btn-dark btn-sm position-absolute bottom-0 start-0 m-2 quick-view-btn">
-                      <i class="bi bi-eye-fill"></i> Quick View
-                    </a>
                   </div>
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                      <h5 class="card-title mb-0">{{this.name}}</h5>
-                      <div class="text-success">
-                        <span class="fw-bold">₦{{this.price}}</span>
+                  <div class="card-body px-0">
+                    <div class="d-grid justify-content-start mb-2 px-0">
+                      <h5 class="card-title mb-0 text-capitalize fs-6 fw-bold">{{this.name}}</h5>
+                      <div class="d-flex justify-content-between">
+                        <span class="fw-light mt-1">₦{{this.price}}</span>
                       </div>
-                    </div>
-                    <p class="card-text small text-muted">{{this.short_description}}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="ratings small">
-                        <i class="bi bi-star-fill text-gold"></i>
-                        <i class="bi bi-star-fill text-gold"></i>
-                        <i class="bi bi-star-fill text-gold"></i>
-                        <i class="bi bi-star-fill text-gold"></i>
-                        <i class="bi bi-star-fill text-gold"></i>
-                        <span class="ms-1">(89)</span>
-                      </div>
-                      <button class="btn btn-sm btn-success add-to-cart" data-product-price="{{this.price}}" data-product-id="{{this.id}}">
-                        <i class="bi bi-cart-plus"></i> Add
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-
               {{/each}}
-
-              
-            <!-- Pagination -->
-            {{> pagination}}
-
             </div>
           </div>
       </section>
 
-
+      {{> pagination}}
     </div>
+  </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="container my-5 py-4">
+  <h2 class="mb-4 text-center">Explore Our Collections</h2>
+  <div class="row g-4">
+    {{#each categories}}
+    <div class="col-md-3">
+      <div class="card border-0 h-100">
+        <img src="{{this.image_url}}" class="category-img" alt="{{this.name}}">
+        <div class="card-body text-center">
+          <h5 class="card-title text-uppercase">{{this.name}}</h5>
+          <a href="/search?categories={{this.id}}" class="btn btn-outline-dark rounded-0 btn-sm">View Collection</a>
+        </div>
+      </div>
+    </div>
+    {{/each}}
   </div>
 </section>

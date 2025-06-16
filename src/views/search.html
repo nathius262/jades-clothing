@@ -50,7 +50,7 @@
       <!-- Products Grid -->
       <div class="row g-4">
         {{#each products}}
-          <div class="col-md-4 col-sm-6 col-12 flex-shrink-0 pe-3 mb-4">
+          <a href="/product/{{this.slug}}" class="col-md-4 col-sm-6 col-12 flex-shrink-0 pe-3 mb-4">
                 <div class="card h-100 border-0 shadow-0 hover-effect">
                   <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
                     <!-- Main Image -->
@@ -79,7 +79,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </a>
         {{else}}
           <div class="col-12 text-center py-5">
             <i class="bi bi-search display-1 text-muted mb-4"></i>

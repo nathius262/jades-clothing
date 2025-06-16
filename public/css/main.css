@@ -1,31 +1,42 @@
-:root{
-    --black: black;
-    --white:white;
-    --green: #1A5F16;
-    --gold: #E8A317;
-    --bg-body: #020325;
-    --bg-blue-transparent: #141668;
-    --blue-transparent: #287ea3da;
+:root {
+  --black: black;
+  --white: white;
+  --green: #1A5F16;
+  --gold: #E8A317;
+  --bg-body: #020325;
+  --bg-blue-transparent: #141668;
+  --blue-transparent: #287ea3da;
+}
+
+a{
+  text-decoration: none;
+  
 }
 
 
 body {
   font-family: var(--font-stack-body), sans-serif;
-  font-weight: var(--font-weight-body); /* Default: 400 */
+  font-weight: var(--font-weight-body);
+  /* Default: 400 */
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-stack-header), sans-serif;
-  font-weight: var(--font-weight-header); /* Default: 400 */
+  font-weight: var(--font-weight-header);
+  /* Default: 400 */
 }
 
 /* Example usage with different weights */
 .button {
   font-family: var(--font-stack-body);
-  font-weight: 600; /* Uses Jost-SemiBold */
+  font-weight: 600;
+  /* Uses Jost-SemiBold */
 }
 
-header a{
+header a {
   font-family: var(--font-stack-header);
   font-weight: var(--font-weight-body);
 }
@@ -35,7 +46,7 @@ header a{
   background: linear-gradient(rgba(0, 0, 0, 0.438), rgba(0, 0, 0, 0.336)), url('../img/a1.jpg') no-repeat center center;
   background-size: cover;
   color: white;
-  min-height: 60vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
 }
@@ -62,4 +73,33 @@ header a{
 .btn-gold:hover {
   background-color: #d19415;
   color: var(--white);
+}
+
+/* PRODUCT*/
+.product-image-container:hover .main-img {
+  opacity: 0 !important;
+}
+
+.product-image-container:hover .alt-img {
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+  /* 20% zoom */
+}
+
+.product-image-container:hover .flash-overlay {
+  animation: flash 0.4s ease;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }

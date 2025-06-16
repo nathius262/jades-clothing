@@ -20,7 +20,7 @@ const page_logo = process.env.PAGELOGO
 
 export const index_view = async (req, res) => {
     try {
-        const limit = 3
+        const limit = 8
         const offset = (1 - 1) * limit;
 
         const products = await productService.findAll({offset, limit})

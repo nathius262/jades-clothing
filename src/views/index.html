@@ -1,25 +1,3 @@
-<style>
-  .product-image-container:hover .main-img {
-    opacity: 0 !important;
-  }
-  
-  .product-image-container:hover .alt-img {
-    opacity: 1 !important;
-    transform: scale(1.2) !important; /* 20% zoom */
-  }
-  
-  .product-image-container:hover .flash-overlay {
-    animation: flash 0.4s ease;
-  }
-  
-  @keyframes flash {
-    0% { opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { opacity: 0; }
-  }
-</style>
-
-
 <!-- Hero Section -->
 <section class="py-5 bg-hero">
   <div class="container hero-content">
@@ -42,39 +20,41 @@
     </div>
 
     <div class="position-relative">
-  <div class="products-row row">
-    {{#each products}}
-    <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
-      <div class="card h-100 border-0 shadow-0 hover-effect">
-        <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
-          <!-- Main Image -->
-          {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
-            <img src="{{mainImg.url}}" class="main-img" 
-                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:all 0.5s ease;z-index:1;">
-          {{/with}}
-          
-          <!-- Alternate Image with Zoom -->
-          {{#with (findAlternateImage this.images) as |altImg|}}
-            <img src="{{altImg.url}}" class="alt-img" 
-                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transform:scale(1);transition:all 0.5s ease;z-index:2;">
-          {{/with}}
-          
-          <!-- Flash Overlay -->
-          <div class="flash-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;"></div>
-        </div>
-        <div class="card-body px-0">
-          <div class="d-grid justify-content-start mb-2 px-0">
-            <h5 class="card-title mb-0 text-capitalize">{{this.name}}</h5>
-            <div class="">
-              <span class="fw-light mt-1">₦{{this.price}}</span>
+      <div class="products-row row">
+        {{#each products}}
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 flex-shrink-0 pe-3 mb-4">
+          <div class="card h-100 border-0 shadow-0 hover-effect">
+            <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
+              <!-- Main Image -->
+              {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
+              <img src="{{mainImg.url}}" class="main-img"
+                style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:all 0.5s ease;z-index:1;">
+              {{/with}}
+
+              <!-- Alternate Image with Zoom -->
+              {{#with (findAlternateImage this.images) as |altImg|}}
+              <img src="{{altImg.url}}" class="alt-img"
+                style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transform:scale(1);transition:all 0.5s ease;z-index:2;">
+              {{/with}}
+
+              <!-- Flash Overlay -->
+              <div class="flash-overlay"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;">
+              </div>
+            </div>
+            <div class="card-body px-0">
+              <div class="d-grid justify-content-start mb-2 px-0">
+                <h5 class="card-title mb-0 text-capitalize">{{this.name}}</h5>
+                <div class="">
+                  <span class="fw-light mt-1">₦{{this.price}}</span>
+                </div>
+              </div>
             </div>
           </div>
-          </div>
+        </div>
+        {{/each}}
       </div>
     </div>
-    {{/each}}
-  </div>
-</div>
 
 </section>
 
@@ -88,7 +68,7 @@
         <img src="{{this.image_url}}" class="category-img" alt="{{this.name}}">
         <div class="card-body text-center">
           <h5 class="card-title text-uppercase">{{this.name}}</h5>
-          <a href="/search?categories={{this.id}}" class="btn btn-outline-success btn-sm">View Collection</a>
+          <a href="/search?categories={{this.id}}" class="btn btn-outline-dark rounded-0 btn-sm">View Collection</a>
         </div>
       </div>
     </div>
@@ -106,7 +86,7 @@
         <div class="position-relative">
           <img src="/assets/img/a1.jpg" class="img-fluid w-100 rounded-3 shadow-lg"
             alt="Nigerian couple in traditional attire">
-          <div class="position-absolute bottom-0 start-0 bg-success text-white px-3 py-2 m-3 rounded">
+          <div class="position-absolute bottom-0 start-0 bg-dark text-white px-3 py-2 m-3 rounded-0">
             <i class="bi bi-heart-fill me-2"></i> Authentic Nigerian Design
           </div>
         </div>
@@ -115,7 +95,7 @@
       <!-- Text Column -->
       <div class="col-lg-6">
         <h2 class="display-5 mb-4">
-          Celebrating Nigeria's <span class="text-success">Rich Cultural Heritage</span>
+          Celebrating Nigeria's <span class="text-dark">Rich Cultural Heritage</span>
         </h2>
         <p class="lead mb-4">
           At Jade's Clothing, we preserve the artistry of Nigerian fashion while infusing contemporary elegance. Each
@@ -124,23 +104,23 @@
 
         <div class="d-flex mb-4">
           <div class="me-4">
-            <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-2">
-              <i class="bi bi-scissors text-success" style="font-size: 1.5rem;"></i>
+            <div class="bg-dark bg-opacity-10 p-3 rounded-circle d-inline-block mb-2">
+              <i class="bi bi-scissors text-darbg-dark" style="font-size: 1.5rem;"></i>
             </div>
             <h5 class="h6">Handcrafted</h5>
             <p class="small">Meticulously tailored by skilled artisans</p>
           </div>
 
           <div>
-            <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-2">
-              <i class="bi bi-globe-africa text-success" style="font-size: 1.5rem;"></i>
+            <div class="bg-dark bg-opacity-10 p-3 rounded-circle d-inline-block mb-2">
+              <i class="bi bi-globe-africa text-dark" style="font-size: 1.5rem;"></i>
             </div>
             <h5 class="h6">Authentic</h5>
             <p class="small">Made with genuine Nigerian fabrics</p>
           </div>
         </div>
 
-        <a href="/about" class="btn btn-outline-success px-4 py-2">
+        <a href="/about" class="btn btn-outline-dark px-4 py-2">
           Discover Our Story <i class="bi bi-arrow-right ms-2"></i>
         </a>
       </div>
@@ -148,57 +128,19 @@
   </div>
 </section>
 
-<!-- Customer Favorites Carousel -->
-<!-- Customer Favorites - Horizontal Scroll -->
-<section class="py-5 bg-light">
-  <div class="container">
-    <!-- Section Header -->
-    <div class="row justify-content-between align-items-end mb-5">
-      <div class="col-md-8">
-        <h2 class="display-5 mb-3">
-          <span class="text-success">Nigerian</span> Customer Favorites
-        </h2>
-        <p class="lead">The styles our community loves most this season</p>
-      </div>
-      <div class="col-md-4 text-md-end">
-        <a href="#" class="btn btn-outline-success">
-          View All Collections <i class="bi bi-arrow-right ms-2"></i>
-        </a>
-      </div>
-    </div>
-
-<div class="position-relative">
-  <div class="products-row row">
-    {{#each products}}
-    <div class="col-lg-4 col-md-6 flex-shrink-0 pe-3 mb-4">
-      <div class="card h-100 border-0 shadow-0 hover-effect">
-        <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
-          <!-- Main Image -->
-          {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
-            <img src="{{mainImg.url}}" class="main-img" 
-                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:opacity 0.5s ease;z-index:1;">
-          {{/with}}
-          
-          <!-- Alternate Image -->
-          {{#with (findAlternateImage this.images) as |altImg|}}
-            <img src="{{altImg.url}}" class="alt-img" 
-                 style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transition:opacity 0.5s ease;z-index:2;">
-          {{/with}}
-          
-          <!-- Flash Overlay -->
-          <div class="flash-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;"></div>
-        </div>
-      </div>
-    </div>
-    {{/each}}
+<!-- Hero Section -->
+<section class="py-5 bg-hero">
+  <div class="container hero-content d-flex justify-content-center align-items-center">
+    <a href="/product" class="btn btn-gold btn-lg px-4 py-2 rounded-0">Shop Now <i
+        class="bi bi-arrow-right ms-2"></i></a>
   </div>
-</div>
 </section>
 
+
 <!-- Why Jade's Clothing -->
-<section class="py-5 border-top">
+<section class="py-5">
   <div class="container text-center">
-    <h3 class="mb-4 text-success">Why Shop with Jade's?</h3>
+    <h3 class="mb-4 text-dark">Why Shop with Jade's?</h3>
     <div class="row g-4">
       <div class="col-md-4">
         <div class="feature-icon">
@@ -250,22 +192,6 @@
         </div>
         <h4 class="playfair-font">Sustainable Practices</h4>
         <p>We prioritize eco-friendly materials and processes to minimize our environmental impact.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Newsletter -->
-<section class="bg-green text-white py-5">
-  <div class="container text-center">
-    <h3 class="mb-3">Join Our Fashion Community</h3>
-    <p class="mb-4">Subscribe to get updates on new arrivals, special offers and Nigerian fashion tips</p>
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="input-group">
-          <input type="email" class="form-control" placeholder="Your email address">
-          <button class="btn btn-gold" type="button">Subscribe</button>
-        </div>
       </div>
     </div>
   </div>

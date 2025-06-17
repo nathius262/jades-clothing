@@ -27,7 +27,7 @@
       border-left: none;
       border-right: none;
     }
-    .btn-outline-success:hover {
+    .btn-outline-dark:hover {
       background-color: var(--green);
       color: white;
     }
@@ -73,7 +73,7 @@
               <i class="bi bi-cart-x text-muted" style="font-size: 3rem;"></i>
               <h5 class="mt-3">Your cart is empty</h5>
               <p class="text-muted">Browse our collection to add items</p>
-              <a href="/product" class="btn btn-success mt-3">Continue Shopping</a>
+              <a href="/product" class="btn btn-dark mt-3">Continue Shopping</a>
             </div>
             {{/if}}
 
@@ -139,7 +139,7 @@
           <div class="card-body">
             <div class="form-group mt-3 row mb-2">
                 <label class="col-6" for="currency">Choose your currency:</label>
-                <select class="form-control col-5" id="currency" disabled>
+                <select class="form-control rounded-0 col-5" id="currency" disabled>
                     <option value="NGN" selected>NGN</option>
                     <option value="USD">USD</option>
                 </select>
@@ -157,7 +157,7 @@
               <span class="fw-bold">Total</span>              
               <span class="fw-bold" id="total" data-total-price="{{total}}" >₦{{total}}</span>
             </div>
-            <button id="checkout-btn" class="btn btn-success w-100 py-2" disabled>
+            <button id="checkout-btn" class="btn btn-dark w-100 py-2" disabled>
               Proceed to Checkout
             </button>
             <div class="text-center mt-3">
@@ -183,25 +183,25 @@
                         <!-- First Name -->
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" id="firstName" class="form-control" required />
+                            <input type="text" id="firstName" class="form-control rounded-0" required />
                         </div>
     
                         <!-- Last Name -->
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" id="lastName" class="form-control" required />
+                            <input type="text" id="lastName" class="form-control rounded-0" required />
                         </div>
     
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" class="form-control" required />
+                            <input type="email" id="email" class="form-control rounded-0" required />
                         </div>
     
                         <!-- Phone -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="text" id="phone" class="form-control" required />
+                            <input type="text" id="phone" class="form-control rounded-0" required />
                         </div>
     
                         <!-- Delivery Option -->
@@ -222,7 +222,7 @@
                             <label for="address" class="form-label">Shipping Address</label>
                             <textarea
                                 id="address"
-                                class="form-control mb-3"
+                                class="form-control rounded-0 mb-3"
                                 rows="2"
                                 placeholder="Enter your shipping address"
                             ></textarea>
@@ -230,19 +230,19 @@
                             <div class="row">
                                 <div class="col-md-4 form-group mb-3">
                                     <label for="country_id1" class="form-label">Country</label>
-                                    <select name="p_country" element-id="country" dependent-state-id="state_id1" dependent-city-id="city_id1" id="country_id1" class="countrystatecity form-control">
+                                    <select name="p_country" element-id="country" dependent-state-id="state_id1" dependent-city-id="city_id1" id="country_id1" class="countrystatecity form-control rounded-0">
                                         <option value="">select</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group mb-3">
                                     <label class="form-label" for="state_id1">State</label>
-                                    <select name="p_state" element-id="state" dependent-city-id="city_id1" id="state_id1" id="state_id1" class="countrystatecity form-control">
+                                    <select name="p_state" element-id="state" dependent-city-id="city_id1" id="state_id1" id="state_id1" class="countrystatecity form-control rounded-0">
                                         <option value="">select</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group mb-3">
                                     <label class="form-label" for="countrystatecity">City</label>
-                                    <select name="p_city" element-id="city" id="city_id1" class="countrystatecity form-control">
+                                    <select name="p_city" element-id="city" id="city_id1" class="countrystatecity form-control rounded-0">
                                         <option value="">select</option>
                                     </select>
                                 </div>
@@ -250,7 +250,7 @@
                         </div>
     
                         <!-- Pay Now Button -->
-                        <button type="button" id="payNow" class="btn btn-success w-100">
+                        <button type="button" id="payNow" class="btn btn-dark rounded-0 w-100">
                             Pay Now
                         </button>
                     </form>

@@ -103,3 +103,113 @@ header a {
     opacity: 0;
   }
 }
+
+/* ABOUT PAGE */
+.bg-about-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), url('../img/a1.jpg') no-repeat center center;
+  background-size: cover;
+  color: white;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+}
+
+
+.feature-icon {
+  background-color: rgba(232, 163, 23, 0.1);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.btn-gold {
+  background-color: var(--gold);
+  color: white;
+  border: none;
+}
+
+.btn-gold:hover {
+  background-color: #d19415;
+  color: white;
+}
+
+.hover-effect {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.playfair-font {
+  font-family: 'Playfair Display', serif;
+}
+
+.text-green {
+  color: var(--green);
+}
+
+.timeline {
+  position: relative;
+  padding-left: 50px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--gold);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -38px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--green);
+  border: 3px solid var(--gold);
+}
+
+.team-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+}
+
+.values-icon {
+  font-size: 2.5rem;
+  color: var(--gold);
+}
+
+.pattern-bg {
+  background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');
+  background-color: rgba(232, 163, 23, 0.05);
+}
+
+/*CONTACT*/
+.bg-contact-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), 
+              url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y29udGFjdHxlbnwwfHwwfHx8MA%3D%3D') no-repeat center center;
+  background-size: cover;
+  color: white;
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+}

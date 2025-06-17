@@ -37,15 +37,60 @@ export const findAll = async ({limit, offset}) => {
 
 export const findBySlug = async (slug) => {
   try {
-     const item = await db.Product.findOne({
-      where: { slug: slug },
-        include: [
-            { model: db.Category, as: 'categories', through: { attributes: [] } },
-            { model: db.Image, as: 'images', attributes: ['url', 'id', 'is_primary'] },
-        ],
+    const item = await db.Product.findOne({
+      where: { slug },
+      include: [
+        { 
+          model: db.Category, 
+          as: 'categories', 
+          through: { attributes: [] } 
+        },
+        { 
+          model: db.Image, 
+          as: 'images', 
+          attributes: ['url', 'id', 'is_primary'] 
+        }
+      ],
     });
+
     if (!item) throw new Error('Not found');
-    return item;
+
+    // Get related products by categories (excluding current product)
+    const categoryIds = item.categories.map(cat => cat.id);
+    
+    const relatedProducts = await db.Product.findAll({
+      where: {
+        id: { [db.Sequelize.Op.ne]: item.id }, // Exclude current product
+        '$categories.id$': { // Filter by shared categories
+          [db.Sequelize.Op.in]: categoryIds
+        }
+      },
+      include: [
+        {
+          model: db.Category,
+          as: 'categories',
+          through: { attributes: [] },
+          where: { id: { [db.Sequelize.Op.in]: categoryIds } }
+        },
+        {
+          model: db.Image,
+          as: 'images',
+          attributes: ['url', 'id', 'is_primary'],
+          where: { is_primary: true },
+          required: false
+        }
+      ],
+      limit: 4,
+      distinct: true,
+      order: db.Sequelize.literal('RANDOM()'), // For random selection
+      subQuery: false
+    });
+
+    return {
+      ...item.toJSON(),
+      relatedProducts
+    };
+
   } catch (error) {
     throw new Error('Error fetching record: ' + error.message);
   }

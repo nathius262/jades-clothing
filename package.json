@@ -1,6 +1,6 @@
 {
   "name": "jades-clothing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Jade's Clothing is a full-stack e-commerce platform built to showcase and sell beautiful Nigerian traditional and contemporary attire. It's structured for growth and modular development.",
   "main": "index.js",
   "scripts": {

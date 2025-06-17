@@ -12,10 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const addToCartBtn = document.querySelector(`.add-to-cart[data-product-id="${productId}"]`);
     
     // Disable add to cart button initially (only enable when quantity changes)
+    /*
     if (addToCartBtn) {
       addToCartBtn.disabled = true;
       input.dataset.originalValue = input.value;
-    }
+    }*/
 
     // Quantity increment
     incrementBtn.addEventListener('click', () => {

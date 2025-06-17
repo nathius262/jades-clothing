@@ -200,3 +200,10 @@ header a {
   display: flex;
   align-items: center;
 }
+
+/* ===== REUSABLE SCROLL ANIMATIONS ===== */
+/* Base animation class (hidden state) */
+/* ===== REUSABLE SCROLL TRANSFORMS ===== */
+.scroll-y-top-el, .scroll-y-down-el, .scroll-x-top-el, .scroll-x-down-el{
+    transition: transform 2s ease;
+}

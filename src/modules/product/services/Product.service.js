@@ -76,13 +76,19 @@ export const findBySlug = async (slug) => {
           model: db.Image,
           as: 'images',
           attributes: ['url', 'id', 'is_primary'],
-          where: { is_primary: true },
-          required: false
+          // Remove the where clause for is_primary and handle ordering instead
+          required: false,
+          order: [
+            // Primary images first, then order by id to get consistent "first" image
+            ['is_primary', 'DESC'],
+            ['id', 'ASC']
+          ],
+          limit: 1 // Only get one image per product
         }
       ],
       limit: 4,
-      distinct: true,
-      order: db.Sequelize.literal('RANDOM()'), // For random selection
+      distinct: true, // This ensures distinct products in the result
+      order: db.Sequelize.literal('RANDOM()'),
       subQuery: false
     });
 

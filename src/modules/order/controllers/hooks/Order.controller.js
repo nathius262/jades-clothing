@@ -2,73 +2,97 @@ import nodemailer from "nodemailer";
 import * as orderService from "../../services/Order.service.js";
 
 export const stripe_webhook_handler_view = async (req, res) => {
-    // 0. Immediate response to prevent retries
+    // 0. Clone critical headers FIRST
+    const headers = {
+        'content-type': req.headers['content-type'] || '',
+        'stripe-signature': req.headers['stripe-signature'] || ''
+    };
+
+    // 1. Validate content type IMMEDIATELY
+    if (!headers['content-type'].includes('application/json')) {
+        console.error('❌ Invalid content-type:', headers['content-type']);
+        return res.status(400).json({ error: 'Invalid content-type' }); // Explicit response
+    }
+
+    // 2. Immediate success response (to prevent Stripe retries)
     res.status(200).json({ received: true });
 
-    const sig = req.headers['stripe-signature'];
-    
     try {
-        // 1. Validate content type
-        if (req.headers['content-type'] !== 'application/json') {
-            throw new Error('Invalid content type');
-        }
-
-        // 2. Verify webhook
+        // 3. Verify webhook signature
         const event = stripe.webhooks.constructEvent(
-            req.body,  // ← Fixed: Use req.body instead of req.rawBody
-            sig,
+            req.body, // Use raw body buffer
+            headers['stripe-signature'],
             process.env.STRIPE_WEBHOOK_SECRET
         );
 
-        // 3. Process payment success
+        // 4. Process payment success
         if (event.type === 'payment_intent.succeeded') {
             const paymentIntent = event.data.object;
 
-            // Get cart from metadata (not cookies)
-            const cartItems = paymentIntent.metadata.cart_items 
-                ? JSON.parse(paymentIntent.metadata.cart_items)
-                : [];
+            // Debugging logs (temporary)
+            console.log('💰 PaymentIntent Metadata:', paymentIntent.metadata);
+            console.log('🛒 Raw Cart Items:', paymentIntent.metadata.cart_items);
 
-            if (cartItems.length === 0) {
-                throw new Error('No cart items in metadata');
+            // 5. Validate cart items
+            const cartItems = parseCartItems(paymentIntent.metadata);
+            if (!cartItems.length) {
+                throw new Error('🛒 Empty cart in metadata');
             }
 
-            // Prepare order data
-            const paymentData = {
-                id: paymentIntent.id,
-                amount: paymentIntent.amount,
-                currency: paymentIntent.currency,
-                customer: {
-                    email: paymentIntent.receipt_email,
-                    first_name: paymentIntent.metadata?.customer_name?.split(' ')[0],
-                    last_name: paymentIntent.metadata?.customer_name?.split(' ')[1],
-                    phone: paymentIntent.metadata?.customer_phone
-                },
-                metadata: paymentIntent.metadata,
-                channel: 'stripe',
-                paid_at: new Date(paymentIntent.created * 1000).toISOString()
-            };
-
-            // Create order
-            const result = await orderService.createOrder(paymentData, cartItems);
-            
-            if (!result.success) {
-                throw new Error(`Order creation failed: ${result.error}`);
-            }
-
-            // Send email
-            await sendTrackingEmail(
-                paymentData.customer.email,
-                result.tracking_id,
-                `${req.protocol}://${req.get('host')}`
-            );
+            // 6. Process order
+            await processSuccessfulPayment(paymentIntent, cartItems, req);
         }
 
     } catch (error) {
-        console.error('❗ Webhook Error:', error.message);
-        // Errors are logged but don't return HTTP errors to prevent Stripe retries
+        console.error('❗ Webhook Processing Failed:', {
+            error: error.message,
+            stack: error.stack // Include stack trace
+        });
+        
+        // Note: Response already sent, can't change status code
+        // Consider logging to external service (Sentry, etc.)
     }
 };
+
+// Helper: Safely parse cart items
+function parseCartItems(metadata) {
+    try {
+        return metadata.cart_items ? JSON.parse(metadata.cart_items) : [];
+    } catch (err) {
+        console.error('🛒 Cart JSON Parse Error:', err);
+        return [];
+    }
+}
+
+// Helper: Process order and send email
+async function processSuccessfulPayment(paymentIntent, cartItems, req) {
+    const paymentData = {
+        id: paymentIntent.id,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        customer: {
+            email: paymentIntent.receipt_email || paymentIntent.metadata?.customer_email,
+            first_name: paymentIntent.metadata?.customer_name?.split(' ')[0] || 'Guest',
+            last_name: paymentIntent.metadata?.customer_name?.split(' ')[1] || '',
+            phone: paymentIntent.metadata?.customer_phone || ''
+        },
+        metadata: paymentIntent.metadata,
+        channel: 'stripe',
+        paid_at: new Date(paymentIntent.created * 1000).toISOString()
+    };
+
+    const result = await orderService.createOrder(paymentData, cartItems);
+    
+    if (!result.success) {
+        throw new Error(`Order creation failed: ${result.error}`);
+    }
+
+    await sendTrackingEmail(
+        paymentData.customer.email,
+        result.tracking_id,
+        `${req.protocol}://${req.get('host')}`
+    );
+}
 
 
 async function sendTrackingEmail(user_email, tracking_id, baseUrl) {
@@ -82,7 +106,7 @@ async function sendTrackingEmail(user_email, tracking_id, baseUrl) {
                 user: process.env.ZOHO_EMAIL,
                 pass: process.env.ZOHO_PASSWORD,
             },
-            
+
         });
 
         // Generate tracking link dynamically

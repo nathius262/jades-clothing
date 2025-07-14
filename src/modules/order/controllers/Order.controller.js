@@ -95,11 +95,29 @@ export const checkout_view = async (req, res) => {
 
 export const payment_intent_view =  async (req, res) => {
   try {
-    const { amount, currency } = req.body;
     
+    const { amount, currency } = req.body;
+
+
+    //metadata to add cart to customers' intent
+    const cartCookies = req.cookies?.jades_cart;
+    if (!cartCookies) {
+        return res.status(400).json({ success: false, error: 'Cart is empty or missing.' });
+    }
+
+    let cartItems;
+    try {
+        cartItems = JSON.parse(cartCookies); // Parse the cookie data
+    } catch (error) {
+        return res.status(400).json({ success: false, error: 'Invalid cart data format.' });
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
+      metadata: {
+        cart_items: JSON.stringify(cartItems),
+      },
       // Enable all payment methods you've activated in dashboard
       //payment_method_types: ['card', 'us_bank_account', 'link', 'etc...'],
       automatic_payment_methods: {
@@ -195,80 +213,71 @@ export const verify_paystack_transaction_view = async (req, res) => {
 
 
 export const stripe_webhook_handler_view = async (req, res) => {
+    // 0. Immediate response to prevent retries
+    res.status(200).json({ received: true });
+
     const sig = req.headers['stripe-signature'];
     
     try {
-        // 1. Verify the webhook signature
+        // 1. Validate content type
+        if (req.headers['content-type'] !== 'application/json') {
+            throw new Error('Invalid content type');
+        }
+
+        // 2. Verify webhook
         const event = stripe.webhooks.constructEvent(
-            req.rawBody,
+            req.body,  // ← Fixed: Use req.body instead of req.rawBody
             sig,
             process.env.STRIPE_WEBHOOK_SECRET
         );
 
-        // 2. Handle payment_intent.succeeded event
+        // 3. Process payment success
         if (event.type === 'payment_intent.succeeded') {
             const paymentIntent = event.data.object;
 
-            // Parse cart data from metadata or cookies
-            const cartCookies = req.cookies?.jades_cart;
-            if (!cartCookies) {
-                throw new Error('Cart is empty or missing');
+            // Get cart from metadata (not cookies)
+            const cartItems = paymentIntent.metadata.cart_items 
+                ? JSON.parse(paymentIntent.metadata.cart_items)
+                : [];
+
+            if (cartItems.length === 0) {
+                throw new Error('No cart items in metadata');
             }
 
-            let cartItems;
-            try {
-                cartItems = JSON.parse(cartCookies);
-            } catch (error) {
-                throw new Error('Invalid cart data format');
-            }
-
-            // Format payment data to match your existing createOrder service
+            // Prepare order data
             const paymentData = {
                 id: paymentIntent.id,
-                amount: paymentIntent.amount / 100, // Convert to currency unit
+                amount: paymentIntent.amount,
                 currency: paymentIntent.currency,
                 customer: {
-                    email: paymentIntent.receipt_email || paymentIntent.metadata?.customer_email,
+                    email: paymentIntent.receipt_email,
                     first_name: paymentIntent.metadata?.customer_name?.split(' ')[0],
                     last_name: paymentIntent.metadata?.customer_name?.split(' ')[1],
                     phone: paymentIntent.metadata?.customer_phone
                 },
                 metadata: paymentIntent.metadata,
                 channel: 'stripe',
-                gateway_response: 'Payment successful',
                 paid_at: new Date(paymentIntent.created * 1000).toISOString()
             };
 
-            // 3. Create Order (using your existing service)
+            // Create order
             const result = await orderService.createOrder(paymentData, cartItems);
-
+            
             if (!result.success) {
-                throw new Error(result.error.message);
+                throw new Error(`Order creation failed: ${result.error}`);
             }
 
-            // 4. Clear cart cookies
-            res.clearCookie('jades_cart');
-
-            // 5. Send tracking email
-            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            // Send email
             await sendTrackingEmail(
-                paymentData.customer.email, 
-                result.tracking_id, 
-                baseUrl
+                paymentData.customer.email,
+                result.tracking_id,
+                `${req.protocol}://${req.get('host')}`
             );
-
-            return res.status(200).json(result);
         }
 
-        // Handle other event types if needed
-        return res.status(200).json({ received: true, });
-
     } catch (error) {
-        console.error('Webhook processing error:', error.message);
-        return res.status(400).json({ 
-            success: false, 
-            error: error.message 
-        });
+        console.error('❗ Webhook Error:', error.message);
+        // Errors are logged but don't return HTTP errors to prevent Stripe retries
     }
 };
 
@@ -312,6 +321,17 @@ async function sendTrackingEmail(user_email, tracking_id, baseUrl) {
     }
 }
 
+
+export const order_complete_view = async (req, res) =>{
+  
+    try {
+        // Render the checkout page with the retrieved products
+        return res.render('order_coplete', {pageTitle: "Order Completed"});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Internal Server Error');
+    }
+}
 
 export const track_order_view = async (req, res) => {
     const { tracking_id } = req.query;

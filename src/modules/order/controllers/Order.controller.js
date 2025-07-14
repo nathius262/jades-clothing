@@ -215,7 +215,7 @@ export const order_complete_view = async (req, res) =>{
   
     try {
         // Render the checkout page with the retrieved products
-        return res.render('order_coplete', {pageTitle: "Order Completed"});
+        return res.render('order_complete', {pageTitle: "Order Completed"});
     } catch (error) {
         console.error(error);
         return res.status(500).send('Internal Server Error');

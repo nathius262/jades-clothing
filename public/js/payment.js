@@ -2,19 +2,23 @@
 import { messageAlert } from './utils.js';
 
 export class PaymentHandler {
+  static stripe;
+  static elements; // Store the Elements group
+
   static init() {
     // Delivery address toggle
     document.getElementById('deliveryOption')?.addEventListener('change', this.toggleAddressField);
 
-    // Currency conversion
+    // Currency conversion (if still needed)
     document.getElementById('currency')?.addEventListener('change', this.handleCurrencyConversion);
 
     // Final checkout button
     document.getElementById('checkout-btn')?.addEventListener('click', () => {
       new bootstrap.Modal(document.getElementById('paymentModal')).show();
+      this.initializeStripe(); // Initialize when modal opens
     });
 
-    // Paystack payment
+    // Stripe payment
     document.getElementById('payNow')?.addEventListener('click', this.processPayment.bind(this));
   }
 
@@ -24,17 +28,17 @@ export class PaymentHandler {
   }
 
   static async handleCurrencyConversion() {
-    const currency = this.value;
+    // Force USD for Stripe
+    const currency = 'USD';
     const totalElement = document.querySelector('[data-total-price]');
     const amount = parseFloat(totalElement.dataset.totalPrice);
 
     try {
       const response = await fetch(`/checkout/api/convert-currency?toCurrency=${currency}&amount=${amount}`);
       const data = await response.json();
-      
+
       if (data.success) {
-        totalElement.textContent = `${currency === 'USD' ? '$' : '₦'}${data.rate.conversion_result.toFixed(2)}`;
-        // Update the data attribute as well
+        totalElement.textContent = `$${data.rate.conversion_result.toFixed(2)}`;
         totalElement.dataset.totalPrice = data.rate.conversion_result;
       }
     } catch (error) {
@@ -47,94 +51,144 @@ export class PaymentHandler {
       );
     }
   }
+  
+  static async initializeStripe() {
+    try {
+      // Initialize Stripe
+      this.stripe = Stripe('pk_test_51RhbUvRA4eanjY1qCKhGVBLKXri3bi66qlnGjZvnwSSYnNTHPl0MvOxzk07letE4CuM0AwBEZZHZCBOKobhid46200s30a9c3r');
+      
+      // Create Payment Intent
+      const response = await fetch('/order/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseFloat(document.querySelector('[data-total-price]').dataset.totalPrice) * 100,
+          currency: 'usd'
+        })
+      });
+      
+      const { clientSecret } = await response.json();
+      this.clientSecret = clientSecret;
+      
+      // Initialize Elements group
+      this.elements = this.stripe.elements({ 
+        clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#000000',
+            borderRadius: '0px'
+          }
+        }
+      });
+      
+      // Create and mount Payment Element
+      const paymentElement = this.elements.create('payment');
+      paymentElement.mount('#payment-element');
+      
+      // Handle validation errors
+      paymentElement.on('change', (event) => {
+        const displayError = document.getElementById('payment-errors');
+        displayError.textContent = event.error?.message || '';
+        displayError.style.display = event.error ? 'block' : 'none';
+      });
+      
+    } catch (error) {
+      console.error('Stripe initialization error:', error);
+      this.showError('Payment system unavailable');
+    }
+  }
 
   static async processPayment() {
-    // Validate form
-    const form = document.getElementById('paymentForm');
-    if (!form.checkValidity()) {
-      form.classList.add('was-validated');
-      return;
-    }
+    const payButton = document.getElementById('payNow');
+    payButton.disabled = true;
+    payButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
 
-    // Get secure total amount from data attribute
-    const totalElement = document.querySelector('[data-total-price]');
-    const amount = parseFloat(totalElement.dataset.totalPrice) * 100; // Convert to kobo/cent
-    const currency = document.getElementById('currency').value;
-
-    // Prepare secure payload
-    const payload = {
-      key: 'pk_test_314202007cd3e2a3f03b9a4bce2a0415f6435a63', // Replace with your key
-      email: document.getElementById('email').value,
-      amount: amount,
-      currency: currency,
-      metadata: {
-        first_name: document.getElementById('firstName').value,
-        last_name: document.getElementById('lastName').value,
-        phone: document.getElementById('phone').value,
-        ...this.getShippingAddress()
+    try {
+      // Validate form first
+      const form = document.getElementById('paymentForm');
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        throw new Error('Please fill all required fields');
       }
+
+      // Update Payment Intent with customer details
+      await fetch('/order/update-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientSecret: this.clientSecret,
+          customer_details: this.getCustomerDetails()
+        })
+      });
+
+      // Confirm payment with Elements group
+      const { error } = await this.stripe.confirmPayment({
+        elements: this.elements, // Pass the Elements group
+        confirmParams: {
+          return_url: window.location.origin + '/order/complete',
+          receipt_email: document.getElementById('email').value
+        },
+        redirect: 'if_required'
+      });
+
+      if (error) throw error;
+      
+      this.handlePaymentSuccess();
+      
+    } catch (error) {
+      this.handlePaymentError(error);
+    } finally {
+      payButton.disabled = false;
+      payButton.innerHTML = 'Pay Now';
+    }
+  }
+
+    static getCustomerDetails() {
+    return {
+      first_name: document.getElementById('firstName').value,
+      last_name: document.getElementById('lastName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      shipping: this.getShippingAddress()
     };
-
-    // Initialize payment
-    const handler = PaystackPop.setup({
-      ...payload,
-      callback: (response) => this.handlePaymentResponse(response),
-      onClose: () => this.handlePaymentClose()
-    });
-
-    handler.openIframe();
   }
 
   static getShippingAddress() {
     if (!document.getElementById('deliveryOption').checked) return {};
 
     return {
-      address: document.getElementById('address').value,
+      line1: document.getElementById('address').value,
       country: $('#country_id1 option:selected').data('address_name'),
       state: $('#state_id1 option:selected').data('address_name'),
-      city: $('#city_id1 option:selected').data('address_name')
+      city: $('#city_id1 option:selected').data('address_name'),
+      postal_code: document.getElementById('zipCode')?.value || ''
     };
   }
 
-  static async handlePaymentResponse(response) {
-    try {
-      const verification = await fetch(`/order/api/verify-payment?reference=${response.reference}`, {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      const data = await verification.json();
+  static handlePaymentSuccess(paymentIntent) {
+    // Close the payment modal
+    bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
 
-      if (data.success) {
-        messageAlert(
-          'Payment Successful',
-          'Order confirmed! Check your email for details.',
-          '/order-confirmation',
-          'text-success',
-          'btn-success'
-        );
-      } else {
-        throw new Error(data.message || 'Verification failed');
-      }
-    } catch (error) {
-      messageAlert(
-        'Payment Error',
-        error.message,
-        '',
-        'text-error',
-        'btn-error'
-      );
-    }
+    // Show success message
+    messageAlert(
+      'Payment Successful',
+      'Order confirmed! Check your email for details.',
+      '/order-confirmation',
+      'text-success',
+      'btn-success'
+    );
   }
 
-  static handlePaymentClose() {
+  static handlePaymentError(error) {
+    console.log(error.message)
+
     messageAlert(
-      'Payment Incomplete',
-      'You closed the payment window. Try again?',
-      '',
-      'text-warning',
-      'btn-warning'
+      'Payment Error',
+      error.message || 'Payment failed. Please try again.',
+      false,
+      'text-error',
+      'btn-error'
     );
   }
 }

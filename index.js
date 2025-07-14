@@ -57,7 +57,32 @@ await loadModules(app);
 
 
 // Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running at http://localhost:${PORT}`);
-});
+// Start local development server if not in production
+if (process.env.NODE_ENV !== 'production') {
+  const { createSNICallback } = await import('anchor-pki/auto-cert/sni-callback');
+  const { TermsOfServiceAcceptor } = await import('anchor-pki/auto-cert/terms-of-service-acceptor');
+  const https = (await import('https')).default;
+  
+  const SNICallback = createSNICallback({
+    name: 'localhost',
+    tosAcceptors: TermsOfServiceAcceptor.createAny(),
+    cacheDir: 'tmp/acme'
+  });
+
+  const server = https.createServer({ SNICallback }, app);
+  const PORT = process.env.PORT || 3000;
+  
+  server.listen(PORT, () => {
+    console.log(`🚀 Server running in development mode`);
+    console.log(`🔐 Local HTTPS server running at https://${process.env.ENDPOINT}:${PORT}`);
+  });
+} else {
+  // In production (Vercel), just create the server
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running in production mode on port ${PORT}`);
+  });
+}
+
+// Export the app for Vercel (must be at top level)
+export default app;

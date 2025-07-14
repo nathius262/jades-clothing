@@ -92,54 +92,87 @@ export const checkout_view = async (req, res) => {
 };
 
 
-export const payment_intent_view =  async (req, res) => {
+export const payment_intent_view = async (req, res) => {
   try {
-    
     const { amount, currency } = req.body;
 
-
-    //metadata to add cart to customers' intent
-    const cartCookies = req.cookies?.jades_cart;
-    if (!cartCookies) {
-        return res.status(400).json({ success: false, error: 'Cart is empty or missing.' });
-    }
-
+    // Get cart from all possible sources
     let cartItems;
     try {
-        cartItems = JSON.parse(cartCookies); // Parse the cookie data
+      if (req.cookies?.jades_cart) {
+        cartItems = JSON.parse(req.cookies.jades_cart);
+      } else if (req.cookies?.cart) {
+        cartItems = JSON.parse(req.cookies.cart);
+      } else if (req.session?.jades_cart) {
+        cartItems = req.session.jades_cart;
+      } else if (req.session?.cart) {
+        cartItems = req.session.cart;
+      } else {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'No cart data found' 
+        });
+      }
+
+      if (!Array.isArray(cartItems)) throw new Error('Invalid cart format');
     } catch (error) {
-        return res.status(400).json({ success: false, error: 'Invalid cart data format.' });
+      console.error('Cart parsing error:', error);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Invalid cart data format' 
+      });
     }
 
+    // Create Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
       metadata: {
         cart_items: JSON.stringify(cartItems),
+        // Include session/cookie identifiers if needed
+        cart_source: req.cookies?.jades_cart ? 'cookie' : 'session'
       },
-      // Enable all payment methods you've activated in dashboard
-      //payment_method_types: ['card', 'us_bank_account', 'link', 'etc...'],
       automatic_payment_methods: {
-        enabled: true, // Let Stripe handle which methods to show
+        enabled: true,
       },
     });
 
-    // Clear cart cookie immediately
-    res.clearCookie('jades_cart', {
+    // Clear ALL possible cart storage
+    // 1. Cookies
+    const cookieOptions = {
       httpOnly: true,
       sameSite: 'strict',
       secure: process.env.NODE_ENV === 'production'
+    };
+    
+    res.clearCookie('jades_cart', cookieOptions);
+    res.clearCookie('cart', cookieOptions);
+    
+    // 2. Session
+    if (req.session) {
+      delete req.session.jades_cart;
+      delete req.session.cart;
+      // For express-session:
+      req.session.save(err => {
+        if (err) console.error('Session save error:', err);
+      });
+    }
+
+    return res.status(200).json({ 
+      clientSecret: paymentIntent.client_secret,
+      message: 'Cart cleared successfully'
     });
 
-
-
-    
-    res.status(200).json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
-    //console.log(err.message)
-    res.status(500).json({ error: err.message });
+    console.error('Payment Intent Error:', err);
+    return res.status(500).json({ 
+      error: 'Failed to create payment intent',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
+
+
 
 
 export const update_payment_intent_view = async (req, res) => {

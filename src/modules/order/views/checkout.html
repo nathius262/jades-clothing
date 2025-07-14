@@ -117,7 +117,7 @@
                   <div class="d-flex justify-content-between">
                     <div>
                       <h6 class="mb-1 product-title">{{this.name}}</h6>
-                      <p class="mb-1 text-muted product-price">₦ {{this.price}}</p>
+                      <p class="mb-1 text-muted product-price">$ {{this.price}}</p>
                     </div>
                     <i class="bi bi-x-lg remove-item" data-product-id="{{this.id}}"></i>
                   </div>
@@ -127,7 +127,7 @@
                       <input type="number" class="quantity-input" value="{{this.quantity}}" min="1">
                       <button class="quantity-btn increment-btn">+</button>
                     </div>
-                    <span class="fw-bold item-total">₦{{this.itemTotal}}</span>
+                    <span class="fw-bold item-total">${{this.itemTotal}}</span>
                   </div>
                 </div>
               </div>
@@ -148,22 +148,22 @@
           <div class="form-group mt-3 row mb-2">
             <label class="col-6" for="currency">Choose your currency:</label>
             <select class="form-control rounded-0 col-5" id="currency" disabled>
-              <option value="NGN" selected>NGN</option>
+              <option value="USD" selected>USD</option>
               <option value="USD">USD</option>
             </select>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span>Subtotal</span>
-            <span id="subtotal" data-subtotal="{{totalPrice}}">₦{{totalPrice}}</span>
+            <span id="subtotal" data-subtotal="{{totalPrice}}">${{totalPrice}}</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span>Shipping</span>
-            <span id="shipping" data-shipping="{{shippingFee}}">₦{{shippingFee}}</span>
+            <span id="shipping" data-shipping="{{shippingFee}}">${{shippingFee}}</span>
           </div>
           <hr>
           <div class="d-flex justify-content-between mb-3">
             <span class="fw-bold">Total</span>
-            <span class="fw-bold" id="total" data-total-price="{{total}}">₦{{total}}</span>
+            <span class="fw-bold" id="total" data-total-price="{{total}}">${{total}}</span>
           </div>
           <button id="checkout-btn" class="btn btn-dark w-100 py-2" disabled>
             Proceed to Checkout

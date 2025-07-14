@@ -1,5 +1,12 @@
 import nodemailer from "nodemailer";
+import dotenv from 'dotenv';
+import Stripe from 'stripe';
 import * as orderService from "../../services/Order.service.js";
+
+dotenv.config();
+
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const stripe_webhook_handler_view = async (req, res) => {
     // 0. Clone critical headers FIRST

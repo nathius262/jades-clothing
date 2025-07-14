@@ -36,9 +36,6 @@ export const stripe_webhook_handler_view = async (req, res) => {
         if (event.type === 'payment_intent.succeeded') {
             const paymentIntent = event.data.object;
 
-            // Debugging logs (temporary)
-            console.log('💰 PaymentIntent Metadata:', paymentIntent.metadata);
-            console.log('🛒 Raw Cart Items:', paymentIntent.metadata.cart_items);
 
             // 5. Validate cart items
             const cartItems = parseCartItems(paymentIntent.metadata);

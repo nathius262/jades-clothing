@@ -88,7 +88,7 @@ async function processSuccessfulPayment(paymentIntent, cartItems, req) {
         paid_at: new Date(paymentIntent.created * 1000).toISOString()
     };
 
-    const result = await orderService.createOrder(paymentData, paymentIntent cartItems);
+    const result = await orderService.createOrder(paymentData, paymentIntent, cartItems);
     
     if (!result.success) {
         throw new Error(`Order creation failed: ${result.error}`);

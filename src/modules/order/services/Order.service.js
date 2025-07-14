@@ -1,113 +1,115 @@
 import db from '../../../models/index.cjs';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function createOrder(paymentData, cartItems) {
+export async function createOrder(paymentData, paymentIntent, cartItems) {
     const transaction = await db.sequelize.transaction();
     try {
-        // Validate cartItems
-        if (!Array.isArray(cartItems) || cartItems.length === 0) {
-            throw new Error('Invalid or empty cart items.');
-        }
+        // Validate cartItems - this remains required
+        if (!Array.isArray(cartItems)) throw new Error('Cart items must be an array');
+        if (cartItems.length === 0) throw new Error('Cart is empty');
 
-        // Extract address from metadata
-        const addressData = {
-            street_address: paymentData.metadata?.address || null,
-            city: paymentData.metadata?.city || null,
-            state: paymentData.metadata?.state || null,
-            country: paymentData.metadata?.country || null,
-        };
+        // Try to extract address from multiple possible sources
+        const addressData = getAddressFromAnySource(paymentIntent);
 
-        // Validate extracted addressData
-        if (!addressData.street_address || !addressData.city || !addressData.state || !addressData.country) {
-            throw new Error('Invalid or incomplete address in metadata.');
-        }
-
-        // Create the Order
+        // Create the Order (address no longer required)
         const order = await db.Order.create({
             tracking_id: uuidv4(),
             customer_email: paymentData.customer.email,
-            customer_phone: paymentData.phone || paymentData.metadata?.phone || null,
-            total_amount: paymentData.amount / 100, // Convert kobo to NGN
+            customer_phone: paymentData.customer.phone,
+            total_amount: paymentData.amount / 100,
             currency: paymentData.currency,
             status: 'confirmed',
             paidAt: paymentData.paid_at,
             payment_channel: paymentData.channel,
             gateway_response: paymentData.gateway_response,
-            delivery_eligible: paymentData.amount / 100 > 1000,
+            delivery_eligible: !!addressData, // Will be true if address exists
         }, { transaction });
 
-        // Create the Address
-        await db.Address.create({
-            order_id: order.id,
-            customer_email: paymentData.customer.email, // Optional if tied to a user
-            street_address: addressData.street_address,
-            city: addressData.city,
-            state: addressData.state,
-            country: addressData.country,
-        }, { transaction });
-
-        // Validate and create OrderItems
-        const orderItems = cartItems.map(item => {
-            // Convert fields to numbers
-            const productId = Number(item.product);
-            const quantity = Number(item.quantity);
-            const price = Number(item.price);
-
-            // Validate numeric values
-            if (
-                isNaN(productId) ||
-                isNaN(quantity) ||
-                isNaN(price) ||
-                !Number.isInteger(productId) ||
-                !Number.isInteger(quantity) ||
-                quantity <= 0
-            ) {
-                throw new Error(`Invalid cart item data: ${JSON.stringify(item)}`);
-            }
-
-            return {
+        // Create Address only if available (no error if missing)
+        if (addressData) {
+            await db.Address.create({
                 order_id: order.id,
-                product_id: item.product,
-                quantity: item.quantity,
-                price: item.price,
-                total_price: item.quantity * item.price,
-            };
-        });
-        await db.OrderItem.bulkCreate(orderItems, { transaction });
-
-        // Reduce Product Stock
-        for (const item of cartItems) {
-            const product = await db.Product.findByPk(item.product, { transaction });
-
-            if (!product) {
-                throw new Error(`Product with ID ${item.product} not found.`);
-            }
-
-            if (product.stock < item.quantity) {
-                throw new Error(`Insufficient stock for product ID ${item.product}.`);
-            }
-
-            // Update stock
-            product.stock -= item.quantity;
-            await product.save({ transaction });
+                customer_email: paymentData.customer.email,
+                street_address: addressData.street_address,
+                city: addressData.city,
+                state: addressData.state,
+                country: addressData.country,
+            }, { transaction });
         }
 
-        //Create initial DeliveryStatus
+        // Process order items
+        const orderItems = cartItems.map(item => ({
+            order_id: order.id,
+            product_id: item.product,
+            quantity: item.quantity,
+            price: item.price,
+            total_price: item.quantity * item.price,
+        }));
+        await db.OrderItem.bulkCreate(orderItems, { transaction });
+
+        // Reduce stock
+        for (const item of cartItems) {
+            const product = await db.Product.findByPk(item.product, { transaction });
+            if (product) {
+                product.stock -= item.quantity;
+                await product.save({ transaction });
+            }
+        }
+
+        // Set delivery status
         await db.DeliveryStatus.create({
             order_id: order.id,
-            status: 'pending', // Initial delivery status
-            notes: 'Order has been created and is pending processing.',
+            status: addressData ? 'pending' : 'ready_for_pickup',
+            notes: addressData 
+                ? 'Shipping address provided' 
+                : 'No address - customer will pickup'
         }, { transaction });
 
-        // Commit the transaction
         await transaction.commit();
         return { success: true, order_id: order.id, tracking_id: order.tracking_id };
+
     } catch (error) {
-        // Rollback on error
         await transaction.rollback();
-        console.error('Error creating order:', error);
+        console.error('Order creation failed:', error.message);
         return { success: false, error: error.message };
     }
+}
+
+// Helper function to flexibly get address from any source
+function getAddressFromAnySource(paymentData) {
+    // 1. Check Stripe shipping address first
+    if (paymentData.shipping?.address) {
+        return {
+            street_address: paymentData.shipping.address.line1,
+            city: paymentData.shipping.address.city,
+            state: paymentData.shipping.address.state,
+            country: paymentData.shipping.address.country
+        };
+    }
+
+    // 2. Check metadata
+    if (paymentData.metadata) {
+        const fromMeta = {
+            street_address: paymentData.metadata.address || paymentData.metadata.street_address,
+            city: paymentData.metadata.city,
+            state: paymentData.metadata.state,
+            country: paymentData.metadata.country
+        };
+        if (fromMeta.street_address && fromMeta.city) return fromMeta;
+    }
+
+    // 3. Check billing address
+    if (paymentData.billing_details?.address) {
+        return {
+            street_address: paymentData.billing_details.address.line1,
+            city: paymentData.billing_details.address.city,
+            state: paymentData.billing_details.address.state,
+            country: paymentData.billing_details.address.country
+        };
+    }
+
+    // Return null if no address found (no error thrown)
+    return null;
 }
 
 

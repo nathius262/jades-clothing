@@ -4,7 +4,7 @@ import * as orderService from '../../order/services/Order.service.js';
 import axios from 'axios';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-
+import Stripe from 'stripe';
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ dotenv.config();
 const page_logo = process.env.PAGELOGO
 const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY;
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const findAll = async (req, res) => {
   try {
@@ -93,6 +93,59 @@ export const checkout_view = async (req, res) => {
 };
 
 
+export const payment_intent_view =  async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+    
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      // Enable all payment methods you've activated in dashboard
+      //payment_method_types: ['card', 'us_bank_account', 'link', 'etc...'],
+      automatic_payment_methods: {
+        enabled: true, // Let Stripe handle which methods to show
+      },
+    });
+    
+    res.status(200).json({ clientSecret: paymentIntent.client_secret });
+  } catch (err) {
+    //console.log(err.message)
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+export const update_payment_intent_view = async (req, res) => {
+  try {
+    const { clientSecret, customer_details } = req.body;
+    
+    // Retrieve PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      clientSecret.split('_secret')[0] // Extract PI ID
+    );
+
+    // Update with customer details
+    const updatedIntent = await stripe.paymentIntents.update(
+      paymentIntent.id, {
+        metadata: {
+          customer_email: customer_details.email,
+          customer_name: `${customer_details.first_name} ${customer_details.last_name}`,
+          customer_phone: customer_details.phone
+        },
+        shipping: customer_details.shipping ? {
+          name: `${customer_details.first_name} ${customer_details.last_name}`,
+          phone: customer_details.phone,
+          address: customer_details.shipping
+        } : undefined
+      }
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const verify_paystack_transaction_view = async (req, res) => {
     const { reference } = req.query;
 
@@ -137,6 +190,85 @@ export const verify_paystack_transaction_view = async (req, res) => {
     } catch (error) {
         console.error('Error verifying transaction:', error.message);
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+
+export const stripe_webhook_handler_view = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    
+    try {
+        // 1. Verify the webhook signature
+        const event = stripe.webhooks.constructEvent(
+            req.rawBody,
+            sig,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+
+        // 2. Handle payment_intent.succeeded event
+        if (event.type === 'payment_intent.succeeded') {
+            const paymentIntent = event.data.object;
+
+            // Parse cart data from metadata or cookies
+            const cartCookies = req.cookies?.jades_cart;
+            if (!cartCookies) {
+                throw new Error('Cart is empty or missing');
+            }
+
+            let cartItems;
+            try {
+                cartItems = JSON.parse(cartCookies);
+            } catch (error) {
+                throw new Error('Invalid cart data format');
+            }
+
+            // Format payment data to match your existing createOrder service
+            const paymentData = {
+                id: paymentIntent.id,
+                amount: paymentIntent.amount / 100, // Convert to currency unit
+                currency: paymentIntent.currency,
+                customer: {
+                    email: paymentIntent.receipt_email || paymentIntent.metadata?.customer_email,
+                    first_name: paymentIntent.metadata?.customer_name?.split(' ')[0],
+                    last_name: paymentIntent.metadata?.customer_name?.split(' ')[1],
+                    phone: paymentIntent.metadata?.customer_phone
+                },
+                metadata: paymentIntent.metadata,
+                channel: 'stripe',
+                gateway_response: 'Payment successful',
+                paid_at: new Date(paymentIntent.created * 1000).toISOString()
+            };
+
+            // 3. Create Order (using your existing service)
+            const result = await orderService.createOrder(paymentData, cartItems);
+
+            if (!result.success) {
+                throw new Error(result.error.message);
+            }
+
+            // 4. Clear cart cookies
+            res.clearCookie('jades_cart');
+
+            // 5. Send tracking email
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            await sendTrackingEmail(
+                paymentData.customer.email, 
+                result.tracking_id, 
+                baseUrl
+            );
+
+            return res.status(200).json(result);
+        }
+
+        // Handle other event types if needed
+        return res.status(200).json({ received: true, });
+
+    } catch (error) {
+        console.error('Webhook processing error:', error.message);
+        return res.status(400).json({ 
+            success: false, 
+            error: error.message 
+        });
     }
 };
 

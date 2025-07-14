@@ -14,6 +14,11 @@ import conditionalRendering from './src/middlewares/conditionalRender.middleware
 import { adminAuthMiddleware } from './src/middlewares/adminAuth.middleware.js';
 import fetchGlobalEntitiesWithCache from './src/middlewares/fetchGlobalEntitiesWithCache.js';
 
+
+//WEBHOOKS HANDLER
+import webHookRoute from './src/modules/order/routes/hooks/order.routes.js';
+
+
 // Resolve __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +31,9 @@ const app = express();
 configureViewEngine(app);
 
 app.use(eventLogger);
+
+//WEBHOOKS HANDLER
+app.use('/webhooks', webHookRoute);
 
 // Middleware
 app.use(cookieParser());

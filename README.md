@@ -80,6 +80,14 @@ npm run dev
 
 ---
 
+
+## Documentation Reference
+
+- [Stripe](https://docs.stripe.com/checkout/quickstart?success=true&lang=node)
+- Testing stripe on https localhost: 
+    - [lclhost](https://lcl.host/)
+    - [stripe tutoral](https://www.youtube.com/watch?v=fgbEwVWlpsI&t=1088s)
+
 ## 📄 License
 
 MIT License

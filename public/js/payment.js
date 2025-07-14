@@ -174,7 +174,7 @@ export class PaymentHandler {
     messageAlert(
       'Payment Successful',
       'Order confirmed! Check your email for details.',
-      '/order-confirmation',
+      '/order/complete',
       'text-success',
       'btn-success'
     );

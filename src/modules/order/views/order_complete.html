@@ -1,0 +1,53 @@
+<style>
+  .confirmation-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .confirmation-icon {
+    font-size: 4rem;
+    color: #28a745; /* Green color */
+    margin-bottom: 1.5rem;
+  }
+  .confirmation-message {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .tracking-link {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #000;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  .tracking-link:hover {
+    background-color: #28a745;
+    color: white;
+    transform: translateY(-2px);
+  }
+</style>
+
+<div class="confirmation-container">
+  <div class="confirmation-message">
+    <!-- Success Icon -->
+    <div class="confirmation-icon">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    
+    <!-- Thank You Message -->
+    <h2 class="mb-3">Thank You For Your Order!</h2>
+    <p class="lead mb-4">We've received your payment and your order is being processed.</p>
+    
+    <!-- Email Confirmation -->
+    <div class="alert alert-light mb-4">
+      <i class="bi bi-envelope-check me-2"></i>
+      Please check your inbox for the order confirmation email
+    </div>
+  </div>
+</div>

@@ -123,6 +123,16 @@ export const payment_intent_view =  async (req, res) => {
         enabled: true, // Let Stripe handle which methods to show
       },
     });
+
+    // Clear cart cookie immediately
+    res.clearCookie('jades_cart', {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production'
+    });
+
+
+
     
     res.status(200).json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {

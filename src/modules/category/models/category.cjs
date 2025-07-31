@@ -1,7 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
-const generateUniqueSlug = require('../../product/utils/slugHelper.cjs'); // Import the slug helper function
-
+const generateUniqueSlug = require('../../../utils/generate_slug.cjs');
 module.exports = (sequelize, DataTypes) => {
   class Category extends Model {
     /**

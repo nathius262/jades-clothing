@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import * as productService from '../modules/product/services/Product.service.js';
-import * as categoryService from '../modules/category/services/Category.service.js';
 import db from '../models/index.cjs';
 
 
@@ -8,7 +7,6 @@ import db from '../models/index.cjs';
 // Derive the equivalent of __dirname
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { Console } from 'console';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,59 +17,59 @@ dotenv.config();
 const page_logo = process.env.PAGELOGO
 
 export const index_view = async (req, res) => {
-    try {
-        const limit = 8
-        const offset = (1 - 1) * limit;
+  try {
+    const limit = 8
+    const offset = (1 - 1) * limit;
 
-        const products = await productService.findAll({offset, limit})
+    const products = await productService.findAll({ offset, limit })
 
-        //console.log(result.rows)
-        res.render('index', {
-            pageTitle: "Home",
-            pageLogo: page_logo,
-            products:products.products
-        });
-    } catch (err) {
-      console.log(err)
-        res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
-    }
+    //console.log(result.rows)
+    res.render('index', {
+      pageTitle: "Home",
+      pageLogo: page_logo,
+      products: products.products
+    });
+  } catch (err) {
+    console.log(err)
+    res.status(500).render('./errors/500', { message: 'Internal Server Error', error: err.message });
+  }
 };
 
 export const about_view = async (req, res) => {
-    try {
-        res.status(200).render('about', {pageTitle: "About"})
-    } catch (error) {
-        res.status(500).render('errors/500', {error: error.message})
-    }
+  try {
+    res.status(200).render('about', { pageTitle: "About" })
+  } catch (error) {
+    res.status(500).render('errors/500', { error: error.message })
+  }
 }
 
 export const contact_view = async (req, res) => {
-    try {
-        res.status(200).render('contact', {pageTitle: "Contact"})
-    } catch (error) {
-        res.status(500).render('errors/500', {error: error.message})
-    }
+  try {
+    res.status(200).render('contact', { pageTitle: "Contact" })
+  } catch (error) {
+    res.status(500).render('errors/500', { error: error.message })
+  }
 }
 
 export const privacy_policy_view = async (req, res) => {
-    try {
-        res.status(200).render('privacy_policy', {pageTitle: "Privacy-Policy"})
-    } catch (error) {
-        res.status(500).render('errors/500', {error: error.message})
-    }
+  try {
+    res.status(200).render('privacy_policy', { pageTitle: "Privacy-Policy" })
+  } catch (error) {
+    res.status(500).render('errors/500', { error: error.message })
+  }
 }
 
 export const terms_condition_view = async (req, res) => {
-    try {
-        res.status(200).render('terms_condition', {pageTitle: "Terms and Conditions"})
-    } catch (error) {
-        res.status(500).render('errors/500', {error: error.message})
-    }
+  try {
+    res.status(200).render('terms_condition', { pageTitle: "Terms and Conditions" })
+  } catch (error) {
+    res.status(500).render('errors/500', { error: error.message })
+  }
 }
 
 export const searchProducts = async (req, res) => {
   try {
-    const { 
+    const {
       searchTerm,
       name,
       min_price,
@@ -88,17 +86,17 @@ export const searchProducts = async (req, res) => {
     // Validate and parse inputs
     const numericPage = Math.max(1, parseInt(page));
     const numericPerPage = Math.max(1, Math.min(100, parseInt(per_page)));
-    
+
     // Prepare filters
     const filters = {
-      ...(searchTerm && { name: searchTerm, description:searchTerm, short_description:searchTerm }), // Changed to match service expectation
+      ...(searchTerm && { name: searchTerm, description: searchTerm, short_description: searchTerm }), // Changed to match service expectation
       ...(name && { name }),
       ...(min_price && { minPrice: parseFloat(min_price) }),
       ...(max_price && { maxPrice: parseFloat(max_price) }),
       ...(description && { description }),
       ...(short_description && { short_description }),
-      ...(categories && { 
-        categoryIds: categories.split(',').map(id => parseInt(id.trim())) 
+      ...(categories && {
+        categoryIds: categories.split(',').map(id => parseInt(id.trim()))
       }),
       limit: numericPerPage,
       offset: (numericPage - 1) * numericPerPage,
@@ -164,5 +162,23 @@ export const searchProducts = async (req, res) => {
       totalItems: 0,
       categories: await db.Category.findAll()
     });
+  }
+};
+
+export const sitemap_view = async (req, res) => {
+  try {
+    res.sendFile(path.join(__dirname, '../../src/views/sitemap.xml'));
+  } catch (error) {
+    console.error('Error serving sitemap:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+export const robots_view = async (req, res) => {
+  try {
+    res.sendFile(path.join(__dirname, '../../src/views/robots.txt'));
+  } catch (error) {
+    console.error('Error serving robots.txt:', error);
+    res.status(500).send('Internal Server Error');
   }
 };

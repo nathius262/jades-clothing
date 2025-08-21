@@ -55,7 +55,7 @@ export class PaymentHandler {
   static async initializeStripe() {
     try {
       // Initialize Stripe
-      this.stripe = Stripe('pk_test_51RhbUvRA4eanjY1qCKhGVBLKXri3bi66qlnGjZvnwSSYnNTHPl0MvOxzk07letE4CuM0AwBEZZHZCBOKobhid46200s30a9c3r');
+      this.stripe = Stripe('pk_live_51RhbUnEdzRV0dHrGnraw8RQdOR1MlrQFyT7rsBFief7H77m25oiYcjGjlI4JXhZJOJwcIYqHZca7RjVssGcCkvlc004Vl7eBTT');
       
       // Create Payment Intent
       const response = await fetch('/order/create-payment-intent', {

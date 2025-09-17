@@ -144,3 +144,5 @@ db.sqlite
 databases/
 
 tmp/
+.vercel
+.env*.local

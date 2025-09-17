@@ -47,48 +47,52 @@
         </div>
       </div>
 
-      <!-- Products Grid -->
-      <div class="row g-4">
-        {{#each products}}
+      <!-- Product Grid -->
+       
+      <div class="products-row row">
+          {{#each products}}
           <a href="/product/{{this.slug}}" class="col-md-4 col-sm-6 col-12 flex-shrink-0 pe-3 mb-4">
-                <div class="card h-100 border-0 shadow-0 hover-effect">
-                  <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
-                    <!-- Main Image -->
-                    {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
-                    <img src="{{mainImg.url}}" class="main-img"
-                      style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:all 0.5s ease;z-index:1;">
-                    {{/with}}
+            <div class="card h-100 border-0 shadow-0 hover-effect">
+              <div class="position-relative product-image-container" style="height: 400px; overflow: hidden;">
+                <!-- Main Image -->
+                {{#with (findPrimaryOrFirst this.images) as |mainImg|}}
+                <img src="{{mainImg.url}}" class="main-img"
+                  style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;transition:all 0.5s ease;z-index:1;">
+                {{/with}}
 
-                    <!-- Alternate Image with Zoom -->
-                    {{#with (findAlternateImage this.images) as |altImg|}}
-                    <img src="{{altImg.url}}" class="alt-img"
-                      style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transform:scale(1);transition:all 0.5s ease;z-index:2;">
-                    {{/with}}
+                <!-- Alternate Image with Zoom -->
+                {{#with (findAlternateImage this.images) as |altImg|}}
+                <img src="{{altImg.url}}" class="alt-img"
+                  style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transform:scale(1);transition:all 0.5s ease;z-index:2;">
+                {{/with}}
 
-                    <!-- Flash Overlay -->
-                    <div class="flash-overlay"
-                      style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;">
-                    </div>
-                  </div>
-                  <div class="card-body px-0">
-                    <div class="d-grid justify-content-start mb-2 px-0">
-                      <h5 class="card-title mb-0 text-capitalize fs-6 fw-bold">{{this.name}}</h5>
-                      <div class="d-flex justify-content-between">
-                        <span class="fw-light mt-1">${{this.price}}</span>
-                      </div>
-                    </div>
-                  </div>
+                <!-- Flash Overlay -->
+                <div class="flash-overlay"
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:3;pointer-events:none;">
                 </div>
-              </a>
-        {{else}}
-          <div class="col-12 text-center py-5">
-            <i class="bi bi-search display-1 text-muted mb-4"></i>
-            <h3 class="mb-3">No products found</h3>
-            <p class="text-muted">Try adjusting your search or filter criteria</p>
-            <a href="/search" class="btn btn-dark rounded-0">Clear all filters</a>
-          </div>
-        {{/each}}
-      </div>
+              </div>
+              <div class="card-body px-0">
+                <div class="d-grid justify-content-start mb-2 px-0">
+                  <h5 class="card-title mb-0 text-capitalize fs-6 fw-bold">{{this.name}}</h5>
+
+                  {{#if (lte this.stock 0)}}
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-light mt-1 text-decoration-line-through">${{this.price}}</span>
+                    <span class="text-danger fw-bold">Sold Out</span>
+                  </div>
+                  {{else}}
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-light mt-1">${{this.price}}</span>
+                  </div>
+                  {{/if}}
+
+                </div>
+              </div>
+            </div>
+          </a>
+          {{/each}}
+        </div>
+
 
       <!-- Pagination -->
       {{#if totalPages}}

@@ -1,5 +1,6 @@
 import * as service from '../services/admin.Product.service.js';
 import * as category from '../../category/services/admin.Category.service.js';
+import * as size from '../../size/services/admin.Size.service.js';
 import db from '../../../models/index.cjs';
 import { getPublicIdFromUrl } from '../utils/utils.js';
 import cloudinary from '../../../config/cloudinaryConfig.js';
@@ -24,16 +25,19 @@ export const findAll = async (req, res) => {
 
 export const findById = async (req, res) => {
   try {
-    const categories = await category.findAll()
+    const categories = await category.findAll();
     const data = await service.findById(req.params.id);
-    const productCategoryIds = new Set(data.categories.map(category => category.id));
-    console.log(productCategoryIds)
+
+    const productCategoryIds = new Set(data.categories.map(c => c.id));
+    const productSizeIds = new Set(data.sizes.map(s => s.id)); // NEW: capture sizes
+
     res.status(200).render('./admins/product_update', {
       success: true,
       pageTitle: "Update Record",
       product: data,
       categories,
-      productCategoryIds
+      productCategoryIds,
+      productSizeIds // pass to view
     });
   } catch (err) {
     res.status(404).render('errors/500', { error: err.message });
@@ -42,33 +46,42 @@ export const findById = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-
-    const request_data = req.body
+    const request_data = req.body;
 
     if (req.files && Array.isArray(req.files)) {
-      // Handle multiple files uploaded
-      request_data.images = req.files.map(file => file.path);  // Extract Cloudinary URLs
+      request_data.images = req.files.map(file => file.path);
     } else if (req.file) {
-      // Handle a single file uploaded (in case multer handles single file upload differently)
-      request_data.images = [req.file.path];  // Wrap it in an array for consistency
+      request_data.images = [req.file.path];
     } else {
-      request_data.images = [];  // No files uploaded
+      request_data.images = [];
+    }
+
+    // Expect sizes from form e.g. [{ size_id, price_override, stock }]
+    if (request_data.sizes && typeof request_data.sizes === 'string') {
+      request_data.sizes = JSON.parse(request_data.sizes);
     }
 
     const data = await service.create(request_data);
     res.status(201).json({ success: true, data, redirectTo: '/admin/product/' });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };
 
 export const update = async (req, res) => {
   try {
-    const data = await service.update(req.params.id, req.body);
-    res.status(200).json({ success: true, data, redirectTo: '/admin/product/'+req.params.id });
+    const request_data = req.body;
+
+    // Parse sizes if sent as JSON string
+    if (request_data.sizes && typeof request_data.sizes === 'string') {
+      request_data.sizes = JSON.parse(request_data.sizes);
+    }
+
+    const data = await service.update(req.params.id, request_data);
+    res.status(200).json({ success: true, data, redirectTo: '/admin/product/' + req.params.id });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -82,11 +95,14 @@ export const destroy = async (req, res) => {
   }
 };
 
+
 export const renderCreate = async (req, res) => {
   const categories = await category.findAll();
+  const sizes = await size.findAll();
   try {
     res.status(200).render('./admins/product_create', {
       categories: categories,
+      sizes: sizes,
       pageTitle: "Create Product"
     });
   } catch (err) {

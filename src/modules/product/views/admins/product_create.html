@@ -134,6 +134,23 @@
                     </select>
                   </div>
 
+                  <!-- Select Sizes -->
+<div class="form-group">
+  <label for="sizes">Sizes</label>
+  <select id="size-selector" class="form-control" multiple>
+    {{#each sizes}}
+      <option value="{{this.id}}">{{this.name}}</option>
+    {{/each}}
+  </select>
+</div>
+
+<!-- Dynamic size details will show here -->
+<div id="selected-sizes"></div>
+
+<!-- Hidden input to store JSON payload -->
+<input type="hidden" name="sizes" id="sizes-json">
+
+
                   
                   <!-- Product short description -->
                   <div class="form-group">
@@ -199,6 +216,67 @@
     reader.readAsDataURL(input.files[0]);
   }
 </script>
+
+<script>
+  const sizeSelector = document.getElementById('size-selector');
+  const selectedSizesContainer = document.getElementById('selected-sizes');
+  const sizesJsonInput = document.getElementById('sizes-json');
+
+  sizeSelector.addEventListener('change', () => {
+    selectedSizesContainer.innerHTML = ''; // reset
+
+    Array.from(sizeSelector.selectedOptions).forEach(option => {
+      const sizeId = option.value;
+      const sizeName = option.text;
+
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('border', 'p-2', 'mb-2', 'size-wrapper');
+
+
+      wrapper.innerHTML = `
+        <h6>${sizeName}</h6>
+        <input type="hidden" class="size-id" value="${sizeId}">
+        <div class="form-group">
+          <label>Stock</label>
+          <input type="number" class="form-control size-stock" placeholder="Stock for ${sizeName}">
+        </div>
+        <div class="form-group">
+          <label>Price Override</label>
+          <input type="number" class="form-control size-price" placeholder="Price override (optional)">
+        </div>
+      `;
+
+      selectedSizesContainer.appendChild(wrapper);
+    });
+    updateSizesJson();
+  });
+
+  // Update hidden input before submit
+  document.getElementById('create-new-product').addEventListener('submit', (e) => {
+    updateSizesJson();
+  });
+
+  function updateSizesJson() {
+    const sizeWrappers = selectedSizesContainer.querySelectorAll('.size-wrapper'); // use class
+    const sizes = [];
+
+    sizeWrappers.forEach(wrapper => {
+      const sizeId = wrapper.querySelector('.size-id').value;
+      const stock = wrapper.querySelector('.size-stock').value || 0;
+      const priceOverride = wrapper.querySelector('.size-price').value || null;
+
+      sizes.push({
+        size_id: parseInt(sizeId, 10),
+        stock: parseInt(stock, 10),
+        price_override: priceOverride ? parseFloat(priceOverride) : null
+      });
+    });
+
+    sizesJsonInput.value = JSON.stringify(sizes);
+  }
+
+</script>
+
 
 <!-- Core plugin JavaScript-->
 <script type="module" src="/assets/js/product.js"></script>

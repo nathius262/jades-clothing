@@ -26,16 +26,19 @@ export const findAll = async (req, res) => {
 export const findById = async (req, res) => {
   try {
     const categories = await category.findAll();
+    const sizes = await size.findAll();
     const data = await service.findById(req.params.id);
 
     const productCategoryIds = new Set(data.categories.map(c => c.id));
     const productSizeIds = new Set(data.sizes.map(s => s.id)); // NEW: capture sizes
+
 
     res.status(200).render('./admins/product_update', {
       success: true,
       pageTitle: "Update Record",
       product: data,
       categories,
+      sizes,
       productCategoryIds,
       productSizeIds // pass to view
     });

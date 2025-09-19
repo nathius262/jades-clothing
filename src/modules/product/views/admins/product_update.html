@@ -105,6 +105,47 @@
                     </select>
                   </div>
 
+                  <div class="form-group">
+                  <label>Sizes</label>
+                  <div id="selected-sizes">
+                    {{#each product.sizes}}
+                      <div class="border p-2 mb-2 size-wrapper" data-size-id="{{this.id}}">
+                        <div class="form-row align-items-end">
+                          <div class="col">
+                            <label>Size</label>
+                            <select class="form-control size-select" disabled>
+                              {{#each ../sizes}}
+                                <option value="{{this.id}}" {{#if (eq this.id ../id)}}selected{{/if}}>{{this.name}}</option>
+                              {{/each}}
+                            </select>
+                          </div>
+                          <div class="col">
+                            <label>Stock</label>
+                            <input type="number" class="form-control size-stock" value="{{this.ProductSize.stock}}">
+                          </div>
+                          <div class="col">
+                            <label>Price override (optional)</label>
+                            <input type="number" class="form-control size-price" value="{{this.ProductSize.price_override}}">
+                          </div>
+                          <div class="col-auto">
+                            <button type="button" class="btn btn-danger remove-size">Remove</button>
+                          </div>
+                        </div>
+                      </div>
+                    {{/each}}
+                  </div>
+                  <button type="button" id="add-size" class="btn btn-primary mt-2">Add Size</button>
+                </div>
+
+                <!-- hidden payload for backend -->
+                <input type="hidden" name="sizes" id="sizes-json">
+
+                <script>
+                  const sizesData = JSON.parse('{{{json sizes}}}'); // all sizes from backend
+                </script>
+
+
+
                   <!-- Image Upload Section -->
                   <div class="form-group row d-block">
                     <label for="images">Add New Images</label>
@@ -159,6 +200,8 @@
 </div>
 <!-- End of Page Wrapper -->
 <script>
+  
+  
   document.getElementById('uploadImagesBtn').addEventListener('click', function () {
     const fileInput = document.getElementById('id_image_file');
     const files = fileInput.files;
@@ -208,6 +251,7 @@
     })
     .catch(error => console.error('Error uploading images:', error));
   });
+
 </script>
 
 

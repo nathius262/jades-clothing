@@ -12,17 +12,19 @@ export class CartService {
   }
 
   /**
-   * Add/update item in cart
+   * Add/update item in cart (product + sizeId combo)
    */
-  static addItem(req, res, productId, quantity, price) {
+  static addItem(req, res, productId, sizeId, quantity, price) {
     if (!req.session.cart) req.session.cart = [];
 
-    const existingItem = req.session.cart.find(item => item.product === productId);
-    
+    const existingItem = req.session.cart.find(
+      item => item.product === productId && item.sizeId === sizeId
+    );
+
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      req.session.cart.push({ product: productId, quantity, price });
+      req.session.cart.push({ product: productId, sizeId, quantity, price });
     }
 
     this._syncCartToCookie(req, res);
@@ -31,20 +33,25 @@ export class CartService {
   /**
    * Remove item from cart
    */
-  static removeItem(req, res, productId) {
+  static removeItem(req, res, productId, sizeId) {
     if (!req.session.cart) return;
 
-    req.session.cart = req.session.cart.filter(item => item.product !== productId);
+    req.session.cart = req.session.cart.filter(
+      item => !(item.product === productId && item.sizeId === sizeId)
+    );
+
     this._syncCartToCookie(req, res);
   }
 
   /**
    * Update item quantity
    */
-  static updateQuantity(req, res, productId, newQuantity) {
+  static updateQuantity(req, res, productId, sizeId, newQuantity) {
     if (!req.session.cart) return false;
 
-    const item = req.session.cart.find(item => item.product === productId);
+    const item = req.session.cart.find(
+      item => item.product === productId && item.sizeId === sizeId
+    );
     if (!item) return false;
 
     item.quantity = newQuantity;

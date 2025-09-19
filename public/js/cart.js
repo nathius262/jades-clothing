@@ -42,75 +42,83 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-    // Add to cart button handlers - modified version
-// Add to cart button handlers - updated version
-document.querySelectorAll('.add-to-cart').forEach(button => {
-  button.addEventListener('click', async function() {
-    const productId = this.dataset.productId;
-    const price = this.dataset.productPrice;
+  // Add to cart button handlers - updated version
+  document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', async function() {
+      const productId = this.dataset.productId;
+      let price = this.dataset.productPrice;
 
-    
-    // Check if this is on a detail page with quantity controls
-    const quantityControl = document.querySelector(`.quantity-controls[data-product-id="${productId}"]`);
-    const isDetailPage = !!quantityControl;
-    let quantity = 1;
-    
-    if (isDetailPage) {
-      quantity = parseInt(quantityControl.querySelector('.quantity-input').value);
-    }
-    
-    // Disable button during operation
-    const originalHtml = this.innerHTML;
-    this.disabled = true;
-    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
-    
-    try {
-      // For non-detail pages, check if item exists first
-      if (!isDetailPage) {
-        const cartResponse = await fetch('/cart/api');
-        if (!cartResponse.ok) throw new Error('Could not fetch cart');
-        
-        const cartData = await cartResponse.json();
-        const existingItem = cartData.cart.find(item => item.product === productId);
-        
-        if (existingItem) {
-          showToast(`This item is already in your cart (Quantity: ${existingItem.quantity})`, 'info');
-          return;
-        }
+      // 🔹 NEW: detect size selection if available
+      const selectedSize = document.querySelector('input[name="selected-size"]:checked');
+      let sizeId = null;
+      if (selectedSize) {
+        sizeId = selectedSize.value;
+        price = selectedSize.dataset.price; // override price if size has custom price
       }
-      
-      // Proceed with add/update
-      const addResponse = await fetch('/cart/api/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, quantity, price })
-      });
-      
-      if (addResponse.ok) {
-        updateCartBadge();
-        showToast(isDetailPage ? 'Cart updated' : 'Item added to cart');
-        
-        // Reset quantity controls if on detail page
-        if (isDetailPage) {
-          const input = quantityControl.querySelector('.quantity-input');
-          input.value = 1;
-          input.dataset.originalValue = '1';
-          this.disabled = true;
-        }
-      } else {
-        throw new Error('Failed to add item to cart');
+
+      // Check if this is on a detail page with quantity controls
+      const quantityControl = document.querySelector(`.quantity-controls[data-product-id="${productId}"]`);
+      const isDetailPage = !!quantityControl;
+      let quantity = 1;
+
+      if (isDetailPage) {
+        quantity = parseInt(quantityControl.querySelector('.quantity-input').value);
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Error adding item to cart', 'danger');
-    } finally {
-      this.innerHTML = originalHtml;
-      this.disabled = false;
-    }
+
+      // Disable button during operation
+      const originalHtml = this.innerHTML;
+      this.disabled = true;
+      this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+
+      try {
+        // For non-detail pages, check if item exists first
+        if (!isDetailPage) {
+          const cartResponse = await fetch('/cart/api');
+          if (!cartResponse.ok) throw new Error('Could not fetch cart');
+
+          const cartData = await cartResponse.json();
+          const existingItem = cartData.cart.find(item => 
+            item.product === productId && (!sizeId || item.sizeId == sizeId)
+          );
+
+          if (existingItem) {
+            showToast(`This item is already in your cart (Quantity: ${existingItem.quantity})`, 'info');
+            return;
+          }
+        }
+
+        // Proceed with add/update
+        const addResponse = await fetch('/cart/api/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId, sizeId, quantity, price })
+        });
+
+        if (addResponse.ok) {
+          updateCartBadge();
+          showToast(isDetailPage ? 'Cart updated' : 'Item added to cart');
+
+          // Reset quantity controls if on detail page
+          if (isDetailPage) {
+            const input = quantityControl.querySelector('.quantity-input');
+            input.value = 1;
+            input.dataset.originalValue = '1';
+            this.disabled = true;
+          }
+        } else {
+          throw new Error('Failed to add item to cart');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error adding item to cart', 'danger');
+      } finally {
+        this.innerHTML = originalHtml;
+        this.disabled = false;
+      }
+    });
   });
-});
 
   // Function to toggle add to cart button state
   function toggleAddToCartButton(input, button) {

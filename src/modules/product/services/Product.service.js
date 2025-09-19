@@ -45,6 +45,11 @@ export const findBySlug = async (slug) => {
           as: 'categories', 
           through: { attributes: [] } 
         },
+        {
+          model: db.Size,
+          as: 'sizes',
+          through: { attributes: ['price_override', 'stock'] } // expose pivot fields
+        },
         { 
           model: db.Image, 
           as: 'images', 

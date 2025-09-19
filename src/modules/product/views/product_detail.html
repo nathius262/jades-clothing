@@ -63,6 +63,11 @@
       font-size: 0.9rem;
     }
   }
+
+  .form-check-input:checked {
+    background-color: rgba(var(--bs-dark-rgb),var(--bs-text-opacity))!important;
+    border-color: rgba(var(--bs-dark-rgb),var(--bs-text-opacity))!important;
+  }
 </style>
 
 <section class="container my-5">
@@ -141,6 +146,30 @@
           {{product.stock}}
         {{/if}}
       </div>
+
+      <div class="mt-4">
+  <span class="fw-bold">Choose Size:</span>
+  <div class="mt-2">
+    {{#each product.sizes}}
+      <div class="form-check">
+        <input class="form-check-input text-dark" type="radio" name="selected-size" id="size-{{this.id}}" value="{{this.id}}" 
+          data-stock="{{this.ProductSize.stock}}" 
+          data-price="{{#if this.ProductSize.price_override}}{{this.ProductSize.price_override}}{{else}}{{../product.price}}{{/if}}"
+          {{#if (lte this.ProductSize.stock 0)}}disabled{{/if}}>
+        <label class="form-check-label" for="size-{{this.id}}">
+          {{this.name}} — 
+          {{#if this.ProductSize.price_override}}
+            ${{this.ProductSize.price_override}}
+          {{else}}
+            ${{../product.price}}
+          {{/if}}
+          {{#if (lte this.ProductSize.stock 0)}} <span class="text-danger">(Out of stock)</span>{{/if}}
+        </label>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
 
       <!-- Quantity Controls -->
       <div class="d-grid my-4">

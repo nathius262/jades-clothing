@@ -37,4 +37,7 @@ export default function registerHelpers(handlebars) {
     if (!options.data.root) options.data.root = {};
     options.data.root[varName] = varValue;
   });
+  handlebars.registerHelper("json", function (context) {
+    return JSON.stringify(context);
+  });
 }

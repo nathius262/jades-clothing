@@ -251,3 +251,104 @@ function readURL(input){
   reader.readAsDataURL(input.files[0]);
 }
 
+try {
+  document.addEventListener("DOMContentLoaded", () => {
+  
+  const selectedSizesContainer = document.getElementById("selected-sizes");
+  const addSizeBtn = document.getElementById("add-size");
+  const sizesJsonInput = document.getElementById("sizes-json");
+
+  function updateHiddenInput() {
+    const payload = [];
+    selectedSizesContainer.querySelectorAll(".size-wrapper").forEach(wrapper => {
+      payload.push({
+        size_id: parseInt(wrapper.querySelector(".size-select").value),
+        stock: parseInt(wrapper.querySelector(".size-stock").value) || 0,
+        price_override: wrapper.querySelector(".size-price").value || null
+      });
+    });
+    sizesJsonInput.value = JSON.stringify(payload);
+  }
+
+  function getUsedSizeIds() {
+    return Array.from(selectedSizesContainer.querySelectorAll(".size-select"))
+      .map(sel => parseInt(sel.value));
+  }
+
+  function createSizeRow(sizeId = null, stock = 0, price = null) {
+    const used = getUsedSizeIds();
+
+    // Build dropdown
+    let optionsHtml = sizesData.map(s => {
+      const disabled = used.includes(s.id) && s.id !== sizeId ? "disabled" : "";
+      const selected = s.id === sizeId ? "selected" : "";
+      return `<option value="${s.id}" ${disabled} ${selected}>${s.name}</option>`;
+    }).join("");
+
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("border", "p-2", "mb-2", "size-wrapper");
+    wrapper.innerHTML = `
+      <div class="form-row align-items-end">
+        <div class="col">
+          <label>Size</label>
+          <select class="form-control size-select">${optionsHtml}</select>
+        </div>
+        <div class="col">
+          <label>Stock</label>
+          <input type="number" class="form-control size-stock" value="${stock}">
+        </div>
+        <div class="col">
+          <label>Price override (optional)</label>
+          <input type="number" class="form-control size-price" value="${price ?? ""}">
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-danger remove-size">Remove</button>
+        </div>
+      </div>
+    `;
+
+    // Remove handler
+    wrapper.querySelectorAll(".remove-size").forEach(btn => {
+      btn.addEventListener("click", () => {
+        wrapper.remove();
+        refreshDropdowns();
+        updateHiddenInput();
+      });
+    });
+
+    // Change handlers
+    wrapper.querySelectorAll("input, select").forEach(el => {
+      el.addEventListener("input", () => {
+        refreshDropdowns();
+        updateHiddenInput();
+      });
+    });
+
+    selectedSizesContainer.appendChild(wrapper);
+    refreshDropdowns();
+    updateHiddenInput();
+  }
+
+  function refreshDropdowns() {
+    const used = getUsedSizeIds();
+    selectedSizesContainer.querySelectorAll(".size-select").forEach(sel => {
+      const currentVal = parseInt(sel.value);
+      sel.querySelectorAll("option").forEach(opt => {
+        const val = parseInt(opt.value);
+        opt.disabled = used.includes(val) && val !== currentVal;
+      });
+    });
+  }
+
+  // Add button
+  addSizeBtn.addEventListener("click", () => {
+    createSizeRow();
+  });
+
+  // Initial update
+  updateHiddenInput();
+});
+}
+catch (e) {
+  console.log("No sizes available", e);
+}

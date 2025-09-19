@@ -51,6 +51,7 @@ export const findById = async (id) => {
     if (!item) throw new Error('Not found');
     return item;
   } catch (error) {
+    console.log(error)
     throw new Error('Error fetching record: ' + error.message);
   }
 };

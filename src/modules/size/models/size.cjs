@@ -12,10 +12,15 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Size.belongsToMany(models.Product, {
-      through: models.ProductSize,
-      foreignKey: 'size_id',
-      as: 'products'
-    });
+        through: models.ProductSize,
+        foreignKey: 'size_id',
+        as: 'products'
+      });
+
+      Size.hasMany(models.ProductSize, {
+        as: 'productSizes',
+        foreignKey: 'size_id'
+      });
     }
   }
   Size.init({

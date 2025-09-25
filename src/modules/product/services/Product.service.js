@@ -109,18 +109,30 @@ export const findBySlug = async (slug) => {
 
 export const findById = async (id) => {
   try {
-     const item = await db.Product.findByPk(id, {
-        include: [
-            { model: db.Category, as: 'categories', through: { attributes: [] } },
-            { model: db.Image, as: 'images', attributes: ['url', 'id', 'is_primary'] },
-        ],
+    const item = await db.Product.findByPk(id, {
+      include: [
+        { model: db.Category, as: 'categories', through: { attributes: [] } },
+        { model: db.Image, as: 'images', attributes: ['url', 'id', 'is_primary'] },
+
+        // include the pivot model and the size model
+        {
+          model: db.ProductSize,
+          as: 'productSizes',
+          attributes: ['id', 'size_id', 'stock', 'price_override'],
+          include: [
+            { model: db.Size, as: 'size', attributes: ['id', 'name'] }
+          ]
+        }
+      ]
     });
-    if (!item) throw new Error('Not found');
+
     return item;
-  } catch (error) {
-    throw new Error('Error fetching record: ' + error.message);
+  } catch (err) {
+    throw new Error('Error fetching record: ' + err.message);
   }
 };
+
+
 export const filterProducts = async (filters = {}) => {
   try {
     const {
@@ -230,5 +242,21 @@ export const filterProducts = async (filters = {}) => {
   } catch (error) {
     console.error('Filter products error:', error);
     throw new Error('Error filtering products: ' + error.message);
+  }
+};
+
+export const checkStock = async (productId, sizeId, quantity) => {
+  if (sizeId) {
+    const productSize = await db.ProductSize.findOne({
+      where: { product_id: productId, size_id: sizeId }
+    });
+    if (!productSize || productSize.stock < quantity) {
+      throw new Error('Insufficient stock for selected size');
+    }
+  } else {
+    const product = await db.Product.findByPk(productId);
+    if (!product || product.stock < quantity) {
+      throw new Error('Insufficient stock');
+    }
   }
 };

@@ -2,12 +2,12 @@
 
 export class CartManager {
   // Update item quantity
-  static async updateItem(productId, quantity) {
+  static async updateItem(productId, sizeId, quantity) {
     try {
       const response = await fetch('/cart/api/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, quantity })
+        body: JSON.stringify({ productId, sizeId, quantity })
       });
 
       if (!response.ok) throw new Error('Failed to update cart');
@@ -19,12 +19,12 @@ export class CartManager {
   }
 
   // Remove item from cart
-  static async removeItem(productId) {
+  static async removeItem(productId, sizeId) {
     try {
       const response = await fetch('/cart/api/remove', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId })
+        body: JSON.stringify({ productId, sizeId })
       });
 
       if (!response.ok) throw new Error('Failed to remove item');
@@ -51,30 +51,33 @@ export class CartManager {
     // Quantity controls
     document.querySelectorAll('.quantity-controls').forEach(control => {
       const productId = control.dataset.productId;
+      const sizeId = control.dataset.sizeId; // 👈 added
       const input = control.querySelector('.quantity-input');
       
       control.querySelector('.decrement-btn').addEventListener('click', () => {
         let newQty = parseInt(input.value) - 1;
         if (newQty < 1) newQty = 1;
-        this.updateItem(productId, newQty);
+        this.updateItem(productId, sizeId, newQty);
       });
 
       control.querySelector('.increment-btn').addEventListener('click', () => {
         const newQty = parseInt(input.value) + 1;
-        this.updateItem(productId, newQty);
+        this.updateItem(productId, sizeId, newQty);
       });
 
       input.addEventListener('change', () => {
         let newQty = parseInt(input.value);
         if (isNaN(newQty)) newQty = 1;
-        this.updateItem(productId, newQty);
+        this.updateItem(productId, sizeId, newQty);
       });
     });
 
     // Remove buttons
     document.querySelectorAll('.remove-item').forEach(btn => {
+      const productId = btn.dataset.productId;
+      const sizeId = btn.dataset.sizeId; // 👈 added
       btn.addEventListener('click', () => {
-        this.removeItem(btn.dataset.productId);
+        this.removeItem(productId, sizeId);
       });
     });
 

@@ -40,55 +40,88 @@ export const findById = async (req, res) => {
 };
 
 export const checkout_view = async (req, res) => {
-    try {
-        // Get cart from cookies or initialize empty cart
-        let cart = [];
+  try {
+    // Get cart from cookies or initialize empty cart
+    let cart = [];
 
-        try {
-            if (!req.session.cart || !req.session.jades_cart) cart = JSON.parse(req.cookies.jades_cart) || JSON.parse(req.cookies.cart)
-            else if (!req.cookies.jades_cart) cart = req.session.jades_cart || req.session.cart
-            else cart = [];
-        } catch (error) {
-            console.log(error)
-            cart = [];
+    try {
+      if (!req.session.cart || !req.session.jades_cart) cart = JSON.parse(req.cookies.jades_cart) || JSON.parse(req.cookies.cart)
+      else if (!req.cookies.jades_cart) cart = req.session.jades_cart || req.session.cart
+      else cart = [];
+    } catch (error) {
+      console.log(error)
+      cart = [];
+    }
+
+
+
+    const cartItems = await Promise.all(
+      cart.map(async (item) => {
+        const product = await productService.findById(item.product);
+
+        // default
+        let price = product.price;
+        let sizeName = null;
+
+        // normalize sizeId to number for reliable comparison
+        const requestedSizeId = item.sizeId ? parseInt(item.sizeId, 10) : null;
+
+        if (requestedSizeId) {
+          // guard: product.productSizes might be undefined
+          const variants = Array.isArray(product.productSizes) ? product.productSizes : [];
+
+          // find variant by numeric comparison
+          const variant = variants.find(s => {
+            // s.size_id might be number; use loose equality or numeric compare
+            return Number(s.size_id) === requestedSizeId;
+          });
+
+         
+          if (variant) {
+            // price_override may be null => fallback to product.price
+            price = (variant.price_override != null && variant.price_override !== '') ? Number(variant.price_override) : product.price;
+            sizeName = variant.size ? variant.size.name : null;
+          } else {
+            // no variant found: fallback (you may want to log or throw here)
+            console.warn(`No productSize variant found for product ${product.id} size ${requestedSizeId}`);
+          }
         }
 
-        
+        return {
+          id: item.product,
+          sizeId: requestedSizeId,
+          sizeName,
+          quantity: item.quantity,
+          price,
+          name: product.name,
+          images: product.images,
+          description: product.description,
+          itemTotal: item.quantity * price,
+        };
+      })
+    );
 
-        // Fetch product details for each item in cart
-        const cartItems = await Promise.all(cart.map(async (item) => {
-            const product = await productService.findById(item.product);
-            return {
-                id: item.product,
-                quantity: item.quantity,
-                price: product.price,
-                name: product.name,
-                images: product.images,
-                description: product.description,
-                itemTotal: item.quantity * product.price,
-            };
-        }));
-        
-        // Calculate totals
-        const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = cartItems.reduce((sum, item) => sum + item.itemTotal, 0);
-        const shippingFee = 0;
 
-        res.render('checkout', {
-            pageTitle: "Checkout",
-            cartItems,
-            totalQty,
-            totalPrice,
-            shippingFee,
-            total: totalPrice + shippingFee
-        });
-    } catch (err) {
-        console.error('Checkout error:', err);
-        res.status(500).render('./errors/500', { 
-            message: 'Internal Server Error', 
-            error: err.message 
-        });
-    }
+    // Calculate totals
+    const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = cartItems.reduce((sum, item) => sum + item.itemTotal, 0);
+    const shippingFee = 0;
+
+    res.render('checkout', {
+      pageTitle: "Checkout",
+      cartItems,
+      totalQty,
+      totalPrice,
+      shippingFee,
+      total: totalPrice + shippingFee
+    });
+  } catch (err) {
+    console.error('Checkout error:', err);
+    res.status(500).render('./errors/500', {
+      message: 'Internal Server Error',
+      error: err.message
+    });
+  }
 };
 
 
@@ -108,18 +141,18 @@ export const payment_intent_view = async (req, res) => {
       } else if (req.session?.cart) {
         cartItems = req.session.cart;
       } else {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'No cart data found' 
+        return res.status(400).json({
+          success: false,
+          error: 'No cart data found'
         });
       }
 
       if (!Array.isArray(cartItems)) throw new Error('Invalid cart format');
     } catch (error) {
       console.error('Cart parsing error:', error);
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid cart data format' 
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid cart data format'
       });
     }
 
@@ -144,10 +177,10 @@ export const payment_intent_view = async (req, res) => {
       sameSite: 'strict',
       secure: process.env.NODE_ENV === 'production'
     };
-    
+
     res.clearCookie('jades_cart', cookieOptions);
     res.clearCookie('cart', cookieOptions);
-    
+
     // 2. Session
     if (req.session) {
       delete req.session.jades_cart;
@@ -158,14 +191,14 @@ export const payment_intent_view = async (req, res) => {
       });
     }
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       message: 'Cart cleared successfully'
     });
 
   } catch (err) {
     console.error('Payment Intent Error:', err);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Failed to create payment intent',
       details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
@@ -178,7 +211,7 @@ export const payment_intent_view = async (req, res) => {
 export const update_payment_intent_view = async (req, res) => {
   try {
     const { clientSecret, customer_details } = req.body;
-    
+
     // Retrieve PaymentIntent
     const paymentIntent = await stripe.paymentIntents.retrieve(
       clientSecret.split('_secret')[0] // Extract PI ID
@@ -187,17 +220,17 @@ export const update_payment_intent_view = async (req, res) => {
     // Update with customer details
     const updatedIntent = await stripe.paymentIntents.update(
       paymentIntent.id, {
-        metadata: {
-          customer_email: customer_details.email,
-          customer_name: `${customer_details.first_name} ${customer_details.last_name}`,
-          customer_phone: customer_details.phone
-        },
-        shipping: customer_details.shipping ? {
-          name: `${customer_details.first_name} ${customer_details.last_name}`,
-          phone: customer_details.phone,
-          address: customer_details.shipping
-        } : undefined
-      }
+      metadata: {
+        customer_email: customer_details.email,
+        customer_name: `${customer_details.first_name} ${customer_details.last_name}`,
+        customer_phone: customer_details.phone
+      },
+      shipping: customer_details.shipping ? {
+        name: `${customer_details.first_name} ${customer_details.last_name}`,
+        phone: customer_details.phone,
+        address: customer_details.shipping
+      } : undefined
+    }
     );
 
     res.json({ success: true });
@@ -207,88 +240,88 @@ export const update_payment_intent_view = async (req, res) => {
 };
 
 export const verify_paystack_transaction_view = async (req, res) => {
-    const { reference } = req.query;
+  const { reference } = req.query;
 
-    try {
-        // Parse cart data from cookies
-        const cartCookies = req.cookies?.jades_cart;
-        if (!cartCookies) {
-            return res.status(400).json({ success: false, error: 'Cart is empty or missing.' });
-        }
-
-        let cartItems;
-        try {
-            cartItems = JSON.parse(cartCookies); // Parse the cookie data
-        } catch (error) {
-            return res.status(400).json({ success: false, error: 'Invalid cart data format.' });
-        }
-
-        // Verify Payment with Paystack
-        const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
-            headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` }, // Replace with your secret key
-        });
-
-        const paymentData = response.data.data;
-
-        // Create Order
-        const result = await orderService.createOrder(paymentData, cartItems);
-
-        if (result.success) {
-            // Clear cart cookies
-            res.clearCookie('jades_cart');
-
-            // Dynamically generate base URL from the request
-            const baseUrl = `${req.protocol}://${req.get('host')}`;
-
-            // Send tracking email
-            await sendTrackingEmail(paymentData.customer.email, result.tracking_id, baseUrl);
-
-            res.status(200).json(result);
-        } else {
-            res.status(400).json({ success: false, error: result.error.message });
-        }
-    } catch (error) {
-        console.error('Error verifying transaction:', error.message);
-        res.status(500).json({ success: false, error: error.message });
+  try {
+    // Parse cart data from cookies
+    const cartCookies = req.cookies?.jades_cart;
+    if (!cartCookies) {
+      return res.status(400).json({ success: false, error: 'Cart is empty or missing.' });
     }
+
+    let cartItems;
+    try {
+      cartItems = JSON.parse(cartCookies); // Parse the cookie data
+    } catch (error) {
+      return res.status(400).json({ success: false, error: 'Invalid cart data format.' });
+    }
+
+    // Verify Payment with Paystack
+    const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+      headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` }, // Replace with your secret key
+    });
+
+    const paymentData = response.data.data;
+
+    // Create Order
+    const result = await orderService.createOrder(paymentData, cartItems);
+
+    if (result.success) {
+      // Clear cart cookies
+      res.clearCookie('jades_cart');
+
+      // Dynamically generate base URL from the request
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+      // Send tracking email
+      await sendTrackingEmail(paymentData.customer.email, result.tracking_id, baseUrl);
+
+      res.status(200).json(result);
+    } else {
+      res.status(400).json({ success: false, error: result.error.message });
+    }
+  } catch (error) {
+    console.error('Error verifying transaction:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
 
 
-export const order_complete_view = async (req, res) =>{
-  
-    try {
-        // Render the checkout page with the retrieved products
-        return res.render('order_complete', {pageTitle: "Order Completed"});
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send('Internal Server Error');
-    }
+export const order_complete_view = async (req, res) => {
+
+  try {
+    // Render the checkout page with the retrieved products
+    return res.render('order_complete', { pageTitle: "Order Completed" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Internal Server Error');
+  }
 }
 
 export const track_order_view = async (req, res) => {
-    const { tracking_id } = req.query;
+  const { tracking_id } = req.query;
 
-    if (!tracking_id) {
-        return res.status(400).json({ success: false, message: 'Tracking ID is required.' });
-    }
+  if (!tracking_id) {
+    return res.status(400).json({ success: false, message: 'Tracking ID is required.' });
+  }
 
-    try {
-      const order = await service.getOrderByTrackingId(tracking_id);
-      res.status(200).json({success:true, order})
-    } catch (error) {
-      res.status(500).render('errors/500', { error: err.message });
-      
-    }
+  try {
+    const order = await service.getOrderByTrackingId(tracking_id);
+    res.status(200).json({ success: true, order })
+  } catch (error) {
+    res.status(500).render('errors/500', { error: err.message });
+
+  }
 };
 
 export const track_order_page = async (req, res) => {
 
 
-    try {
-        // Render the checkout page with the retrieved products
-        return res.render('track_order', {pageTitle: "Track Your Order"});
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send('Internal Server Error');
-    }
+  try {
+    // Render the checkout page with the retrieved products
+    return res.render('track_order', { pageTitle: "Track Your Order" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Internal Server Error');
+  }
 };

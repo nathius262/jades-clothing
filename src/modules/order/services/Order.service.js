@@ -1,5 +1,7 @@
 import db from '../../../models/index.cjs';
 import { v4 as uuidv4 } from 'uuid';
+import * as productService from '../../product/services/Product.service.js';
+
 
 export async function createOrder(paymentData, paymentIntent, cartItems) {
     const transaction = await db.sequelize.transaction();
@@ -37,24 +39,43 @@ export async function createOrder(paymentData, paymentIntent, cartItems) {
             }, { transaction });
         }
 
-        // Process order items
+        // Validate stock before processing items
+        for (const item of cartItems) {
+        await productService.checkStock(item.product, item.sizeId, item.quantity);
+        }
+
+        // Process order items (safe now, stock is available)
         const orderItems = cartItems.map(item => ({
-            order_id: order.id,
-            product_id: item.product,
-            quantity: item.quantity,
-            price: item.price,
-            total_price: item.quantity * item.price,
+        order_id: order.id,
+        product_id: item.product,
+        size_id: item.sizeId || null,
+        quantity: item.quantity,
+        price: item.price,
+        total_price: item.quantity * item.price,
         }));
         await db.OrderItem.bulkCreate(orderItems, { transaction });
 
-        // Reduce stock
+        // Reduce stock (since we already checked availability)
         for (const item of cartItems) {
-            const product = await db.Product.findByPk(item.product, { transaction });
-            if (product) {
-                product.stock -= item.quantity;
-                await product.save({ transaction });
+        if (item.sizeId) {
+            const productSize = await db.ProductSize.findOne({
+            where: { product_id: item.product, size_id: item.sizeId },
+            transaction
+            });
+            if (productSize) {
+            productSize.stock -= item.quantity;
+            await productSize.save({ transaction });
+            continue;
             }
         }
+        const product = await db.Product.findByPk(item.product, { transaction });
+        if (product) {
+            product.stock -= item.quantity;
+            await product.save({ transaction });
+        }
+        }
+
+
 
         // Set delivery status
         await db.DeliveryStatus.create({
@@ -135,11 +156,9 @@ export const getOrders = async (page, limit) => {
 
 export const getOrderById = async (id) => {
 
-    const order = await db.Order.findByPk(id, {
-        attributes: ['id', 'tracking_id', 'customerEmail', 'customer_phone', 'total_amount', 'currency', 'status', 'paidAt', 'payment_channel', 'gateway_response', 'updatedAt', 'createdAt'],
-
+        const order = await db.Order.findByPk(id, {
+        attributes: ['id', 'tracking_id', 'customer_email', 'customer_phone', 'total_amount', 'currency', 'status', 'paidAt', 'payment_channel', 'gateway_response', 'updatedAt', 'createdAt'],
         include: [
-
             { model: db.Address, as: 'address', attributes: ['street_address', 'city', 'state', 'country'] },
             { model: db.DeliveryStatus, as: 'delivery_status', attributes: ['status'] },
             {
@@ -148,11 +167,12 @@ export const getOrderById = async (id) => {
                 attributes: ['quantity', 'price', 'total_price'],
                 include: [
                     { model: db.Product, as: 'product', attributes: ['id', 'name'] },
+                    { model: db.Size, as: 'size', attributes: ['id', 'name'] } 
                 ]
             },
-
         ],
     });
+
 
     if (!order) return null;
     return order;
@@ -162,32 +182,37 @@ export const getOrderByTrackingId = async (tracking_id) => {
     try {
         // Fetch order details
         const order = await db.Order.findOne({
-            where: { tracking_id },
-            attributes: ['tracking_id'],
-            include: [
-                { model: db.OrderItem, as: 'items', attributes:['quantity', 'price'], include: [{ model: db.Product, as: 'product', attributes:['name', 'price'] }] },
-                { model: db.DeliveryStatus, as: 'delivery_status', attributes: ['status', 'notes', 'updatedAt'] },
-            ],
-        });
+        where: { tracking_id },
+        attributes: ['tracking_id'],
+        include: [
+            {
+                model: db.OrderItem,
+                as: 'items',
+                attributes: ['quantity', 'price'],
+                include: [
+                    { model: db.Product, as: 'product', attributes: ['name'] },
+                    { model: db.Size, as: 'size', attributes: ['name'] }   // ✅ include size
+                ]
+            },
+            { model: db.DeliveryStatus, as: 'delivery_status', attributes: ['status', 'notes', 'updatedAt'] },
+        ],
+    });
 
+    const orderDetail = {
+        status: order.status,
+        items: order.items.map(item => ({
+            name: item.product.name,
+            size: item.size ? item.size.name : null,   // ✅ attach size
+            quantity: item.quantity,
+            price: item.price,
+        })),
+        delivery_status: order.delivery_status.map(status => ({
+            status: status.status,
+            updatedAt: status.updatedAt,
+            notes: status.notes
+        }))
+    };
 
-        if (!order) {
-            throw new Error('Not found');
-        }
-
-        const orderDetail = {
-            status: order.status,
-            items: order.items.map(item => ({
-                name: item.product.name,
-                quantity: item.quantity,
-                price: item.price,
-            })),
-            delivery_status: order.delivery_status.map(status => ({
-                status: status.status,
-                updatedAt:status.updatedAt,
-                notes:status.notes
-            }))
-        }
 
         return orderDetail;
     } catch (error) {

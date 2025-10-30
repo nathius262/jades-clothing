@@ -17,7 +17,7 @@ router.get('/about', about_view);
 router.get('/contact', contact_view);
 router.get('/terms-conditions', terms_condition_view);
 router.get('/privacy-policy', privacy_policy_view);
-router.get('/search', searchProducts);
+router.get('/search-terms', searchProducts);
 
 //others
 router.get('/site-map.xml', sitemap_view);

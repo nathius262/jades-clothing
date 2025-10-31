@@ -46,6 +46,16 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
+app.use((req, res, next) => {
+  const ua = req.headers['user-agent'] || '';
+  if (ua.includes('BLEXBot')) {
+    return res.status(403).send('Forbidden');
+  }
+  next();
+});
+
+
 // Static files
 app.use(staticFiles);
 

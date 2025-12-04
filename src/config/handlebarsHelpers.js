@@ -4,6 +4,9 @@ export default function registerHelpers(handlebars) {
   handlebars.registerHelper('gt', (a, b) => a > b);
   handlebars.registerHelper('lt', (a, b) => a < b);
   handlebars.registerHelper('eq', (a, b) => a === b);
+  handlebars.registerHelper('concat', (...args) => {
+    return args.slice(0, -1).join('');
+  });
   handlebars.registerHelper('notEqual', (a, b) => a !== b);
   handlebars.registerHelper('add', (a, b) => a + b);
   handlebars.registerHelper('subtract', (a, b) => a - b);

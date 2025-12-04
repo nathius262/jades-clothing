@@ -136,114 +136,96 @@ export const findById = async (id) => {
 export const filterProducts = async (filters = {}) => {
   try {
     const {
-      name,
-      minPrice,
-      maxPrice,
-      description,
-      short_description,
+      search = null,
+      name = null,
+      description = null,
+      short_description = null,
+      minPrice = null,
+      maxPrice = null,
       categoryIds = [],
-      limit = 10,
-      offset = 0,
-      sortBy = 'createdAt',
-      sortOrder = 'DESC'
+      order = null,       // Sequelize order array, e.g. [['price', 'ASC']]
+      limit = 12,
+      offset = 0
     } = filters;
 
+    const { Op } = db.Sequelize;
     const where = {};
-    
-    // Text search conditions
-    if (name || description || short_description) {
-      where[db.Sequelize.Op.or] = [];
-      
-      if (name) {
-        where[db.Sequelize.Op.or].push(
-          db.sequelize.where(
-            db.sequelize.fn('lower', db.sequelize.col('name')),
-            {
-              [db.Sequelize.Op.like]: `%${name.toLowerCase()}%`
-            }
-          )
-        );
-      }
-      
-      if (description) {
-        where[db.Sequelize.Op.or].push(
-          db.sequelize.where(
-            db.sequelize.fn('lower', db.sequelize.col('description')),
-            {
-              [db.Sequelize.Op.like]: `%${description.toLowerCase()}%`
-            }
-          )
-        );
-      }
 
-      if (short_description) {
-        where[db.Sequelize.Op.or].push(
-          db.sequelize.where(
-            db.sequelize.fn('lower', db.sequelize.col('short_description')),
-            {
-              [db.Sequelize.Op.like]: `%${short_description.toLowerCase()}%`
-            }
-          )
-        );
-      }
+    // ---------- TEXT SEARCH (only if there is something) ----------
+    const orConditions = [];
+
+    if (search) {
+      orConditions.push(
+        { name: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } },
+        { short_description: { [Op.iLike]: `%${search}%` } }
+      );
     }
-    
-    // Price range filtering
-    if (minPrice !== undefined || maxPrice !== undefined) {
+
+    if (name) orConditions.push({ name: { [Op.iLike]: `%${name}%` } });
+    if (description) orConditions.push({ description: { [Op.iLike]: `%${description}%` } });
+    if (short_description) orConditions.push({ short_description: { [Op.iLike]: `%${short_description}%` } });
+
+    if (orConditions.length > 0) {
+      where[Op.or] = orConditions;
+    }
+
+    // ---------- PRICE RANGE ----------
+    if (minPrice !== null || maxPrice !== null) {
       where.price = {};
-      if (minPrice !== undefined) {
-        where.price[db.Sequelize.Op.gte] = minPrice;
-      }
-      if (maxPrice !== undefined) {
-        where.price[db.Sequelize.Op.lte] = maxPrice;
-      }
+      if (minPrice !== null && !Number.isNaN(minPrice)) where.price[Op.gte] = minPrice;
+      if (maxPrice !== null && !Number.isNaN(maxPrice)) where.price[Op.lte] = maxPrice;
     }
 
-    // Include conditions for associations
+    // ---------- ASSOCIATIONS ----------
+    // Only attach WHERE on categories if we have valid categoryIds
     const include = [
-      { 
-        model: db.Category, 
-        as: 'categories', 
+      {
+        model: db.Category,
+        as: "categories",
         through: { attributes: [] },
-        ...(categoryIds.length ? { where: { id: categoryIds } } : {})
+        ...(categoryIds && categoryIds.length ? { where: { id: categoryIds } } : {})
       },
-      { 
-        model: db.Image, 
-        as: 'images', 
-        attributes: ['url', 'id', 'is_primary'] 
+      {
+        model: db.Image,
+        as: "images",
+        attributes: ["id", "url", "is_primary"]
       }
     ];
 
-    // Sorting configuration
-    const order = [[sortBy, sortOrder]];
+    // ---------- SORTING (use provided order or fallback) ----------
+    const finalOrder = Array.isArray(order) && order.length ? order : [["createdAt", "DESC"]];
 
-    // Fetch products with filters
+    // ---------- QUERY ----------
     const products = await db.Product.findAll({
       where,
       include,
-      order,
+      order: finalOrder,
       limit,
       offset,
       distinct: true
     });
 
-    // Get total count for pagination
+    // Count (only include category join when filtering by categories)
+    const countInclude = (categoryIds && categoryIds.length) ? [include[0]] : [];
     const total = await db.Product.count({
       where,
-      include: categoryIds.length ? include.slice(0, 1) : [],
+      include: countInclude,
       distinct: true
     });
 
     return {
       products,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limit)
     };
-  } catch (error) {
-    console.error('Filter products error:', error);
-    throw new Error('Error filtering products: ' + error.message);
+  } catch (err) {
+    console.error("Filter products error:", err);
+    throw new Error("Error filtering products: " + err.message);
   }
 };
+
+
 
 export const checkStock = async (productId, sizeId, quantity) => {
   if (sizeId) {

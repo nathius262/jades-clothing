@@ -70,100 +70,131 @@ export const terms_condition_view = async (req, res) => {
 export const searchProducts = async (req, res) => {
   try {
     const {
-      searchTerm,
-      name,
-      min_price,
-      max_price,
-      description,
-      short_description,
-      categories,
-      page = 1,
-      per_page = 10,
-      sort_by,
-      sort_order
+      searchTerm = "",
+      min_price = "",
+      max_price = "",
+      categories = "",
+      sort = "",         // combined value e.g. "price:asc"
+      page = "1",
+      per_page = "12",
+      view = "grid"
     } = req.query;
 
-    // Validate and parse inputs
-    const numericPage = Math.max(1, parseInt(page));
-    const numericPerPage = Math.max(1, Math.min(100, parseInt(per_page)));
+    // Pagination
+    const pageNumber = Math.max(1, parseInt(page, 10) || 1);
+    const perPage = Math.max(1, Math.min(100, parseInt(per_page, 10) || 12));
+    const offset = (pageNumber - 1) * perPage;
 
-    // Prepare filters
+    // Categories → array of ints
+    const categoryIds = categories
+      ? categories.split(",").map(c => parseInt(c.trim(), 10)).filter(n => !Number.isNaN(n))
+      : [];
+
+    // ---------------------------------------------------------------------
+    // SORTING (NEW + CLEAN)
+    // ---------------------------------------------------------------------
+    let sort_by = "";
+    let sort_order = "";
+
+    if (sort.includes(":")) {
+      const [field, direction] = sort.split(":");
+      sort_by = (field || "").trim().toLowerCase();
+      sort_order = (direction || "").trim().toLowerCase();
+    }
+
+    // Default
+    let order = [["createdAt", "DESC"]];
+    let resolvedSortOrder = sort_order || "desc";
+
+    const ALLOWED = ["price", "createdat", "name"];
+
+    if (ALLOWED.includes(sort_by)) {
+      order = [[sort_by, resolvedSortOrder.toUpperCase()]];
+    }
+
+    // ---------------------------------------------------------------------
+
     const filters = {
-      ...(searchTerm && { name: searchTerm, description: searchTerm, short_description: searchTerm }), // Changed to match service expectation
-      ...(name && { name }),
-      ...(min_price && { minPrice: parseFloat(min_price) }),
-      ...(max_price && { maxPrice: parseFloat(max_price) }),
-      ...(description && { description }),
-      ...(short_description && { short_description }),
-      ...(categories && {
-        categoryIds: categories.split(',').map(id => parseInt(id.trim()))
-      }),
-      limit: numericPerPage,
-      offset: (numericPage - 1) * numericPerPage,
-      ...(sort_by && { sortBy: sort_by }),
-      ...(sort_order && { sortOrder: sort_order.toUpperCase() })
+      search: searchTerm || null,
+      minPrice: min_price ? parseFloat(min_price) : null,
+      maxPrice: max_price ? parseFloat(max_price) : null,
+      categoryIds,
+      order,
+      limit: perPage,
+      offset
     };
 
-
-    const result = await productService.filterProducts(filters);
-
-    // Get all categories for the filter dropdown
+    const { products, total } = await productService.filterProducts(filters);
+    const totalPages = Math.ceil(total / perPage);
     const allCategories = await db.Category.findAll();
 
-    // Build query string helper
-    const buildQueryString = (params) => {
-      const queryParams = new URLSearchParams();
-      for (const [key, value] of Object.entries(params)) {
-        if (value !== undefined && value !== '') {
-          if (Array.isArray(value)) {
-            value.forEach(v => queryParams.append(key, v));
-          } else {
-            queryParams.append(key, value);
-          }
+    // Query Builder
+    const buildQuery = (params) => {
+      const qs = new URLSearchParams();
+      for (const [k, v] of Object.entries(params)) {
+        if (v === undefined || v === null || v === "") continue;
+        if (k === "categories" && Array.isArray(v)) {
+          if (v.length === 0) continue;
+          qs.append(k, v.join(","));
+        } else {
+          qs.append(k, v);
         }
       }
-      return queryParams.toString();
+      return qs.toString();
     };
 
-    const totalPages = Math.ceil(result.total / numericPerPage);
+    const baseQuery = { ...req.query };
 
+    // Pagination
+    const paginationLinks = {
+      prev: pageNumber > 1 ? buildQuery({ ...baseQuery, page: pageNumber - 1 }) : null,
+      next: pageNumber < totalPages ? buildQuery({ ...baseQuery, page: pageNumber + 1 }) : null,
+      pages: Array.from({ length: totalPages }, (_, i) => ({
+        number: i + 1,
+        query: buildQuery({ ...baseQuery, page: i + 1 })
+      }))
+    };
 
-    res.render('search', {
-      products: result.products,
-      totalItems: result.total,
-      totalPages: totalPages,
-      currentPage: numericPage,
-      searchQuery: searchTerm || name,
+    const selectedCategory = categoryIds.length ? String(categoryIds[0]) : "";
+
+    // Render
+    res.render("search", {
+      products,
+      totalItems: total,
+      totalPages,
+      currentPage: pageNumber,
       categories: allCategories,
+      viewMode: view,
+      startItem: offset + 1,
+      endItem: Math.min(offset + perPage, total),
+
+      // Template filters
       currentFilters: {
         searchTerm,
+        categories: selectedCategory,
         min_price,
         max_price,
-        categories: categories ? categories.split(',') : [],
         sort_by,
-        sort_order
+        sort_order: resolvedSortOrder
       },
-      viewMode: req.query.view || 'grid',
-      startItem: (numericPage - 1) * numericPerPage + 1,
-      endItem: Math.min(numericPage * numericPerPage, result.total),
-      queryString: buildQueryString(req.query),
-      prevPageQuery: buildQueryString({ ...req.query, page: numericPage - 1 }),
-      nextPageQuery: buildQueryString({ ...req.query, page: numericPage + 1 }),
-      pageNumbers: Array.from({ length: totalPages }, (_, i) => ({
-        number: i + 1,
-        query: buildQueryString({ ...req.query, page: i + 1 })
-      }))
+
+      pageTitle: "Search Results",
+      pagination: paginationLinks,
+      queryString: buildQuery(req.query)
     });
-  } catch (error) {
-    console.error('Search error:', error);
-    res.status(500).render('search', {
-      error: 'Error performing search',
+
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).render("search", {
+      error: "Error performing search",
       products: [],
       totalItems: 0,
       categories: await db.Category.findAll()
     });
   }
 };
+
+
 
 export const sitemap_view = async (req, res) => {
   try {

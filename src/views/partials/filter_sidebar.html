@@ -1,69 +1,76 @@
 <aside class="col-md-3 mb-4 p-4 rounded">
-    <form method="GET" action="/search-terms">
-        <h5 class="mb-3">Refine Search</h5>
+  <form method="GET" action="/search-terms">
+    <h5 class="mb-3">Refine Search</h5>
 
-        <!-- Search Term -->
-        <div class="mb-4">
-            <label class="form-label">Search Term</label>
-            <div class="input-group">
-                <input type="text" name="searchTerm" class="form-control rounded-0" placeholder="Search products..."
-                    value="{{currentFilters.searchTerm}}">
-                <button type="submit" class="btn btn-dark rounded-0">
-                    <i class="bi bi-search"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Category Filter -->
-        <div class="mb-3">
-            <label class="form-label">Category</label>
-            <select class="form-select rounded-0" name="categories">
-                <option value="">All Categories</option>
-                {{#each globalEntities.categories}}
-                <option value="{{this.id}}" {{#eq this.id ../currentFilters.categories}}selected{{/eq}}>
-                    {{this.name}}
-                </option>
-                {{/each}}
-            </select>
-        </div>
-
-        <!-- Price Range -->
-        <div class="mb-3">
-            <label class="form-label">Price Range</label>
-            <div class="row g-2">
-                <div class="col">
-                    <input type="number" name="min_price" class="form-control rounded-0" placeholder="Min"
-                        value="{{currentFilters.min_price}}">
-                </div>
-                <div class="col">
-                    <input type="number" name="max_price" class="form-control rounded-0" placeholder="Max"
-                        value="{{currentFilters.max_price}}">
-                </div>
-            </div>
-        </div>
-
-        <!-- Sort Options -->
-        <div class="mb-3">
-            <label class="form-label">Sort By</label>
-            <select class="form-select rounded-0" name="sort_by">
-                <option value="">Featured</option>
-                <option value="price" {{#eq currentFilters.sort_by 'price' }}selected{{/eq}}>
-                    Price: Low to High
-                </option>
-                <option value="createdAt" {{#eq currentFilters.sort_by 'createdAt' }}selected{{/eq}}>
-                    Newest Arrivals
-                </option>
-            </select>
-            <input type="hidden" name="sort_order" value="{{currentFilters.sort_order}}">
-        </div>
-
-        <input type="hidden" name="page" value="1">
-
-        <button type="submit" class="btn btn-dark rounded-0 w-100 mb-2">
-            <i class="bi bi-funnel"></i> Apply Filters
+    <!-- Search Term -->
+    <div class="mb-4">
+      <label class="form-label">Search Term</label>
+      <div class="input-group">
+        <input type="text" name="searchTerm" class="form-control rounded-0" placeholder="Search products..."
+          value="{{currentFilters.searchTerm}}">
+        <button type="submit" class="btn btn-dark rounded-0">
+          <i class="bi bi-search"></i>
         </button>
-        <a href="/search-terms" class="btn btn-outline-dark rounded-0 w-100">
-            <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
-        </a>
-    </form>
+      </div>
+    </div>
+
+    <!-- Category Filter (single-select) -->
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <select class="form-select rounded-0" name="categories">
+        <option value="">All Categories</option>
+        {{#each globalEntities.categories}}
+        <option value="{{this.id}}" {{#if (eq ../currentFilters.categories this.id)}}selected{{/if}}>
+          {{this.name}}
+        </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <!-- Price Range -->
+    <div class="mb-3">
+      <label class="form-label">Price Range</label>
+      <div class="row g-2">
+        <div class="col">
+          <input type="number" name="min_price" class="form-control rounded-0" placeholder="Min"
+            value="{{currentFilters.min_price}}">
+        </div>
+        <div class="col">
+          <input type="number" name="max_price" class="form-control rounded-0" placeholder="Max"
+            value="{{currentFilters.max_price}}">
+        </div>
+      </div>
+    </div>
+
+    <select class="form-select rounded-0" name="sort">
+
+      <option value="">Featured</option>
+
+      <option value="price:asc" {{#if (eq (concat currentFilters.sort_by ":" currentFilters.sort_order) "price:asc"
+        )}}selected{{/if}}>
+        Price: Low to High
+      </option>
+
+      <option value="price:desc" {{#if (eq (concat currentFilters.sort_by ":" currentFilters.sort_order) "price:desc"
+        )}}selected{{/if}}>
+        Price: High to Low
+      </option>
+
+      <option value="createdat:desc" {{#if (eq (concat currentFilters.sort_by ":"
+        currentFilters.sort_order) "createdat:desc" )}}selected{{/if}}>
+        Newest Arrivals
+      </option>
+
+    </select>
+
+    <input type="hidden" name="page" value="1">
+
+    <button type="submit" class="btn btn-dark rounded-0 w-100 mb-2">
+      <i class="bi bi-funnel"></i> Apply Filters
+    </button>
+
+    <a href="/search-terms" class="btn btn-outline-dark rounded-0 w-100">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+    </a>
+  </form>
 </aside>

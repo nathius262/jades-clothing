@@ -193,7 +193,7 @@ header a {
 /*CONTACT*/
 .bg-contact-hero {
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), 
-              url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y29udGFjdHxlbnwwfHwwfHx8MA%3D%3D') no-repeat center center;
+              url('../img/a1.jpg') no-repeat center center;
   background-size: cover;
   color: white;
   min-height: 40vh;

@@ -39,7 +39,7 @@
     "slugify": "^1.6.6",
     "sqlite3": "^5.1.7",
     "stripe": "^18.3.0",
-    "vercel": "^48.0.2"
+    "vercel": "^50.5.0"
   },
   "devDependencies": {
     "anchor-pki": "^0.3.2",

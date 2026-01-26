@@ -1,57 +1,60 @@
-  <!-- Footer -->
-  <footer class="text-white py-5" style="background-color: var(--black) !important;">
-    <div class="container">
-      <div class="row  text-center text-md-start">
-        <div class="col-lg-4 mb-4 mb-lg-0">
-          <h5 class="playfair-font mb-4"  style="font-family: 'Alex Brush', cursive; font-size: 2.2rem; font-weight: 400;">Jade's Clothing</h5>
-          <p>Celebrating Nigerian heritage through timeless fashion since 2010.</p>
-          <div class="social-icons mt-4">
-            <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-            <a href="https://www.instagram.com/jadesclothing2025?igsh=N3d5NGFmb3d3Z25j" class="text-white me-3"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-            <a href="#" class="text-white"><i class="bi bi-pinterest"></i></a>
-          </div>
-        </div>
-        <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-          <h6 class="text-uppercase mb-4">Shop</h6>
-          <ul class="list-unstyled">
-            {{#each globalEntities.categories}}
-            <li class="mb-2"><a href="/search-terms?categories={{this.id}}" class="text-white text-decoration-none text-capitalize">{{this.name}}</a></li>
-            {{/each}}
-            
-          </ul>
-        </div>
-        <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-          <h6 class="text-uppercase mb-4">Company</h6>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="/about" class="text-white text-decoration-none">About Us</a></li>
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">Our Artisans</a></li>
-            <li class="mb-2"><a href="#" class="text-white text-decoration-none">Careers</a></li>
-            <li class="mb-2"><a href="/order/track-order" class="text-white text-decoration-none">Track Order</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-4">
-          <h6 class="text-uppercase mb-4">Newsletter</h6>
-          <p>Subscribe for updates on new collections and exclusive offers.</p>
-          <div class="input-group mb-3">
-            <input type="email" class="form-control" placeholder="Your email">
-            <button class="btn btn-dark" type="button">Subscribe</button>
-          </div>
-          <small class="">We respect your privacy. Unsubscribe at any time.</small>
+<!-- Footer -->
+<footer class="text-white py-5" style="background-color: var(--black) !important;">
+  <div class="container">
+    <div class="row  text-center text-md-start">
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <h5 class="playfair-font mb-4" style="font-family: 'Alex Brush', cursive; font-size: 2.2rem; font-weight: 400;">
+          Jade's Clothing</h5>
+        <p>Celebrating Nigerian heritage through timeless fashion since 2024.</p>
+        <div class="social-icons mt-4">
+          <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+          <a href="https://www.instagram.com/jadesclothing2025?igsh=N3d5NGFmb3d3Z25j" class="text-white me-3"><i
+              class="bi bi-instagram"></i></a>
+          <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+          <a href="#" class="text-white"><i class="bi bi-pinterest"></i></a>
         </div>
       </div>
-      <hr class="my-4 bg-secondary">
-      <div class="row">
-        <div class="col-md-6 text-center text-md-start">
-          <small>&copy; 2025 Jade's Clothing. All rights reserved.</small>
+      <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+        <h6 class="text-uppercase mb-4">Shop</h6>
+        <ul class="list-unstyled">
+          {{#each globalEntities.categories}}
+          <li class="mb-2"><a href="/search-terms?categories={{this.id}}"
+              class="text-white text-decoration-none text-capitalize">{{this.name}}</a></li>
+          {{/each}}
+
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+        <h6 class="text-uppercase mb-4">Company</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="/about" class="text-white text-decoration-none">About Us</a></li>
+          <li class="mb-2"><a href="#" class="text-white text-decoration-none">Our Artisans</a></li>
+          <li class="mb-2"><a href="#" class="text-white text-decoration-none">Careers</a></li>
+          <li class="mb-2"><a href="/order/track-order" class="text-white text-decoration-none">Track Order</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h6 class="text-uppercase mb-4">Newsletter</h6>
+        <p>Subscribe for updates on new collections and exclusive offers.</p>
+        <div class="input-group mb-3">
+          <input type="email" class="form-control" placeholder="Your email">
+          <button class="btn btn-dark" type="button">Subscribe</button>
         </div>
-        <div class="col-md-6 text-center text-md-end">
-          <small>
-            <a href="/privacy-policy" class="text-white text-decoration-none me-3">Privacy Policy</a>
-            <a href="/terms-conditions" class="text-white text-decoration-none me-3">Terms of Service</a>
-            <a href="#" class="text-white text-decoration-none">Shipping Policy</a>
-          </small>
-        </div>
+        <small class="">We respect your privacy. Unsubscribe at any time.</small>
       </div>
     </div>
-  </footer>
+    <hr class="my-4 bg-secondary">
+    <div class="row">
+      <div class="col-md-6 text-center text-md-start">
+        <small>&copy; 2025 Jade's Clothing. All rights reserved.</small>
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <small>
+          <a href="/privacy-policy" class="text-white text-decoration-none me-3">Privacy Policy</a>
+          <a href="/terms-conditions" class="text-white text-decoration-none me-3">Terms of Service</a>
+          <a href="#" class="text-white text-decoration-none">Shipping Policy</a>
+        </small>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -3,6 +3,7 @@
 export class CartManager {
   // Update item quantity
   static async updateItem(productId, sizeId, quantity) {
+    if (sizeId === '') sizeId = null;
     try {
       const response = await fetch('/cart/api/update', {
         method: 'POST',
@@ -20,6 +21,7 @@ export class CartManager {
 
   // Remove item from cart
   static async removeItem(productId, sizeId) {
+    if (sizeId === '') sizeId = null;
     try {
       const response = await fetch('/cart/api/remove', {
         method: 'POST',
@@ -39,7 +41,7 @@ export class CartManager {
   static refreshUI() {
     const hasItems = document.querySelectorAll('.cart-item').length > 0;
     const checkoutBtn = document.getElementById('checkout-btn');
-    
+
     if (checkoutBtn) {
       checkoutBtn.disabled = !hasItems;
       console.log('Checkout button state:', hasItems ? 'Enabled' : 'Disabled');
@@ -53,7 +55,7 @@ export class CartManager {
       const productId = control.dataset.productId;
       const sizeId = control.dataset.sizeId; // 👈 added
       const input = control.querySelector('.quantity-input');
-      
+
       control.querySelector('.decrement-btn').addEventListener('click', () => {
         let newQty = parseInt(input.value) - 1;
         if (newQty < 1) newQty = 1;

@@ -2,86 +2,94 @@ const CART_COOKIE_NAME = 'jades_cart';
 const CART_EXPIRY_DAYS = 3;
 
 export class CartService {
-  // ==== CORE METHODS ==== //
-  
-  /**
-   * Get current cart from session
-   */
+  // ===== CORE =====
+
   static getCart(req) {
-    return req.session.cart || [];
+    return req.session.cart;
   }
 
-  /**
-   * Add/update item in cart (product + sizeId combo)
-   */
-  static addItem(req, res, productId, sizeId, quantity, price) {
-    if (!req.session.cart) req.session.cart = [];
+  static initCartFromCookie(req) {
+    if (req.session.cart) return;
 
-    const existingItem = req.session.cart.find(
-      item => item.product === productId && item.sizeId === sizeId
-    );
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
+    if (req.cookies[CART_COOKIE_NAME]) {
+      try {
+        req.session.cart = JSON.parse(req.cookies[CART_COOKIE_NAME]);
+      } catch {
+        req.session.cart = [];
+      }
     } else {
-      req.session.cart.push({ product: productId, sizeId, quantity, price });
+      req.session.cart = [];
     }
-
-    this._syncCartToCookie(req, res);
   }
 
-  /**
-   * Remove item from cart
-   */
-  static removeItem(req, res, productId, sizeId) {
-    if (!req.session.cart) return;
-
-    req.session.cart = req.session.cart.filter(
-      item => !(item.product === productId && item.sizeId === sizeId)
-    );
-
-    this._syncCartToCookie(req, res);
-  }
-
-  /**
-   * Update item quantity
-   */
-  static updateQuantity(req, res, productId, sizeId, newQuantity) {
-    if (!req.session.cart) return false;
+  static addItem(req, res, productId, sizeId, quantity, price) {
+    const pid = String(productId);
+    const sid = sizeId === null ? null : String(sizeId);
 
     const item = req.session.cart.find(
-      item => item.product === productId && item.sizeId === sizeId
+      i =>
+        String(i.product) === pid &&
+        (i.sizeId === null ? null : String(i.sizeId)) === sid
     );
+
+    if (item) {
+      item.quantity += Number(quantity);
+    } else {
+      req.session.cart.push({
+        product: pid,
+        sizeId: sid,
+        quantity: Number(quantity),
+        price: Number(price)
+      });
+    }
+
+    this._sync(req, res);
+  }
+
+  static updateQuantity(req, res, productId, sizeId, quantity) {
+    const pid = String(productId);
+    const sid = sizeId === null ? null : String(sizeId);
+
+    const item = req.session.cart.find(
+      i =>
+        String(i.product) === pid &&
+        (i.sizeId === null ? null : String(i.sizeId)) === sid
+    );
+
     if (!item) return false;
 
-    item.quantity = newQuantity;
-    this._syncCartToCookie(req, res);
+    item.quantity = Math.max(1, Number(quantity));
+    this._sync(req, res);
     return true;
   }
 
-  // ==== HELPER METHODS ==== //
+  static removeItem(req, res, productId, sizeId) {
+    const pid = String(productId);
+    const sid = sizeId === null ? null : String(sizeId);
 
-  /**
-   * Sync session cart to HTTP cookie
-   */
-  static _syncCartToCookie(req, res) {
+    req.session.cart = req.session.cart.filter(
+      i =>
+        !(
+          String(i.product) === pid &&
+          (i.sizeId === null ? null : String(i.sizeId)) === sid
+        )
+    );
+
+    this._sync(req, res);
+  }
+
+  // ===== COOKIE SYNC =====
+
+  static _sync(req, res) {
+    if (req.session.cart.length === 0) {
+      res.clearCookie(CART_COOKIE_NAME);
+      return;
+    }
+
     res.cookie(CART_COOKIE_NAME, JSON.stringify(req.session.cart), {
       maxAge: CART_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: 'Lax'
     });
-  }
-
-  /**
-   * Initialize cart from cookie if needed
-   */
-  static initCartFromCookie(req) {
-    if (!req.session.cart && req.cookies[CART_COOKIE_NAME]) {
-      try {
-        req.session.cart = JSON.parse(req.cookies[CART_COOKIE_NAME]);
-      } catch (e) {
-        req.session.cart = [];
-      }
-    }
   }
 }
